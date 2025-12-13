@@ -57,13 +57,14 @@ IGNORED_DIRS = {
 IGNORED_FILES = "scan_project.py,install_hooks.py,setup_vibe_kit.py"
 
 FORBIDDEN_PATTERNS = [
-    (r"API_KEY\s*=", "Chave de API explícita"),
-    (r"PASSWORD\s*=", "Senha explícita"),
-    (r"SECRET\s*=", "Segredo explícito"),
+    (r"(?i)(api_key|apikey|access_token)\s*=['\"]", "Possível Chave de API (Variação de nome)"),
+    (r"(?i)(password|passwd|pwd)\s*=['\"]", "Senha explícita"),
+    (r"(?i)(secret|client_secret)\s*=['\"]", "Segredo explícito"),
     (r"sk-[a-zA-Z0-9]{20,}", "Chave OpenAI"),
     (r"ghp_[a-zA-Z0-9]{20,}", "Token GitHub"),
     (r"AKIA[0-9A-Z]{16}", "AWS Access Key ID"),
     (r"AIza[0-9A-Za-z-_]{35}", "Google API Key"),
+    (r"Bearer [a-zA-Z0-9_\-\.]{20,}", "Token de Autenticação Bearer"),
     (r"-----BEGIN [A-Z]+ PRIVATE KEY-----", "Chave Privada SSH/RSA"),
 ]
 
@@ -100,13 +101,21 @@ def run_ruff_linter():
 
 def run_pip_audit():
     logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências (SCA)...{RESET}")
-    if not os.path.exists("requirements.txt"):
-        logger.log(f"ℹ️  requirements.txt não encontrado. Pulando.", YELLOW)
+    
+    target_file = ""
+    if os.path.exists("requirements.txt"):
+        target_file = "-r requirements.txt"
+    elif os.path.exists("pyproject.toml"):
+        target_file = "." # pip-audit detecta pyproject.toml automaticamente no diretório
+    else:
+        logger.log(f"ℹ️  Nenhum arquivo de dependências (requirements.txt/pyproject.toml) encontrado. Pulando.", YELLOW)
         return True
+        
     if not ensure_package_installed("pip-audit"): return False
 
     try:
-        result = subprocess.run(["pip-audit", "-r", "requirements.txt"], text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        cmd = ["pip-audit"] + target_file.split()
+        result = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if result.returncode != 0:
             logger.log(f"\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
             logger.log(result.stdout)
