@@ -2,16 +2,22 @@ import os
 import sys
 import stat
 import subprocess
+import shutil
 
 HOOKS_DIR = ".git/hooks"
 PRE_COMMIT_FILE = os.path.join(HOOKS_DIR, "pre-commit")
-CURRENT_PYTHON = sys.executable
+VIBE_CHECK_FILE = os.path.join(HOOKS_DIR, "vibe_check.py")
+CURRENT_PYTHON = sys.executable.replace('\\', '/')
 
 HOOK_BODY = r"""
 import sys
 import re
 import subprocess
 import os
+
+# Força UTF-8 no Windows para evitar erro de emoji (cp1252)
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 RED = "\033[91m"
 GREEN = "\033[92m"
@@ -51,7 +57,7 @@ def scan_file(filepath):
     return issues
 
 def main():
-    print(f"{GREEN}🛡️  Vibe Security (Pre-commit): Checando Segredos...{RESET}")
+    print(f"{GREEN}🛡️  Vibe Security (Local): Auditando...{RESET}")
     staged_files = get_staged_files()
     if not staged_files: sys.exit(0)
     if any(scan_file(f) for f in staged_files):
@@ -62,17 +68,77 @@ def main():
 if __name__ == "__main__": main()
 """
 
+def activate_ai_configs():
+    vibe_path = ".vibe"
+    if not os.path.exists(vibe_path): return
+
+    print("\n🤖 Configuração de IA detectada (.vibe/).")
+    print("Escolha quais ferramentas deseja ativar na raiz do projeto:")
+
+    options = [
+        ("Cursor (.cursorrules)", ".cursorrules"),
+        ("Cline (.clinerules)", ".clinerules"),
+        ("Qodo Gen (.codiumai.toml)", ".codiumai.toml"),
+        ("GitHub Copilot/Actions (.github)", ".github"),
+        ("Gemini (GEMINI.md)", "GEMINI.md"),
+        ("Auditoria Geral (AUDITORIA_IA.md)", "AUDITORIA_IA.md")
+    ]
+
+    available = []
+    for label, fname in options:
+        if os.path.exists(os.path.join(vibe_path, fname)):
+            available.append((label, fname))
+
+    if not available: return
+
+    for i, (label, _) in enumerate(available, 1):
+        print(f"  {i}. {label}")
+    print("  99. Limpar configurações (Remover da raiz)")
+    print("  0. Sair")
+
+    selection = input("\nDigite os números (ex: 1,3 (separe por virgulas caso queira mais de uma)): ").strip()
+    if not selection or selection == '0': return
+
+    if selection == '99':
+        print("🧹 Limpando configurações da raiz...")
+        for _, fname in options:
+            if os.path.exists(fname):
+                try:
+                    if os.path.isdir(fname): shutil.rmtree(fname)
+                    else: os.remove(fname)
+                    print(f"🗑️  Removido: {fname}")
+                except Exception as e: print(f"❌ Erro ao remover {fname}: {e}")
+        return
+
+    print("🔄 Copiando...")
+    for idx in [s.strip() for s in selection.split(',') if s.strip().isdigit()]:
+        i = int(idx) - 1
+        if 0 <= i < len(available):
+            lbl, fname = available[i]
+            src, dst = os.path.join(vibe_path, fname), fname
+            try:
+                if os.path.isdir(src): shutil.copytree(src, dst, dirs_exist_ok=True)
+                else: shutil.copy2(src, dst)
+                print(f"✅ Ativado: {lbl}")
+            except Exception as e: print(f"❌ Erro: {e}")
+
 def install():
     if not os.path.exists(".git"):
         print("❌ Erro: Rode 'git init' primeiro.")
         return
     if not os.path.exists(HOOKS_DIR): os.makedirs(HOOKS_DIR)
     
-    final_content = f"#!{CURRENT_PYTHON}\n{HOOK_BODY}"
-    with open(PRE_COMMIT_FILE, "w", encoding="utf-8") as f: f.write(final_content)
+    # 1. Salva a lógica Python em um arquivo separado
+    with open(VIBE_CHECK_FILE, "w", encoding="utf-8") as f: f.write(HOOK_BODY)
+
+    # 2. Cria um wrapper Shell Script seguro (com aspas) para chamar o Python
+    shell_content = f'#!/bin/sh\n"{CURRENT_PYTHON}" "{VIBE_CHECK_FILE}" "$@"\n'
+    with open(PRE_COMMIT_FILE, "w", encoding="utf-8", newline='\n') as f: f.write(shell_content)
     os.chmod(PRE_COMMIT_FILE, os.stat(PRE_COMMIT_FILE).st_mode | stat.S_IEXEC)
     
     print(f"✅ Vibe Security instalado usando: {CURRENT_PYTHON}")
+    activate_ai_configs()
+
     try:
         print("📦 Verificando ferramentas (Bandit, Pip-Audit, Ruff)...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit", "pip-audit", "ruff"], stdout=subprocess.DEVNULL)
