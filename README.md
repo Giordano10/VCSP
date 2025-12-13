@@ -1,4 +1,4 @@
-# 🛡️ Vibe Coding Starter Kit (Template Oficial)
+# 🛡️ Vibe Coding Security Protocol (VCPS)
 
 Bem-vindo! Este é um **Template de Segurança** para quem desenvolve com ajuda de Inteligência Artificial (ChatGPT, Claude, Gemini, Cursor).
 
