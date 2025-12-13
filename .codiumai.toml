@@ -1,8 +1,8 @@
 [tests]
 plan_instructions = """
-1. Aja como um atacante.
-2. Injete payloads de SQLi e XSS.
-3. Verifique vazamento de dados sensíveis.
+1. Aja como um atacante (Pentest).
+2. Verifique casos de borda (Edge Cases).
+3. Garanta que o código lida bem com inputs inválidos.
 """
 [analysis]
 reference_files = ["AUDITORIA_IA.md"]

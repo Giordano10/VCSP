@@ -1,22 +1,16 @@
-# 🛡️ Playbook de Segurança & Auditoria (Python/Backend)
+# 🛡️ Playbook de Segurança & Qualidade
 
-Este documento contém cenários de ataque reais e como preveni-los.
+## 🏴‍☠️ O que os Scanners Procuram?
 
-## 🏴‍☠️ Red Team: Cenários de Ataque Comuns
+### 1. Bandit (Segurança)
+* `exec()`, `eval()`, `os.system()`
+* Senhas hardcoded
+* Criptografia fraca (MD5)
 
-### 1. SQL Injection
-**❌ Inseguro:** `f"SELECT * FROM users WHERE user = '{u}'"`
-**✅ Correto:** `cursor.execute("SELECT... WHERE user = %s", (u,))`
+### 2. Pip-Audit (Dependências)
+* Bibliotecas com CVEs conhecidos (ex: Log4j, requests antigos).
 
-### 2. OS Command Injection
-**❌ Inseguro:** `os.system(f"ping {ip}")`
-**✅ Correto:** `subprocess.run(["ping", ip])`
-
-### 3. XSS (Cross-Site Scripting)
-**Risco:** Renderizar input do usuário sem escape em HTML.
-**Solução:** Usar autoescape do framework ou limpar input.
-
-## 📋 Checklist
-- [ ] Segredos removidos (Use `python scan_project.py`)?
-- [ ] Inputs sanitizados?
-- [ ] Dependências seguras?
+### 3. Ruff (Qualidade/Bugs)
+* **F841:** Variável local atribuída mas nunca usada.
+* **F401:** Importado mas não usado.
+* **E722:** `except:` vazio (sem especificar o erro).

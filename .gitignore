@@ -6,3 +6,5 @@ venv/
 .venv/
 .vscode/
 node_modules/
+.ruff_cache/
+vulnerable_test_DO_NOT_DEPLOY.py

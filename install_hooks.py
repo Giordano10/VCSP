@@ -74,10 +74,10 @@ def install():
     
     print(f"✅ Vibe Security instalado usando: {CURRENT_PYTHON}")
     try:
-        print("📦 Verificando dependências de auditoria (Bandit)...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit"], stdout=subprocess.DEVNULL)
-        print("✅ Bandit pronto para uso.")
+        print("📦 Verificando ferramentas (Bandit, Pip-Audit, Ruff)...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit", "pip-audit", "ruff"], stdout=subprocess.DEVNULL)
+        print("✅ Todas as ferramentas de auditoria instaladas.")
     except:
-        print("⚠️ Aviso: Não foi possível instalar o Bandit automaticamente. Rode 'pip install bandit'.")
+        print("⚠️ Aviso: Instale manualmente: pip install bandit pip-audit ruff")
 
 if __name__ == "__main__": install()

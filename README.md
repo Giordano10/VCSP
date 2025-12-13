@@ -1,7 +1,7 @@
 # 🛡️ Vibe Coding Security Protocol (VCPS)
 
 Template seguro para desenvolvimento ágil com IA (Vibe Coding).
-Já vem configurado com **Contexto Automático para IA**, **Proteção de Commit**, **Pentest Lógico** e **CI/CD**.
+Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências** e **Controle de Qualidade**.
 
 ---
 
@@ -13,13 +13,13 @@ Já vem configurado com **Contexto Automático para IA**, **Proteção de Commit
 3. Crie seu projeto.
 
 ### 2. Ativar a Proteção (Obrigatório)
-O Git não baixa a proteção de senhas automaticamente. Assim que baixar seu novo projeto, rode no terminal:
+O Git não baixa a proteção automaticamente. Assim que baixar seu novo projeto, rode:
 
 ```bash
 python install_hooks.py
 ```
 
-✅ **Pronto!** Seu repositório agora bloqueia senhas localmente e instala o auditor (Bandit).
+✅ **Pronto!** Hooks ativados e auditores instalados (Bandit, Pip-Audit, Ruff).
 
 ### 3. Configurar Ambiente
 ```bash
@@ -29,68 +29,54 @@ cp .env.example .env
 
 ---
 
-## 🤖 Automação de IA (Como funciona)
+## 🤖 Automação de IA (Magic Files)
 
-Este kit injeta regras de segurança automaticamente na sua IA. **Você NÃO precisa copiar textos manualmente** se usar as ferramentas suportadas:
+Este kit injeta regras de segurança e qualidade automaticamente na sua IA:
 
-| Ferramenta | Arquivo Mágico | Como usar |
+| Ferramenta | Arquivo | Função |
 | :--- | :--- | :--- |
-| **Cursor** | `.cursorrules` | **Automático.** Lê as regras antes do chat. |
-| **Cline / Roo Code** | `.clinerules` | **Automático.** Agente autônomo com foco em segurança. |
-| **Qodo Gen** | `.codiumai.toml` | **Automático.** Gera testes focados em achar falhas. |
-| **GitHub Copilot** | `.github/...` | **Automático.** Instruções de sistema globais. |
-| **Gemini Code Assist** | `GEMINI.md` | **Automático.** Contexto para o modo Agent. |
-
-### 🧠 Usando com IAs de Navegador (ChatGPT / Perplexity)
-Como essas ferramentas não têm acesso direto aos arquivos do seu projeto:
-1. Abra o arquivo `AUDITORIA_IA.md`.
-2. Copie o conteúdo ou anexe o arquivo no chat.
-3. Diga: *"Use estas regras de segurança para criar o código..."*
+| **Cursor** | `.cursorrules` | Regras de segurança e estilo. |
+| **Cline** | `.clinerules` | Agente autônomo com foco em qualidade. |
+| **Qodo Gen** | `.codiumai.toml` | Testes focados em falhas e edge cases. |
+| **Copilot** | `.github/...` | Instruções globais. |
 
 ---
 
-## 🛡️ Ferramentas de Defesa
+## 🕵️ Varredura Completa (The Quality Gate)
 
-| Ferramenta | Comando | Função |
-| :--- | :--- | :--- |
-| **Hook Local** | `git commit` | Bloqueia commits com chaves/senhas expostas. |
-| **Scanner** | `python scan_project.py` | Varre segredos e **falhas de lógica (Pentest)**. |
-| **CI/CD** | (Automático) | Roda o scanner a cada `git push` no GitHub. |
+O script `scan_project.py` executa 4 camadas de verificação:
 
----
+1.  **🔐 Segredos:** Busca por chaves vazadas no código.
+2.  **🔫 Pentest (Bandit):** Busca por falhas de lógica e injeção.
+3.  **📦 SCA (Pip Audit):** Busca por bibliotecas desatualizadas/vulneráveis.
+4.  **🧹 Linter (Ruff):** Busca por bugs, variáveis não usadas e código sujo.
 
-## 🕵️ Varredura e Pentest
-
-O scanner deste kit agora inclui o **Bandit**, que procura falhas de lógica (como injeção de SQL ou uso inseguro de shell).
-
-Para rodar a auditoria completa:
+Para rodar tudo:
 ```bash
 python scan_project.py
 ```
 
-### Teste de Segurança (Prova Real)
-Para verificar se o Pentest está funcionando, crie um arquivo `teste_perigo.py` com:
-```python
-import os
-os.system("ls -la") 
-```
-Ao rodar o scanner, ele DEVE acusar vulnerabilidade em vermelho.
+---
+
+## 🧪 Como testar se a segurança funciona?
+
+Este kit gera automaticamente um arquivo chamado `vulnerable_test_DO_NOT_DEPLOY.py`.
+Ele é um "arquivo armadilha" cheio de falhas propositais (Senhas, SQL Injection, Eval).
+
+1.  Rode o scanner: `python scan_project.py`
+2.  **Resultado Esperado:** O terminal deve ficar VERMELHO, apontando múltiplos erros neste arquivo. Isso prova que o sistema funciona.
+3.  **Ação:** Após o teste, **APAGUE** esse arquivo imediatamente:
+    ```bash
+    rm vulnerable_test_DO_NOT_DEPLOY.py
+    ```
 
 ---
 
-## 🚨 PROTOCOLO DE PÂNICO: Vazou uma chave?
+## 🚨 PROTOCOLO DE PÂNICO
+Se vazou chave: **REVOGUE** imediatamente no painel do fornecedor.
 
-Se você (ou um colega) comitou uma chave e ela foi para o GitHub:
-
-1. 🛑 **NÃO tente apenas apagar a linha no código.**
-2. 🔥 **Considere a chave QUEIMADA.**
-3. **Ação Imediata:** Revogue (delete) a chave no painel do fornecedor e gere uma nova.
-
-## 🚨 Bypass (Falsos Positivos)
-Se o hook bloquear algo legítimo (ex: ID numérico longo):
-```bash
-git commit -m "mensagem" --no-verify
-```
+## 🚨 Bypass
+Se o hook bloquear algo legítimo: `git commit -m "msg" --no-verify`
 
 ---
 
@@ -101,5 +87,3 @@ Este projeto foi criado e é mantido por **Giordano Alves**, Desenvolvedor Backe
 O objetivo deste template é permitir que desenvolvedores usem o poder da IA ("Vibe Coding") sem sacrificar a solidez e a segurança da engenharia de software tradicional.
 
 > *"Codifique na velocidade da luz, mas com a segurança de um cofre."*
-
----
