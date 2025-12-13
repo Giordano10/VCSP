@@ -71,3 +71,15 @@ Se o hook bloquear algo legítimo (ex: ID numérico longo):
 ```bash
 git commit -m "mensagem" --no-verify
 ```
+
+---
+
+## 👨‍💻 Sobre o Mantenedor
+
+Este projeto foi criado e é mantido por **Giordano Alves**, Desenvolvedor Backend Python especialista em Infraestrutura, Linux e Segurança.
+
+O objetivo deste template é permitir que desenvolvedores usem o poder da IA ("Vibe Coding") sem sacrificar a robustez e a segurança da engenharia de software tradicional.
+
+> *"Codifique na velocidade da luz, mas com a segurança de um cofre."*
+
+---
