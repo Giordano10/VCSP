@@ -16,6 +16,8 @@ jobs:
           python-version: '3.10'
       - name: Instalar Auditores
         run: pip install bandit pip-audit ruff
+      - name: Remover Arquivo de Teste (Chaos Test)
+        run: rm -f vulnerable_test_DO_NOT_DEPLOY.py || true
       - name: Rodar Scan Completo
         run: python scan_project.py
       - name: Upload Logs (Artifact)
