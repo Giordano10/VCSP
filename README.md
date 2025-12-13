@@ -34,11 +34,13 @@ cp .env.example .env
 
 Este kit injeta regras de segurança automaticamente na sua IA. **Você NÃO precisa copiar textos manualmente** se usar as ferramentas suportadas:
 
-| Ferramenta | Onde a mágica acontece | Como usar |
+| Ferramenta | Arquivo Mágico | Como usar |
 | :--- | :--- | :--- |
-| **Cursor** | `.cursorrules` | **Automático.** O Cursor lê esse arquivo oculto antes de responder qualquer chat. |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | **Automático.** O Copilot usa esse arquivo como instrução de sistema em todo o projeto. |
-| **Gemini Code Assist** | `GEMINI.md` | **Automático (Agent Mode).** Se ele não ler, cite `@GEMINI.md` no prompt inicial. |
+| **Cursor** | `.cursorrules` | **Automático.** Lê as regras antes do chat. |
+| **Cline / Roo Code** | `.clinerules` | **Automático.** Agente autônomo com foco em segurança. |
+| **Qodo Gen** | `.codiumai.toml` | **Automático.** Gera testes focados em achar falhas. |
+| **GitHub Copilot** | `.github/...` | **Automático.** Instruções de sistema globais. |
+| **Gemini Code Assist** | `GEMINI.md` | **Automático.** Contexto para o modo Agent. |
 
 ### 🧠 Usando com IAs de Navegador (ChatGPT / Perplexity)
 Como essas ferramentas não têm acesso direto aos arquivos do seu projeto:
@@ -62,9 +64,9 @@ Como essas ferramentas não têm acesso direto aos arquivos do seu projeto:
 
 Se você (ou um colega) comitou uma chave e ela foi para o GitHub:
 
-1.  🛑 **NÃO tente apenas apagar a linha no código.**
-2.  🔥 **Considere a chave QUEIMADA.**
-3.  **Ação Imediata:** Revogue (delete) a chave no painel do fornecedor e gere uma nova.
+1. 🛑 **NÃO tente apenas apagar a linha no código.**
+2. 🔥 **Considere a chave QUEIMADA.**
+3. **Ação Imediata:** Revogue (delete) a chave no painel do fornecedor e gere uma nova.
 
 ## 🚨 Bypass (Falsos Positivos)
 Se o hook bloquear algo legítimo (ex: ID numérico longo):
@@ -78,7 +80,7 @@ git commit -m "mensagem" --no-verify
 
 Este projeto foi criado e é mantido por **Giordano Alves**, Desenvolvedor Backend Python especialista em Infraestrutura, Linux e Segurança.
 
-O objetivo deste template é permitir que desenvolvedores usem o poder da IA ("Vibe Coding") sem sacrificar a robustez e a segurança da engenharia de software tradicional.
+O objetivo deste template é permitir que desenvolvedores usem o poder da IA ("Vibe Coding") sem sacrificar a solidez e a segurança da engenharia de software tradicional.
 
 > *"Codifique na velocidade da luz, mas com a segurança de um cofre."*
 
