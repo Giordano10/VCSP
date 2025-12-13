@@ -1,4 +1,4 @@
-# 🛡️ Vibe Coding Starter Kit (Template Oficial)
+# 🛡️ Vibe Coding Security Protocol (VCPS)
 
 Template seguro para desenvolvimento ágil com IA (Vibe Coding).
 Já vem configurado com **Contexto Automático para IA**, **Proteção de Commit** e **CI/CD**.
