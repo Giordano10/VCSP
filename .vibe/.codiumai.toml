@@ -5,4 +5,4 @@ plan_instructions = """
 3. Garanta que o código lida bem com inputs inválidos.
 """
 [analysis]
-reference_files = ["AUDITORIA_IA.md"]
+reference_files = [".vibe/AUDITORIA_IA.md"]

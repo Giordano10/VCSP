@@ -31,14 +31,16 @@ cp .env.example .env
 
 ## 🤖 Automação de IA (Magic Files)
 
-Este kit injeta regras de segurança e qualidade automaticamente na sua IA:
+As configurações de IA e CI/CD estão organizadas na pasta **`.vibe/`** para manter a raiz limpa.
+Para ativar uma ferramenta, copie seu arquivo para a raiz do projeto.
 
-| Ferramenta | Arquivo | Função |
+| Ferramenta | Arquivo (em .vibe/) | Função |
 | :--- | :--- | :--- |
 | **Cursor** | `.cursorrules` | Regras de segurança e estilo. |
 | **Cline** | `.clinerules` | Agente autônomo com foco em qualidade. |
 | **Qodo Gen** | `.codiumai.toml` | Testes focados em falhas e edge cases. |
 | **Copilot** | `.github/...` | Instruções globais. |
+| **GitHub** | `.github/workflows` | CI/CD Pipeline. |
 
 ---
 
