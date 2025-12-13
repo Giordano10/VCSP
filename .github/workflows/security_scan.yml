@@ -14,3 +14,9 @@ jobs:
         run: pip install bandit pip-audit ruff
       - name: Rodar Scan Completo
         run: python scan_project.py
+      - name: Upload Logs (Artifact)
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-logs
+          path: logs/

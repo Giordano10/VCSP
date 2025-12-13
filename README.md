@@ -1,7 +1,7 @@
 # 🛡️ Vibe Coding Security Protocol (VCPS)
 
 Template seguro para desenvolvimento ágil com IA (Vibe Coding).
-Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências** e **Controle de Qualidade**.
+Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências**, **Quality Gate** e **Histórico de Logs**.
 
 ---
 
@@ -19,7 +19,7 @@ O Git não baixa a proteção automaticamente. Assim que baixar seu novo projeto
 python install_hooks.py
 ```
 
-✅ **Pronto!** Hooks ativados e auditores instalados (Bandit, Pip-Audit, Ruff).
+✅ **Pronto!** Hooks ativados e ferramentas instaladas (Bandit, Pip-Audit, Ruff).
 
 ### 3. Configurar Ambiente
 ```bash
@@ -42,30 +42,31 @@ Este kit injeta regras de segurança e qualidade automaticamente na sua IA:
 
 ---
 
-## 🕵️ Varredura Completa (The Quality Gate)
+## 🕵️ Varredura e Histórico (Scanner)
 
-O script `scan_project.py` executa 4 camadas de verificação:
+O script `scan_project.py` executa 4 camadas de verificação e **salva tudo na pasta `logs/`**:
 
 1.  **🔐 Segredos:** Busca por chaves vazadas no código.
 2.  **🔫 Pentest (Bandit):** Busca por falhas de lógica e injeção.
 3.  **📦 SCA (Pip Audit):** Busca por bibliotecas desatualizadas/vulneráveis.
 4.  **🧹 Linter (Ruff):** Busca por bugs, variáveis não usadas e código sujo.
 
-Para rodar tudo:
+Para rodar a auditoria:
 ```bash
 python scan_project.py
 ```
 
+📂 **Confira seu progresso:** Abra a pasta `logs/` para ver o histórico de correções e garantir que você não está repetindo erros antigos.
+
 ---
 
-## 🧪 Como testar se a segurança funciona?
+## 🧪 Teste de Segurança (Chaos Test)
 
-Este kit gera automaticamente um arquivo chamado `vulnerable_test_DO_NOT_DEPLOY.py`.
-Ele é um "arquivo armadilha" cheio de falhas propositais (Senhas, SQL Injection, Eval).
+Este kit gera um arquivo chamado `vulnerable_test_DO_NOT_DEPLOY.py` cheio de falhas.
 
 1.  Rode o scanner: `python scan_project.py`
-2.  **Resultado Esperado:** O terminal deve ficar VERMELHO, apontando múltiplos erros neste arquivo. Isso prova que o sistema funciona.
-3.  **Ação:** Após o teste, **APAGUE** esse arquivo imediatamente:
+2.  **Resultado:** O terminal ficará VERMELHO e um log será gerado com os detalhes.
+3.  **Ação:** Após o teste, **APAGUE** esse arquivo:
     ```bash
     rm vulnerable_test_DO_NOT_DEPLOY.py
     ```
