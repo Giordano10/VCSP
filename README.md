@@ -1,111 +1,73 @@
-# 🛡️ Vibe Coding Security Protocol (VCPS)
+# 🛡️ Vibe Coding Starter Kit (Template Oficial)
 
-Bem-vindo! Este é um **Template de Segurança** para quem desenvolve com ajuda de Inteligência Artificial (ChatGPT, Claude, Gemini, Cursor).
-
-O objetivo deste projeto é garantir que, mesmo programando rápido com IA, seu código não tenha **senhas vazadas**, **falhas de segurança** ou **bugs críticos**.
+Template seguro para desenvolvimento ágil com IA (Vibe Coding).
+Já vem configurado com **Contexto Automático para IA**, **Proteção de Commit** e **CI/CD**.
 
 ---
 
-## 🐣 Como começar (Passo a Passo para Iniciantes)
+## 🚀 Como usar este Template
 
-Siga estes passos exatos para criar seu projeto com segurança máxima.
+### 1. Iniciar um Novo Projeto
+1. Clique no botão verde **"Use this template"** (topo da página).
+2. Selecione **"Create a new repository"**.
+3. Crie seu projeto.
 
-### 1️⃣ Criar o Repositório no GitHub
-Não clone este template diretamente! Use-o como base:
-1.  Olhe para o topo desta página, no canto direito.
-2.  Clique no botão verde **"Use this template"**.
-3.  Escolha a opção **"Create a new repository"**.
-4.  Dê um nome ao seu novo projeto (Ex: `meu-projeto-python`) e crie.
-
-### 2️⃣ Baixar para seu Computador
-Agora, no **seu** novo repositório que acabou de criar:
-1.  Clique no botão verde **Code**.
-2.  Copie o link HTTPS.
-3.  Abra seu terminal (ou Git Bash) e digite:
-    ```bash
-    git clone SEU_LINK_AQUI
-    cd nome-do-seu-projeto
-    ```
-
-### 3️⃣ Configurar o Ambiente Python (Opcional, mas Recomendado)
-Para não bagunçar seu computador, crie um ambiente isolado:
-
-**No Windows:**
-```bash
-python -m venv venv
-.\venv\Scripts\activate
-```
-
-**No Linux/Mac:**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-*(Se aparecer `(venv)` no começo da linha do terminal, funcionou!)*
-
-### 4️⃣ Ativar a Segurança (MUITO IMPORTANTE 🚨)
-O Git não baixa a proteção de senhas automaticamente. Você precisa ativá-la uma única vez.
-Rode este comando na raiz do projeto:
+### 2. Ativar a Proteção (Obrigatório)
+O Git não baixa a proteção de senhas automaticamente.
+Assim que baixar seu novo projeto, rode no terminal:
 
 ```bash
 python install_hooks.py
 ```
 
-✅ **Se aparecer "Vibe Security instalado":** Parabéns! Agora, se você tentar salvar (commitar) um código com senha exposta, o sistema vai te bloquear automaticamente.
+✅ **Pronto!** Seu repositório agora bloqueia senhas localmente.
 
-### 5️⃣ Configurar suas Senhas
-Nunca coloque senhas no código. Use o arquivo `.env`.
-1.  Copie o exemplo:
-    ```bash
-    cp .env.example .env
-    # No Windows: copy .env.example .env
-    ```
-2.  Abra o arquivo `.env` no seu editor (VS Code).
-3.  Coloque suas chaves reais lá.
-    * *Nota:* O arquivo `.env` é ignorado pelo Git, então suas senhas nunca subirão para a internet.
+### 3. Configurar Ambiente
+```bash
+cp .env.example .env
+# Edite o .env com suas chaves (ele já é ignorado pelo Git)
+```
 
 ---
 
-## 🤖 Como usar com a IA?
+## 🤖 Automação de IA (Como funciona)
 
-Este kit já vem configurado para "ensinar" a IA a ser segura.
+Este kit injeta regras de segurança automaticamente na sua IA. **Você NÃO precisa copiar textos manualmente** se usar as ferramentas suportadas:
 
-* **Se usa Cursor:** Ele lerá automaticamente o arquivo `.cursorrules`.
-* **Se usa Gemini/ChatGPT/Perplexity:**
-    Copie o conteúdo do arquivo `AUDITORIA_IA.md` e cole no chat antes de pedir código. Exemplo:
-    > "Estou começando um projeto. Use as regras abaixo para garantir segurança: [Cole o texto aqui]"
+| Ferramenta | Onde a mágica acontece | Como usar |
+| :--- | :--- | :--- |
+| **Cursor** | `.cursorrules` | **Automático.** O Cursor lê esse arquivo oculto antes de responder qualquer chat. |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | **Automático.** O Copilot usa esse arquivo como instrução de sistema em todo o projeto. |
+| **Gemini Code Assist** | `GEMINI.md` | **Automático (Agent Mode).** Se ele não ler, cite `@GEMINI.md` no prompt inicial. |
+
+### 🧠 Usando com IAs de Navegador (ChatGPT / Perplexity)
+Como essas ferramentas não têm acesso direto aos arquivos do seu projeto:
+1. Abra o arquivo `AUDITORIA_IA.md`.
+2. Copie o conteúdo ou anexe o arquivo no chat.
+3. Diga: *"Use estas regras de segurança para criar o código..."*
 
 ---
 
-## 🚨 O que fazer se o Git bloquear meu Commit?
+## 🛡️ Ferramentas de Defesa
 
-Se você tentar dar `git commit` e aparecer uma mensagem **VERMELHA** dizendo `COMMIT ABORTADO`, o "guardião" funcionou!
+| Ferramenta | Comando | Função |
+| :--- | :--- | :--- |
+| **Hook Local** | `git commit` | Bloqueia commits com chaves/senhas expostas. |
+| **Scanner** | `python scan_project.py` | Varre todo o projeto em busca de falhas antigas. |
+| **CI/CD** | (Automático) | Roda o scanner a cada `git push` no GitHub. |
 
-1.  Leia a mensagem de erro. Ela vai dizer em qual arquivo e linha está a senha.
-2.  Remova a senha do código e coloque no `.env`.
-3.  Tente commitar de novo.
+---
 
-**"Mas é um alarme falso!"**
-Se o bloqueio for em um número que *parece* cartão de crédito mas não é, force o envio:
+## 🚨 PROTOCOLO DE PÂNICO: Vazou uma chave?
+
+Se você (ou um colega) comitou uma chave e ela foi para o GitHub:
+
+1.  🛑 **NÃO tente apenas apagar a linha no código.**
+2.  🔥 **Considere a chave QUEIMADA.**
+3.  **Ação Imediata:** Revogue (delete) a chave no painel do fornecedor e gere uma nova.
+
+## 🚨 Bypass (Falsos Positivos)
+Se o hook bloquear algo legítimo (ex: ID numérico longo):
 ```bash
 git commit -m "mensagem" --no-verify
 ```
-
----
-
-## 🗑️ Auditoria: "Será que já vazei algo?"
-
-Se você está usando este template em um código que já existia, rode o scanner para procurar falhas antigas:
-
-```bash
-python scan_project.py
-```
-
-Se ele encontrar algo vermelho:
-1.  **Não apague apenas.** A senha já está no histórico.
-2.  Vá no site do serviço (AWS, OpenAI) e **cancele (revogue)** a chave.
-3.  Gere uma nova.
-
----
-*Template criado para garantir Vibe Coding seguro.*
