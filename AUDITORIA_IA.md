@@ -1,30 +1,22 @@
-# 🛡️ Playbook de Segurança & Pentest
+# 🛡️ Playbook de Segurança & Auditoria (Python/Backend)
 
-Este documento ensina como simular ataques no seu próprio código.
+Este documento contém cenários de ataque reais e como preveni-los.
 
-## 🧠 Prompt para Simulação de Pentest (Copie e cole na IA)
+## 🏴‍☠️ Red Team: Cenários de Ataque Comuns
 
-> "Atue como um Pentester Sênior. Analise o código abaixo procurando vulnerabilidades OWASP Top 10 (Injection, Broken Access Control, SSRF). Não apenas corrija, mas me explique como um atacante exploraria essa falha específica. Tente 'quebrar' minha lógica."
+### 1. SQL Injection
+**❌ Inseguro:** `f"SELECT * FROM users WHERE user = '{u}'"`
+**✅ Correto:** `cursor.execute("SELECT... WHERE user = %s", (u,))`
 
-## 🏴‍☠️ Cenários de Ataque Comuns (O que o Bandit procura)
+### 2. OS Command Injection
+**❌ Inseguro:** `os.system(f"ping {ip}")`
+**✅ Correto:** `subprocess.run(["ping", ip])`
 
-### 1. Execução de Código Arbitrário (RCE)
-**❌ Vulnerável:**
-```python
-import os
-user_input = input()
-os.system("echo " + user_input) # Perigo! Se digitar "; rm -rf /"
-```
-**✅ Seguro:** `subprocess.run(["echo", user_input])`
+### 3. XSS (Cross-Site Scripting)
+**Risco:** Renderizar input do usuário sem escape em HTML.
+**Solução:** Usar autoescape do framework ou limpar input.
 
-### 2. Uso de Criptografia Fraca
-**❌ Vulnerável:** `hashlib.md5(b"senha")` (MD5 é quebrado)
-**✅ Seguro:** `hashlib.sha256(b"senha")` ou `bcrypt`
-
-### 3. Bind para todas as interfaces
-**❌ Vulnerável:** `app.run(host='0.0.0.0')` (Expõe para a rede toda em dev)
-**✅ Seguro:** `app.run(host='127.0.0.1')`
-
-## 📋 Checklist Manual
-- [ ] Rodei o `python scan_project.py` (Bandit)?
-- [ ] Testei inputs com caracteres especiais (`'`, `"`, `;`, `--`)?
+## 📋 Checklist
+- [ ] Segredos removidos (Use `python scan_project.py`)?
+- [ ] Inputs sanitizados?
+- [ ] Dependências seguras?

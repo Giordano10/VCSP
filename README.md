@@ -1,61 +1,105 @@
 # 🛡️ Vibe Coding Security Protocol (VCPS)
 
 Template seguro para desenvolvimento ágil com IA (Vibe Coding).
-Já vem configurado com **Contexto Automático**, **Análise de Vulnerabilidades (SAST)** e **Proteção de Commit**.
+Já vem configurado com **Contexto Automático para IA**, **Proteção de Commit**, **Pentest Lógico** e **CI/CD**.
 
 ---
 
 ## 🚀 Como usar este Template
 
 ### 1. Iniciar um Novo Projeto
-1. Clique no botão verde **"Use this template"**.
+1. Clique no botão verde **"Use this template"** (topo da página).
 2. Selecione **"Create a new repository"**.
+3. Crie seu projeto.
 
-### 2. Instalar Dependências de Segurança (NOVO 🟢)
-Para realizar a varredura profunda (Pentest Lógico), instale o Bandit:
+### 2. Ativar a Proteção (Obrigatório)
+O Git não baixa a proteção de senhas automaticamente. Assim que baixar seu novo projeto, rode no terminal:
 
 ```bash
-pip install -r requirements-dev.txt
 python install_hooks.py
 ```
+
+✅ **Pronto!** Seu repositório agora bloqueia senhas localmente e instala o auditor (Bandit).
 
 ### 3. Configurar Ambiente
 ```bash
 cp .env.example .env
+# Edite o .env com suas chaves (ele já é ignorado pelo Git)
 ```
 
 ---
 
-## 🕵️ Varredura de Pentest (Como testar)
+## 🤖 Automação de IA (Como funciona)
 
-Agora você tem dois níveis de verificação:
+Este kit injeta regras de segurança automaticamente na sua IA. **Você NÃO precisa copiar textos manualmente** se usar as ferramentas suportadas:
 
-1.  **Scanner de Segredos (Básico):** Procura chaves vazadas.
-2.  **Bandit (Avançado):** Procura falhas de lógica (SQL Injection, Eval, Criptografia fraca).
+| Ferramenta | Arquivo Mágico | Como usar |
+| :--- | :--- | :--- |
+| **Cursor** | `.cursorrules` | **Automático.** Lê as regras antes do chat. |
+| **Cline / Roo Code** | `.clinerules` | **Automático.** Agente autônomo com foco em segurança. |
+| **Qodo Gen** | `.codiumai.toml` | **Automático.** Gera testes focados em achar falhas. |
+| **GitHub Copilot** | `.github/...` | **Automático.** Instruções de sistema globais. |
+| **Gemini Code Assist** | `GEMINI.md` | **Automático.** Contexto para o modo Agent. |
 
-Para rodar ambos:
+### 🧠 Usando com IAs de Navegador (ChatGPT / Perplexity)
+Como essas ferramentas não têm acesso direto aos arquivos do seu projeto:
+1. Abra o arquivo `AUDITORIA_IA.md`.
+2. Copie o conteúdo ou anexe o arquivo no chat.
+3. Diga: *"Use estas regras de segurança para criar o código..."*
+
+---
+
+## 🛡️ Ferramentas de Defesa
+
+| Ferramenta | Comando | Função |
+| :--- | :--- | :--- |
+| **Hook Local** | `git commit` | Bloqueia commits com chaves/senhas expostas. |
+| **Scanner** | `python scan_project.py` | Varre segredos e **falhas de lógica (Pentest)**. |
+| **CI/CD** | (Automático) | Roda o scanner a cada `git push` no GitHub. |
+
+---
+
+## 🕵️ Varredura e Pentest
+
+O scanner deste kit agora inclui o **Bandit**, que procura falhas de lógica (como injeção de SQL ou uso inseguro de shell).
+
+Para rodar a auditoria completa:
 ```bash
 python scan_project.py
 ```
 
----
-
-## 🤖 Automação de IA
-
-| Ferramenta | Arquivo | Função |
-| :--- | :--- | :--- |
-| **Cursor** | `.cursorrules` | Lê regras de segurança automaticamente. |
-| **Cline** | `.clinerules` | Agente de defesa ativo. |
-| **Qodo Gen** | `.codiumai.toml` | Gera testes de invasão. |
-| **Gemini/GPT** | `AUDITORIA_IA.md` | Copie o prompt "Red Team" deste arquivo. |
+### Teste de Segurança (Prova Real)
+Para verificar se o Pentest está funcionando, crie um arquivo `teste_perigo.py` com:
+```python
+import os
+os.system("ls -la") 
+```
+Ao rodar o scanner, ele DEVE acusar vulnerabilidade em vermelho.
 
 ---
 
-## 🚨 PROTOCOLO DE PÂNICO
-Se vazou chave: **REVOGUE** no painel do fornecedor imediatamente. Não basta apagar do Git.
+## 🚨 PROTOCOLO DE PÂNICO: Vazou uma chave?
+
+Se você (ou um colega) comitou uma chave e ela foi para o GitHub:
+
+1. 🛑 **NÃO tente apenas apagar a linha no código.**
+2. 🔥 **Considere a chave QUEIMADA.**
+3. **Ação Imediata:** Revogue (delete) a chave no painel do fornecedor e gere uma nova.
+
+## 🚨 Bypass (Falsos Positivos)
+Se o hook bloquear algo legítimo (ex: ID numérico longo):
+```bash
+git commit -m "mensagem" --no-verify
+```
 
 ---
 
 ## 👨‍💻 Sobre o Mantenedor
-Criado e mantido por **Giordano Alves**, especialista em Backend Python, Infra e Segurança.
+
+Este projeto foi criado e é mantido por **Giordano Alves**, Desenvolvedor Backend Python especialista em Infraestrutura, Linux e Segurança.
+
+O objetivo deste template é permitir que desenvolvedores usem o poder da IA ("Vibe Coding") sem sacrificar a solidez e a segurança da engenharia de software tradicional.
+
 > *"Codifique na velocidade da luz, mas com a segurança de um cofre."*
+
+---

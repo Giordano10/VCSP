@@ -10,10 +10,14 @@ YELLOW = "\033[93m"
 RESET = "\033[0m"
 BOLD = "\033[1m"
 
+# Ignorar APENAS ambientes virtuais e git. 
 IGNORED_DIRS = {
     '.git', 'venv', 'env', '.venv', '__pycache__', 'node_modules', 
     '.idea', '.vscode', 'build', 'dist', 'target', '.github'
 }
+
+# Arquivos que o Bandit deve ignorar para não dar falso positivo neles mesmos
+IGNORED_FILES = "scan_project.py,install_hooks.py,setup_vibe_kit.py"
 
 FORBIDDEN_PATTERNS = [
     (r"API_KEY\s*=", "Chave de API explícita"),
@@ -24,34 +28,48 @@ FORBIDDEN_PATTERNS = [
     (r"AKIA[0-9A-Z]{16}", "AWS Access Key ID"),
     (r"AIza[0-9A-Za-z-_]{35}", "Google API Key"),
     (r"-----BEGIN [A-Z]+ PRIVATE KEY-----", "Chave Privada SSH/RSA"),
+    (r"\b192\.168\.\d{1,3}\.\d{1,3}\b", "IP Interno (192.168.x.x) hardcoded"),
+    (r"\b10\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", "IP Interno (10.x.x.x) hardcoded"),
 ]
 
-def check_bandit_installed():
-    return shutil.which("bandit") is not None
+def ensure_bandit_installed():
+    if shutil.which("bandit") is None:
+        print(f"{YELLOW}⚠️  Bandit não encontrado. Instalando automaticamente...{RESET}")
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit"])
+            print(f"{GREEN}✅ Bandit instalado!{RESET}\n")
+        except:
+            print(f"{RED}❌ Erro ao instalar Bandit. Rode 'pip install bandit' manualmente.{RESET}")
+            return False
+    return True
 
 def run_bandit():
-    print(f"\n{BOLD}🔫 Executando Análise Lógica (Bandit)...{RESET}")
-    if not check_bandit_installed():
-        print(f"{YELLOW}⚠️  Bandit não encontrado.{RESET}")
-        print("Para detectar falhas de lógica (eval, exec, crypto), instale:")
-        print(f"{BOLD}pip install bandit{RESET}\n")
+    print(f"\n{BOLD}🔫 Executando Análise Lógica (Bandit - Modo Paranoico)...{RESET}")
+    
+    if not ensure_bandit_installed():
         return False
     
-    # Roda o bandit recursivamente (-r) no diretório atual (.)
-    # -ll: mostra severidade média e alta
-    # -q: modo silencioso (só erros)
-    # -f custom: formatação personalizada (opcional, aqui usaremos txt padrão)
     try:
-        # Exclui pastas de teste e venv
-        subprocess.run(
-            ["bandit", "-r", ".", "-ll", "-x", "venv,.venv,tests,test"], 
-            check=True
-        )
-        print(f"{GREEN}✅ Nenhum problema lógico grave encontrado pelo Bandit.{RESET}")
+        # Exclui também os scripts do kit da análise do Bandit
+        exclusions = f"venv,.venv,.git,{IGNORED_FILES}"
+        
+        # -r . : Recursivo
+        # -x ... : Exclusões
+        # -f screen : Formato de saída
+        cmd = ["bandit", "-r", ".", "-x", exclusions, "-f", "screen"]
+        
+        result = subprocess.run(cmd, text=True)
+        
+        if result.returncode != 0:
+            print(f"\n{RED}⛔ O BANDIT ENCONTROU VULNERABILIDADES!{RESET}")
+            print("☝️  Veja o relatório acima e corrija o código.")
+            return False
+        
+        print(f"{GREEN}✅ Código limpo. Nenhuma falha lógica encontrada.{RESET}")
         return True
-    except subprocess.CalledProcessError:
-        print(f"\n{RED}⛔ O BANDIT ENCONTROU VULNERABILIDADES DE CÓDIGO!{RESET}")
-        print("Verifique o relatório acima e corrija as falhas de lógica.")
+        
+    except Exception as e:
+        print(f"{RED}❌ Erro ao rodar Bandit: {e}{RESET}")
         return False
 
 def scan_file(filepath):
@@ -67,17 +85,19 @@ def scan_file(filepath):
     return issues
 
 def main():
-    print(f"{BOLD}🔍 Vibe Security Scan (Secrets + Pentest Logic){RESET}")
+    print(f"{BOLD}🔍 Vibe Security Scan{RESET}")
     
     # 1. Busca por Segredos (Regex)
     root_dir = os.getcwd()
     files_with_issues = 0
-    print(f"1️⃣  Buscando chaves hardcoded...")
+    print(f"1️⃣  Buscando chaves (Regex)...")
 
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
         for file in files:
-            if file in ["scan_project.py", "install_hooks.py", "setup_vibe_kit.py"]: continue
+            # Ignora os scripts na busca regex também para evitar duplicidade
+            if file in IGNORED_FILES.split(","): continue
+            
             filepath = os.path.join(root, file)
             issues = scan_file(filepath)
             if issues:
@@ -88,11 +108,8 @@ def main():
                     print(f"   L.{line_num}: {msg}")
 
     secrets_ok = (files_with_issues == 0)
-    if secrets_ok:
-        print(f"{GREEN}✅ Nenhuma chave encontrada.{RESET}")
-    else:
-        print(f"{RED}⛔ Foram encontradas chaves expostas.{RESET}")
-
+    if secrets_ok: print(f"{GREEN}✅ Nenhuma chave encontrada.{RESET}")
+    
     # 2. Busca por Vulnerabilidades de Lógica (Bandit)
     bandit_ok = run_bandit()
 

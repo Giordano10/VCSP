@@ -10,9 +10,5 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      
-      - name: Instalar Bandit
-        run: pip install bandit
-
-      - name: Rodar Scanner (Secrets + Bandit)
-        run: python scan_project.py
+      - run: pip install bandit
+      - run: python scan_project.py

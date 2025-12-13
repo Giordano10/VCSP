@@ -1,8 +1,8 @@
 [tests]
 plan_instructions = """
-1. Aja como um atacante (Pentester).
-2. Tente injetar SQL, XSS e comandos de sistema nos testes.
-3. Verifique se o sistema falha de forma segura (sem vazar stack trace).
+1. Aja como um atacante.
+2. Injete payloads de SQLi e XSS.
+3. Verifique vazamento de dados sensíveis.
 """
 [analysis]
 reference_files = ["AUDITORIA_IA.md"]

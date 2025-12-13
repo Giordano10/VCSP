@@ -1,6 +1,7 @@
 import os
 import sys
 import stat
+import subprocess
 
 HOOKS_DIR = ".git/hooks"
 PRE_COMMIT_FILE = os.path.join(HOOKS_DIR, "pre-commit")
@@ -26,6 +27,8 @@ FORBIDDEN_PATTERNS = [
     (r"AKIA[0-9A-Z]{16}", "AWS Access Key ID"),
     (r"AIza[0-9A-Za-z-_]{35}", "Google API Key"),
     (r"-----BEGIN [A-Z]+ PRIVATE KEY-----", "Chave Privada SSH/RSA"),
+    (r"\b192\.168\.\d{1,3}\.\d{1,3}\b", "IP Interno (192.168.x.x) hardcoded"),
+    (r"\b10\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", "IP Interno (10.x.x.x) hardcoded"),
 ]
 
 def get_staged_files():
@@ -64,10 +67,17 @@ def install():
         print("❌ Erro: Rode 'git init' primeiro.")
         return
     if not os.path.exists(HOOKS_DIR): os.makedirs(HOOKS_DIR)
+    
     final_content = f"#!{CURRENT_PYTHON}\n{HOOK_BODY}"
-    with open(PRE_COMMIT_FILE, "w", encoding="utf-8") as f:
-        f.write(final_content)
+    with open(PRE_COMMIT_FILE, "w", encoding="utf-8") as f: f.write(final_content)
     os.chmod(PRE_COMMIT_FILE, os.stat(PRE_COMMIT_FILE).st_mode | stat.S_IEXEC)
+    
     print(f"✅ Vibe Security instalado usando: {CURRENT_PYTHON}")
+    try:
+        print("📦 Verificando dependências de auditoria (Bandit)...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit"], stdout=subprocess.DEVNULL)
+        print("✅ Bandit pronto para uso.")
+    except:
+        print("⚠️ Aviso: Não foi possível instalar o Bandit automaticamente. Rode 'pip install bandit'.")
 
 if __name__ == "__main__": install()
