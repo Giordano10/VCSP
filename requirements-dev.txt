@@ -1,0 +1,2 @@
+bandit==1.7.5
+# Adicione aqui outras libs de teste (pytest, etc)

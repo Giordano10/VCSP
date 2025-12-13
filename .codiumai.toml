@@ -1,11 +1,8 @@
 [tests]
-# Instruções para o Agente de Testes
 plan_instructions = """
-1. Priorize testes de segurança (Security Testing).
-2. Verifique SQL Injection e XSS em todos os inputs.
-3. Não faça mocks excessivos; valide a lógica real quando possível.
+1. Aja como um atacante (Pentester).
+2. Tente injetar SQL, XSS e comandos de sistema nos testes.
+3. Verifique se o sistema falha de forma segura (sem vazar stack trace).
 """
-
 [analysis]
-# Arquivos que a IA deve ler para entender o contexto de segurança
 reference_files = ["AUDITORIA_IA.md"]
