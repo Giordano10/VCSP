@@ -11,6 +11,14 @@ Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditori
 
 ---
 
+## 🎯 Para que serve?
+
+No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muitos projetos ganharam um boost na produção e no lançamento de features. Porém, nem todo mundo está preocupado com a manutenção e segurança do próprio código, podendo ficar vulnerável caso não haja um revisor experiente para encontrar brechas que podem ser exploradas por atacantes.
+
+**Foi pensando nisso que criei essa ferramenta:** ela vai varrer seu código, seja ele criado por IA ou não, em busca dessas potenciais falhas, atuando como uma camada de segurança automatizada.
+
+---
+
 ## 🚀 Como usar este Template
 
 ### Opção A: Começando do Zero (Recomendado)
@@ -24,7 +32,14 @@ Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditori
 3. Certifique-se de ter o Python 3.10+ instalado.
 
 ### 2. Ativar a Proteção (Obrigatório para ambos os casos)
-O Git não baixa a proteção automaticamente. No terminal, na raiz do projeto, rode:
+O Git, por padrão, não baixa scripts de automação (Hooks) por motivos de segurança. Portanto, você precisa rodar este script para "ligar" a proteção na sua máquina.
+
+**O que o `install_hooks.py` faz?**
+1.  **Instala o Pre-Commit Hook:** Cria um arquivo oculto em `.git/hooks/` que intercepta todo comando `git commit`.
+2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit) e as instala se necessário.
+3.  **Limpa Conflitos:** Remove arquivos de exemplo duplicados que possam causar erros.
+
+No terminal, na raiz do projeto, rode:
 
 ```bash
 python install_hooks.py
@@ -58,6 +73,21 @@ Para ativar uma ferramenta, copie seu arquivo para a raiz do projeto.
 Para IAs de chat que não aceitam arquivos de configuração (como ChatGPT ou Perplexity), copie o conteúdo de **`.vibe/AUDITORIA_IA.md`** (System Prompt) e cole no início da conversa.
 
 Isso garante que a IA siga as mesmas regras de segurança e estilo do restante do projeto.
+
+---
+
+## ⚡ O Fluxo de Trabalho (Vibe Coding)
+
+Como este kit protege você enquanto a IA codifica?
+
+1.  **Você pede:** "Crie uma conexão com o banco AWS." (no Cursor/Copilot/ChatGPT).
+2.  **A IA gera:** Um código funcional, mas coloca a `AWS_ACCESS_KEY` direto no arquivo python.
+3.  **Você commita:** `git commit -m "add db connection"`
+4.  **O Guardião Atua:** O hook (instalado no passo 2) intercepta o commit **antes** dele ser salvo.
+5.  **Bloqueio:** O terminal exibe: `❌ [BLOQUEADO] AWS Access Key encontrada`.
+6.  **Correção:** Você move a chave para o `.env` (como deve ser) e tenta de novo.
+
+**Resultado:** Você codifica na velocidade da IA, mas com a segurança de um sênior revisando cada linha em tempo real.
 
 ---
 
