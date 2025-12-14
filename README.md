@@ -117,6 +117,12 @@ python scan_project.py
 
 📂 **Confira seu progresso:** Abra a pasta `logs/` para ver o histórico de correções e garantir que você não está repetindo erros antigos.
 
+### 📅 Relatório Semanal Automático
+O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feira às 08:00 UTC** via GitHub Actions.
+
+*   **Objetivo:** Gerar um relatório de tudo que foi produzido na semana anterior.
+*   **Benefício:** Permite que você revise e corrija dívidas técnicas ou de segurança antes de iniciar o novo ciclo de desenvolvimento.
+
 ---
 
 ## 🚨 PROTOCOLO DE PÂNICO (Vazamento de Credenciais)
