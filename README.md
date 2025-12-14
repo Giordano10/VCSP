@@ -100,6 +100,9 @@ Como este kit protege você enquanto a IA codifica?
 
 ## 🕵️ Varredura e Histórico (Scanner)
 
+**Para que serve o `scan_project.py`?**
+Enquanto o `install_hooks.py` protege o futuro (novos commits), o `scan_project.py` protege o passado. Ele serve para **varrer todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
+
 O script `scan_project.py` executa 4 camadas de verificação e **salva tudo na pasta `logs/`**:
 
 1.  **🔐 Segredos:** Busca por chaves vazadas no código.
