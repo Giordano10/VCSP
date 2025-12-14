@@ -1,6 +1,7 @@
 # 🛡️ Vibe Coding Security Protocol (VCPS)
 
 ![CI Status](https://github.com/Giordano10/VCSP/actions/workflows/security_scan.yml/badge.svg)
+![Latest Release](https://img.shields.io/github/v/release/Giordano10/VCSP)
 ![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Security](https://img.shields.io/badge/security-bandit%20%7C%20pip--audit-red)
