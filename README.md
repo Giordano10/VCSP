@@ -39,6 +39,11 @@ O Git, por padrão, não baixa scripts de automação (Hooks) por motivos de seg
 2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit) e as instala se necessário.
 3.  **Limpa Conflitos:** Remove arquivos de exemplo duplicados que possam causar erros.
 
+**🤖 O Menu de Seleção de IA:**
+Durante a execução, o script perguntará qual IA você utiliza (Cursor, Cline, etc.).
+*   **Para que serve?** Ele copia automaticamente os arquivos de configuração (ex: `.cursorrules`) da pasta `.vibe/` para a raiz.
+*   **Por que isso importa?** Isso "ensina" sua IA a gerar código seguro desde o início, evitando que o Guardião bloqueie seus commits depois.
+
 No terminal, na raiz do projeto, rode:
 
 ```bash
@@ -58,7 +63,9 @@ cp .env.example .env
 ## 🤖 Automação de IA (Magic Files)
 
 As configurações de IA e CI/CD estão organizadas na pasta **`.vibe/`** para manter a raiz limpa.
-Para ativar uma ferramenta, copie seu arquivo para a raiz do projeto.
+**Se você rodou o `install_hooks.py` (Passo 2), a configuração da sua IA já foi aplicada automaticamente!**
+
+Caso queira trocar de IA ou configurar manualmente, basta rodar novamente o Install_hooks.py, e selecionar a opção correspondente a IA que está usando. Caso queira excluir o arquivo de configuração da raiz, rode o install_hooks.py e selecione a opção 99 para limpar os arquivos da raiz.
 
 | Ferramenta | Arquivo (em .vibe/) | Função |
 | :--- | :--- | :--- |
