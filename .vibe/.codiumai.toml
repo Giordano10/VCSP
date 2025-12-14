@@ -1,8 +1,26 @@
 [tests]
+framework = "pytest"
+num_desired_tests = 4
+
 plan_instructions = """
-1. Aja como um atacante (Pentest).
-2. Verifique casos de borda (Edge Cases).
-3. Garanta que o código lida bem com inputs inválidos.
+CONTEXT: You are the QA Security Engineer for a high-security Python project (VCSP).
+
+1. **SECURITY & INJECTION:**
+   - Generate specific test cases for SQL Injection (e.g., `' OR 1=1 --`).
+   - Test for XSS payloads in string inputs.
+   - Verify that secrets are NOT logged in error messages.
+
+2. **ROBUSTNESS & EDGE CASES:**
+   - Test boundary values (max int, empty strings, null bytes).
+   - Test malformed JSON/XML inputs.
+   - Ensure `UnicodeDecodeError` handling is tested.
+
+3. **MOCKING & ISOLATION:**
+   - STRICTLY FORBIDDEN: Real network calls (AWS, OpenAI, Database).
+   - Use `unittest.mock` or `pytest-mock` for everything.
+   - Mock environment variables using `monkeypatch`.
 """
+
 [analysis]
+auto_mock = true
 reference_files = [".vibe/AUDITORIA_IA.md"]
