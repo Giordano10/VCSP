@@ -132,6 +132,14 @@ def activate_ai_configs():
             except Exception as e:
                 print(f"❌ Erro: {e}")
 
+def check_conflicts():
+    if os.path.exists("test_sample.py") and os.path.exists("tests/test_sample.py"):
+        try:
+            os.remove("test_sample.py")
+            print("🗑️  Conflito resolvido: test_sample.py removido da raiz.")
+        except Exception:
+            pass
+
 def install():
     if not os.path.exists(".git"):
         print("❌ Erro: Rode 'git init' primeiro.")
@@ -151,6 +159,7 @@ def install():
     
     print(f"✅ Vibe Security instalado usando: {CURRENT_PYTHON}")
     activate_ai_configs()
+    check_conflicts()
 
     try:
         print("📦 Verificando ferramentas (Bandit, Pip-Audit, Ruff)...")
