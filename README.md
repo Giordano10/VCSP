@@ -13,13 +13,18 @@ Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditori
 
 ## 🚀 Como usar este Template
 
-### 1. Iniciar um Novo Projeto
+### Opção A: Começando do Zero (Recomendado)
 1. Clique no botão verde **"Use this template"** (topo da página).
 2. Selecione **"Create a new repository"**.
 3. Crie seu projeto.
 
-### 2. Ativar a Proteção (Obrigatório)
-O Git não baixa a proteção automaticamente. Assim que baixar seu novo projeto, rode:
+### Opção B: Em Projeto Já Existente
+1. Baixe este repositório (ZIP ou Clone).
+2. Copie os arquivos `install_hooks.py`, `scan_project.py` e a pasta `.vibe/` para a raiz do seu projeto atual.
+3. Certifique-se de ter o Python 3.10+ instalado.
+
+### 2. Ativar a Proteção (Obrigatório para ambos os casos)
+O Git não baixa a proteção automaticamente. No terminal, na raiz do projeto, rode:
 
 ```bash
 python install_hooks.py
@@ -46,7 +51,13 @@ Para ativar uma ferramenta, copie seu arquivo para a raiz do projeto.
 | **Cline** | `.clinerules` | Agente autônomo com foco em qualidade. |
 | **Qodo Gen** | `.codiumai.toml` | Testes focados em falhas e edge cases. |
 | **Copilot** | `.github/...` | Instruções globais. |
+| **Gemini** | `GEMINI.md` | Prompt otimizado para Google AI Studio / Vertex AI. |
 | **GitHub** | `.github/workflows` | CI/CD Pipeline. |
+
+### 🧠 ChatGPT, Perplexity & Claude
+Para IAs de chat que não aceitam arquivos de configuração (como ChatGPT ou Perplexity), copie o conteúdo de **`.vibe/GEMINI.md`** (System Prompt) e cole no início da conversa.
+
+Isso garante que a IA siga as mesmas regras de segurança e estilo do restante do projeto.
 
 ---
 
