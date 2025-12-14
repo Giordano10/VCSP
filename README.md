@@ -55,7 +55,7 @@ Para ativar uma ferramenta, copie seu arquivo para a raiz do projeto.
 | **GitHub** | `.github/workflows` | CI/CD Pipeline. |
 
 ### 🧠 ChatGPT, Perplexity & Claude
-Para IAs de chat que não aceitam arquivos de configuração (como ChatGPT ou Perplexity), copie o conteúdo de **`.vibe/GEMINI.md`** (System Prompt) e cole no início da conversa.
+Para IAs de chat que não aceitam arquivos de configuração (como ChatGPT ou Perplexity), copie o conteúdo de **`.vibe/AUDITORIA_IA.md`** (System Prompt) e cole no início da conversa.
 
 Isso garante que a IA siga as mesmas regras de segurança e estilo do restante do projeto.
 
