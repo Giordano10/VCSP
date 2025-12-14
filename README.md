@@ -125,6 +125,8 @@ O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feir
 
 ![Bug Trend](.vibe/assets/bug_trend.png)
 
+> **Nota:** Este gráfico ilustra o formato do relatório. Como foi gerado dentro do próprio VCSP (que é um código limpo), ele não apresenta falhas. Ao utilizar esta ferramenta no seu projeto, o gráfico refletirá os dados reais do seu ambiente, variando de acordo com o histórico de cada usuário.
+
 ---
 
 ## 🚨 PROTOCOLO DE PÂNICO (Vazamento de Credenciais)
