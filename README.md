@@ -68,11 +68,29 @@ python scan_project.py
 
 ---
 
-## 🚨 PROTOCOLO DE PÂNICO
-Se vazou chave: **REVOGUE** imediatamente no painel do fornecedor.
+## 🚨 PROTOCOLO DE PÂNICO (Vazamento de Credenciais)
 
-## 🚨 Bypass
-Se o hook bloquear algo legítimo: `git commit -m "msg" --no-verify`
+Se você acidentalmente comitou uma chave de API ou senha:
+
+1.  **REVOGUE** a chave imediatamente no painel do fornecedor (AWS, OpenAI, etc).
+2.  **NÃO** tente apenas apagar o arquivo e comitar de novo (o histórico do Git mantém o segredo).
+3.  Rotacione todas as credenciais que possam ter sido expostas.
+
+## 🔓 Bypass (Ignorar Verificações)
+
+Se o hook bloquear um arquivo legítimo (falso-positivo) ou você precisar forçar um commit urgente:
+
+```bash
+git commit -m "mensagem" --no-verify
+```
+
+> **Aviso:** Isso desativa todas as verificações de segurança para aquele commit.
+
+---
+
+## 🤝 Contribuições e Novas IAs
+
+Caso queira sugerir arquivos de configuração para outras IAs, mande um email para **giordano.alves9@gmail.com**, ou submeta uma PR solicitando a criação de mais modelos de IA para esse projeto.
 
 ---
 
