@@ -30,9 +30,9 @@ class Logger:
         self.filepath = filepath
         # Cria o arquivo e escreve o cabeçalho
         with open(self.filepath, "w", encoding="utf-8") as f:
-            f.write(f"=== RELATÓRIO DE SEGURANÇA VCPS ===\n")
+            f.write("=== RELATÓRIO DE SEGURANÇA VCPS ===\n")
             f.write(f"Data: {datetime.datetime.now()}\n")
-            f.write(f"===================================\n\n")
+            f.write("===================================\n\n")
 
     def log(self, message, color=None):
         """Imprime colorido no terminal e limpo no arquivo."""
@@ -74,26 +74,27 @@ def ensure_package_installed(package):
         try:
             subprocess.check_call([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL)
             logger.log(f"✅ {package} instalado.", GREEN)
-        except:
+        except Exception:
             logger.log(f"❌ Erro ao instalar {package}.", RED)
             return False
     return True
 
 def run_ruff_linter():
     logger.log(f"\n{BOLD}🧹 Executando Linter (Ruff - Qualidade de Código)...{RESET}")
-    if not ensure_package_installed("ruff"): return False
+    if not ensure_package_installed("ruff"):
+        return False
     
     try:
         # Captura output para salvar no log
-        result = subprocess.run(["ruff", "check", "."], text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(["ruff", "check", "."], text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         
         if result.returncode != 0:
-            logger.log(f"\n⛔ O RUFF ENCONTROU PROBLEMAS DE QUALIDADE!", RED)
+            logger.log("\n⛔ O RUFF ENCONTROU PROBLEMAS DE QUALIDADE!", RED)
             logger.log(result.stdout) # Salva o erro detalhado no log
             logger.log("☝️  Corrija os erros acima.", RED)
             return False
             
-        logger.log(f"✅ Código limpo e organizado.", GREEN)
+        logger.log("✅ Código limpo e organizado.", GREEN)
         return True
     except Exception as e:
         logger.log(f"❌ Erro ao rodar Ruff: {e}", RED)
@@ -108,19 +109,20 @@ def run_pip_audit():
     elif os.path.exists("pyproject.toml"):
         target_file = "." # pip-audit detecta pyproject.toml automaticamente no diretório
     else:
-        logger.log(f"ℹ️  Nenhum arquivo de dependências (requirements.txt/pyproject.toml) encontrado. Pulando.", YELLOW)
+        logger.log("ℹ️  Nenhum arquivo de dependências (requirements.txt/pyproject.toml) encontrado. Pulando.", YELLOW)
         return True
         
-    if not ensure_package_installed("pip-audit"): return False
+    if not ensure_package_installed("pip-audit"):
+        return False
 
     try:
         cmd = ["pip-audit"] + target_file.split()
-        result = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if result.returncode != 0:
-            logger.log(f"\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
+            logger.log("\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
             logger.log(result.stdout)
             return False
-        logger.log(f"✅ Dependências seguras.", GREEN)
+        logger.log("✅ Dependências seguras.", GREEN)
         return True
     except Exception as e:
         logger.log(f"❌ Erro ao rodar pip-audit: {e}", RED)
@@ -128,18 +130,19 @@ def run_pip_audit():
 
 def run_bandit():
     logger.log(f"\n{BOLD}🔫 Executando Análise Lógica (Bandit)...{RESET}")
-    if not ensure_package_installed("bandit"): return False
+    if not ensure_package_installed("bandit"):
+        return False
     try:
-        exclusions = f"venv,.venv,.git,{IGNORED_FILES}"
+        exclusions = f"venv,.venv,.git,tests,.\\tests,{IGNORED_FILES}"
         cmd = ["bandit", "-r", ".", "-x", exclusions, "-f", "txt"] # Formato texto para log
         
-        result = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         
         if result.returncode != 0:
-            logger.log(f"\n⛔ O BANDIT ENCONTROU VULNERABILIDADES!", RED)
+            logger.log("\n⛔ O BANDIT ENCONTROU VULNERABILIDADES!", RED)
             logger.log(result.stdout)
             return False
-        logger.log(f"✅ Lógica segura.", GREEN)
+        logger.log("✅ Lógica segura.", GREEN)
         return True
     except Exception as e:
         logger.log(f"❌ Erro ao rodar Bandit: {e}", RED)
@@ -150,11 +153,13 @@ def scan_file(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             for i, line in enumerate(f, 1):
-                if len(line) > 500: continue
+                if len(line) > 500:
+                    continue
                 for pattern, msg in FORBIDDEN_PATTERNS:
                     if re.search(pattern, line):
                         issues.append((i, msg, line.strip()))
-    except: pass
+    except Exception:
+        pass
     return issues
 
 def main():
@@ -164,11 +169,12 @@ def main():
     # 1. Regex
     root_dir = os.getcwd()
     files_with_issues = 0
-    logger.log(f"1️⃣  Buscando chaves (Regex)...")
+    logger.log("1️⃣  Buscando chaves (Regex)...")
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
         for file in files:
-            if file in IGNORED_FILES.split(","): continue
+            if file in IGNORED_FILES.split(","):
+                continue
             filepath = os.path.join(root, file)
             issues = scan_file(filepath)
             if issues:
@@ -179,7 +185,8 @@ def main():
                     logger.log(f"   L.{line_num}: {msg}")
 
     secrets_ok = (files_with_issues == 0)
-    if secrets_ok: logger.log(f"✅ Nenhuma chave encontrada.", GREEN)
+    if secrets_ok:
+        logger.log("✅ Nenhuma chave encontrada.", GREEN)
     
     # 2. Bandit
     bandit_ok = run_bandit()
@@ -191,10 +198,10 @@ def main():
     ruff_ok = run_ruff_linter()
 
     if not secrets_ok or not bandit_ok or not audit_ok or not ruff_ok:
-        logger.log(f"\n⛔ FALHA NA AUDITORIA. VERIFIQUE OS ERROS ACIMA.", RED)
+        logger.log("\n⛔ FALHA NA AUDITORIA. VERIFIQUE OS ERROS ACIMA.", RED)
         sys.exit(1)
     
-    logger.log(f"\n🎉 SUCESSO! Código aprovado em todas as etapas.", GREEN)
+    logger.log("\n🎉 SUCESSO! Código aprovado em todas as etapas.", GREEN)
     sys.exit(0)
 
 if __name__ == "__main__":

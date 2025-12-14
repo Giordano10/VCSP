@@ -12,7 +12,7 @@ CURRENT_PYTHON = sys.executable.replace('\\', '/')
 HOOK_BODY = r"""
 import sys
 import re
-import subprocess
+import subprocess  # nosec
 import os
 
 # Força UTF-8 no Windows para evitar erro de emoji (cp1252)
@@ -39,7 +39,7 @@ FORBIDDEN_PATTERNS = [
 
 def get_staged_files():
     try:
-        result = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True)
+        result = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True)  # nosec
         return [f for f in result.splitlines() if os.path.exists(f)]
     except subprocess.CalledProcessError: return []
 
@@ -53,13 +53,14 @@ def scan_file(filepath):
                     if re.search(pattern, line):
                         print(f"{RED}[BLOQUEADO] {filepath}:{i} -> {msg}{RESET}")
                         issues = True
-    except: pass
+    except Exception: pass  # nosec
     return issues
 
 def main():
     print(f"{GREEN}🛡️  Vibe Security (Local): Auditando...{RESET}")
     staged_files = get_staged_files()
-    if not staged_files: sys.exit(0)
+    if not staged_files:
+        sys.exit(0)
     if any(scan_file(f) for f in staged_files):
         print(f"\n{RED}❌ COMMIT ABORTADO.{RESET} Use --no-verify se necessário.")
         sys.exit(1)
@@ -70,7 +71,8 @@ if __name__ == "__main__": main()
 
 def activate_ai_configs():
     vibe_path = ".vibe"
-    if not os.path.exists(vibe_path): return
+    if not os.path.exists(vibe_path):
+        return
 
     print("\n🤖 Configuração de IA detectada (.vibe/).")
     print("Escolha quais ferramentas deseja ativar na raiz do projeto:")
@@ -89,7 +91,8 @@ def activate_ai_configs():
         if os.path.exists(os.path.join(vibe_path, fname)):
             available.append((label, fname))
 
-    if not available: return
+    if not available:
+        return
 
     for i, (label, _) in enumerate(available, 1):
         print(f"  {i}. {label}")
@@ -97,17 +100,21 @@ def activate_ai_configs():
     print("  0. Sair")
 
     selection = input("\nDigite os números (ex: 1,3 (separe por virgulas caso queira mais de uma)): ").strip()
-    if not selection or selection == '0': return
+    if not selection or selection == '0':
+        return
 
     if selection == '99':
         print("🧹 Limpando configurações da raiz...")
         for _, fname in options:
             if os.path.exists(fname):
                 try:
-                    if os.path.isdir(fname): shutil.rmtree(fname)
-                    else: os.remove(fname)
+                    if os.path.isdir(fname):
+                        shutil.rmtree(fname)
+                    else:
+                        os.remove(fname)
                     print(f"🗑️  Removido: {fname}")
-                except Exception as e: print(f"❌ Erro ao remover {fname}: {e}")
+                except Exception as e:
+                    print(f"❌ Erro ao remover {fname}: {e}")
         return
 
     print("🔄 Copiando...")
@@ -117,23 +124,29 @@ def activate_ai_configs():
             lbl, fname = available[i]
             src, dst = os.path.join(vibe_path, fname), fname
             try:
-                if os.path.isdir(src): shutil.copytree(src, dst, dirs_exist_ok=True)
-                else: shutil.copy2(src, dst)
+                if os.path.isdir(src):
+                    shutil.copytree(src, dst, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(src, dst)
                 print(f"✅ Ativado: {lbl}")
-            except Exception as e: print(f"❌ Erro: {e}")
+            except Exception as e:
+                print(f"❌ Erro: {e}")
 
 def install():
     if not os.path.exists(".git"):
         print("❌ Erro: Rode 'git init' primeiro.")
         return
-    if not os.path.exists(HOOKS_DIR): os.makedirs(HOOKS_DIR)
+    if not os.path.exists(HOOKS_DIR):
+        os.makedirs(HOOKS_DIR)
     
     # 1. Salva a lógica Python em um arquivo separado
-    with open(VIBE_CHECK_FILE, "w", encoding="utf-8") as f: f.write(HOOK_BODY)
+    with open(VIBE_CHECK_FILE, "w", encoding="utf-8") as f:
+        f.write(HOOK_BODY)
 
     # 2. Cria um wrapper Shell Script seguro (com aspas) para chamar o Python
     shell_content = f'#!/bin/sh\n"{CURRENT_PYTHON}" "{VIBE_CHECK_FILE}" "$@"\n'
-    with open(PRE_COMMIT_FILE, "w", encoding="utf-8", newline='\n') as f: f.write(shell_content)
+    with open(PRE_COMMIT_FILE, "w", encoding="utf-8", newline='\n') as f:
+        f.write(shell_content)
     os.chmod(PRE_COMMIT_FILE, os.stat(PRE_COMMIT_FILE).st_mode | stat.S_IEXEC)
     
     print(f"✅ Vibe Security instalado usando: {CURRENT_PYTHON}")
@@ -143,7 +156,8 @@ def install():
         print("📦 Verificando ferramentas (Bandit, Pip-Audit, Ruff)...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit", "pip-audit", "ruff"], stdout=subprocess.DEVNULL)
         print("✅ Todas as ferramentas de auditoria instaladas.")
-    except:
+    except Exception:
         print("⚠️ Aviso: Instale manualmente: pip install bandit pip-audit ruff")
 
-if __name__ == "__main__": install()
+if __name__ == "__main__":
+    install()

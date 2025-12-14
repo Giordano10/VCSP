@@ -67,19 +67,6 @@ python scan_project.py
 
 ---
 
-## 🧪 Teste de Segurança (Chaos Test)
-
-Este kit gera um arquivo chamado `vulnerable_test_DO_NOT_DEPLOY.py` cheio de falhas.
-
-1.  Rode o scanner: `python scan_project.py`
-2.  **Resultado:** O terminal ficará VERMELHO e um log será gerado com os detalhes.
-3.  **Ação:** Após o teste, **APAGUE** esse arquivo:
-    ```bash
-    rm vulnerable_test_DO_NOT_DEPLOY.py
-    ```
-
----
-
 ## 🚨 PROTOCOLO DE PÂNICO
 Se vazou chave: **REVOGUE** imediatamente no painel do fornecedor.
 
