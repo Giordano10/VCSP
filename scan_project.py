@@ -133,7 +133,7 @@ def run_bandit():
     if not ensure_package_installed("bandit"):
         return False
     try:
-        exclusions = f"venv,.venv,.git,tests,.\\tests,{IGNORED_FILES}"
+        exclusions = f"venv,.venv,.git,tests,.\\tests,./tests,{IGNORED_FILES}"
         cmd = ["bandit", "-r", ".", "-x", exclusions, "-f", "txt"] # Formato texto para log
         
         result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
