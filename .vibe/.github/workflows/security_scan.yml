@@ -28,6 +28,8 @@ jobs:
         run: pytest
       
       - name: Rodar Scan Completo
+        id: scan
+        continue-on-error: true
         run: python scan_project.py
       
       - name: Gerar Gráfico de Tendência
@@ -93,3 +95,9 @@ jobs:
         with:
           name: security-logs
           path: logs/
+      
+      - name: Verificar Status do Scan
+        if: steps.scan.outcome == 'failure'
+        run: |
+          echo "⛔ Falhas de segurança encontradas!"
+          exit 1
