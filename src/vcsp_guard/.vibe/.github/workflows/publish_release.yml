@@ -29,6 +29,7 @@ jobs:
         with:
           commit_message: "docs: update CHANGELOG.md"
           file_pattern: CHANGELOG.md
+          branch: master
       
       - name: Create Release
         uses: softprops/action-gh-release@v2
