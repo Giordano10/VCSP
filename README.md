@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Security](https://img.shields.io/badge/security-bandit%20%7C%20pip--audit-red)
 
-Template seguro para desenvolvimento ágil com IA (Vibe Coding).
+biblioteca segura para desenvolvimento ágil com IA (Vibe Coding).
 Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências**, **Quality Gate** e **Histórico de Logs**.
 
 ---
