@@ -168,4 +168,5 @@ def install():
     except Exception:
         print("⚠️ Aviso: Instale manualmente: pip install bandit pip-audit ruff")
 
-if __name__ == "__main__": install()
+if __name__ == "__main__":
+    install()

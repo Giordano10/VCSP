@@ -97,7 +97,7 @@ def run_ruff_linter():
         logger.log("✅ Código limpo e organizado.", GREEN)
         return True
     except Exception as e:
-        logger.log("❌ Erro ao rodar Ruff: {e}", RED)
+        logger.log(f"❌ Erro ao rodar Ruff: {e}", RED)
         return False
 
 def run_pip_audit():
@@ -145,7 +145,7 @@ def run_bandit():
         logger.log("✅ Lógica segura.", GREEN)
         return True
     except Exception as e:
-        logger.log("❌ Erro ao rodar Bandit: {e}", RED)
+        logger.log(f"❌ Erro ao rodar Bandit: {e}", RED)
         return False
 
 def scan_file(filepath):
