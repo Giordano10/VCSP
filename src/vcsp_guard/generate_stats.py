@@ -1,5 +1,4 @@
 import os
-import json
 import glob
 import re
 import matplotlib.pyplot as plt
@@ -40,13 +39,16 @@ def main():
             stats['secrets'] = len(re.findall(r'❌ \[SEGREDO\]', content))
             
             bandit_match = re.search(r'Total issues: (\d+)', content)
-            if bandit_match: stats['bandit'] = int(bandit_match.group(1))
+            if bandit_match:
+                stats['bandit'] = int(bandit_match.group(1))
             
             audit_match = re.search(r'Found (\d+) known vulnerabilit', content)
-            if audit_match: stats['audit'] = int(audit_match.group(1))
+            if audit_match:
+                stats['audit'] = int(audit_match.group(1))
             
             ruff_match = re.search(r'Found (\d+) error', content)
-            if ruff_match: stats['ruff'] = int(ruff_match.group(1))
+            if ruff_match:
+                stats['ruff'] = int(ruff_match.group(1))
         
         history.append(stats)
 
