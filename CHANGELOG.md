@@ -1,24 +1,163 @@
 # Changelog
+All notable changes to this project will be documented in this file.
+## [1.0.1.1] - 2025-12-15
 
-Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+### Bug Fixes
 
-O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-e este projeto adere ao [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- Fix (f518ae9)
 
-## [1.0.0] - Lançamento Oficial
+- Fix (cc62b9d)
 
-### 🚀 Novidades
-- **Automação de Release:** Workflow configurado para gerar releases e changelogs automáticos com Git Cliff.
-- **Relatório Semanal:** Scan de segurança agendado (CRON) com gráfico de tendência de bugs (`bug_trend.png`).
-- **Instalação Inteligente:** `install_hooks.py` agora possui menu interativo para seleção de IA e resolução de conflitos.
-- **Gráficos:** Geração automática de histórico de vulnerabilidades na pasta `.vibe/assets`.
 
-### 📚 Documentação
-- **README Completo:** Novas seções sobre "Protocolo de Pânico", "Bypass", "Fluxo Vibe Coding" e "Menu de Seleção".
-- **Badges:** Adicionado indicador de Latest Release.
-- **Guias:** Instruções claras para uso com ChatGPT, Perplexity e Claude.
+### Documentation
 
-### ⚙️ Configuração & Segurança
-- **System Prompts:** Regras de segurança reforçadas para Cursor, Gemini e Copilot (Secrets, Bandit, Ruff).
-- **Testes (CodiumAI):** Configuração otimizada para Pytest com foco em injeção de SQL e XSS.
-- **Auditoria:** `AUDITORIA_IA.md` atualizado com checklist técnico de AppSec.
+- Update security trend chart (4a420e1)
+
+- Update CHANGELOG.md (0fe4fd8)
+
+- Update security trend chart (1984a69)
+
+- Update security trend chart (f121add)
+
+- Update security trend chart (84f94cd)
+
+
+### Att
+
+- Readme atualizado (3c7f285)
+
+
+## [1.0.1] - 2025-12-15
+
+### "docs
+
+- Add MIT License" (6921e9c)
+
+
+### Att
+
+- Readme Corrigido (6abd58f)
+
+- Assinatura do readme (c954633)
+
+
+### Bug Fixes
+
+- Fix (dbd1a46)
+
+- Fix (4d89d0d)
+
+- Fix readme (471f83a)
+
+- Fix (f162547)
+
+- Lib descontinuada (1e139b0)
+
+- Fix (2554fb2)
+
+- Ignore asserts in tests for bandit scan (d075ed7)
+
+- Fix (e7cf1fb)
+
+- Fix (627dc50)
+
+- Improved readme to include more details on how it works. (b6c2dec)
+
+- Improved audit rules for more accurate error testing. (8058307)
+
+- Fix (5100b0b)
+
+- Improved readme (720d48f)
+
+- Fix (2f0ea34)
+
+- Obsolete version of git-cliff fixed (fb286e2)
+
+- Fix (6438a80)
+
+- Branch master on archive changelog fixed (7751f18)
+
+
+### Documentation
+
+- Improve README for beginners (9cf6062)
+
+- Update security trend chart (8c23921)
+
+- Update security trend chart (884540e)
+
+- Update security trend chart (e8eaf53)
+
+- Update security trend chart (0d44a09)
+
+- Update security trend chart (e9ffde9)
+
+- Update security trend chart (128ed71)
+
+- Update security trend chart (1347825)
+
+- Update security trend chart (23df37d)
+
+
+### Feat
+
+- Adicionado proteção contra pentest (3781ce5)
+
+- Adicionada verificação de pentest usando bandit (3ba6232)
+
+- Adicionada teste de sanitização e verificação de dependencias maliciosas (0c7fd2d)
+
+- Adicionada uma pasta de logs para historico futuro e consulta (baab531)
+
+- Added an AI-powered file selection intelligence feature to avoid cluttering the main project folder with unused code. (0a63a2f)
+
+- Add changelog (cb5afe8)
+
+
+### Features
+
+- Add support for Cline and Qodo Gen + Update README (c5360d2)
+
+- A verification routine has been added every Monday, via GitHub Actions, for better management of pushes and weekly reports before the release of new features, and is documented in the readme file. (bb59620)
+
+- Added scan graph to display errors found in the project where this repository is running. The readme has been updated to reflect these changes and is documented in the changelog file. (2bc77e4)
+
+
+### Fix
+
+- Corrigido o erro que causava a falha no github. O erro foi corrigido substituindo o antigo arquivo de erros propositais pelo arquivo pytest. alem disso, o proprio ruff havia detectado algumas vulnerabilidades no proprio codigo, de identação e sanitização, que aproveitei para corrigir junto. (36724ce)
+
+
+### Miscellaneous Tasks
+
+- Setup project structure for pypi release (228d97c)
+
+
+### Refact
+
+- Creating a folder to centralize all public AI configuration files. (4d264ea)
+
+
+### Add
+
+- The readme has been refactored and a new section has been added for contributing to the project. (235ea88)
+
+- New text for readme and auditoria_ia.md (12af521)
+
+- The individual configuration files for each AI have been refactored and improved to adequately address each AI's specific scenario, using the audit file as a basis. (f2bad4d)
+
+- Graph description (0aaf26c)
+
+
+### Att
+
+- Project name on readme (9d84717)
+
+- Licence (925eb32)
+
+
+### Refact
+
+- Fix (313bc3c)
+
+
