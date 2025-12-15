@@ -36,3 +36,22 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: false
+      
+      - name: Set Version from Tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "🚀 Configurando versão para: $VERSION"
+          sed -i 's/version = ".*"/version = "'$VERSION'"/' pyproject.toml
+
+      - name: Build Package
+        run: |
+          pip install build
+          python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: dist/
+          skip_existing: true

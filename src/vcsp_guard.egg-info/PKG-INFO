@@ -1,3 +1,24 @@
+Metadata-Version: 2.4
+Name: vcsp-guard
+Version: 1.0.0
+Summary: Vibe Coding Security Protocol - Security & Quality Guardrails for AI Coding
+Author-email: Giordano Alves <giordano.alves9@gmail.com>
+License-Expression: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Security
+Classifier: Topic :: Software Development :: Quality Assurance
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: bandit
+Requires-Dist: pip-audit
+Requires-Dist: ruff
+Requires-Dist: matplotlib
+Requires-Dist: pandas
+Requires-Dist: pytest
+Dynamic: license-file
+
 # 🛡️ Vibe Coding Security Protocol (VCPS)
 
 ![CI Status](https://github.com/Giordano10/VCSP/actions/workflows/security_scan.yml/badge.svg)
@@ -172,15 +193,3 @@ Este projeto está disponível como um pacote Python oficial.
 1.  **Instalação:** `pip install vcsp-guard`
 2.  **Inicialização:** `vcsp-init` (Configura os hooks e arquivos no projeto atual)
 3.  **Varredura:** `vcsp-scan` (Roda a auditoria de segurança)
-
----
-
-## 🚀 Como Lançar Novas Versões (Mantenedores)
-
-Para manter GitHub e PyPI sempre sincronizados, siga este fluxo:
-
-1.  **Crie uma Release no GitHub:**
-    *   Crie uma nova tag (ex: `v1.1.0`).
-    *   Publique a release.
-2.  **Automação:** O GitHub Actions detectará a tag, ajustará a versão no código e publicará no PyPI automaticamente.
-3.  **Sincronização:** Se a versão já existir no PyPI (ex: você subiu manualmente), o workflow apenas registrará o sucesso no GitHub, mantendo tudo alinhado.

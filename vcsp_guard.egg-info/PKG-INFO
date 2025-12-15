@@ -1,3 +1,25 @@
+Metadata-Version: 2.4
+Name: vcsp-guard
+Version: 1.0.0
+Summary: Vibe Coding Security Protocol - Security & Quality Guardrails for AI Coding
+Author-email: Giordano Alves <giordano.alves9@gmail.com>
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Security
+Classifier: Topic :: Software Development :: Quality Assurance
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: bandit
+Requires-Dist: pip-audit
+Requires-Dist: ruff
+Requires-Dist: matplotlib
+Requires-Dist: pandas
+Requires-Dist: pytest
+Dynamic: license-file
+
 # 🛡️ Vibe Coding Security Protocol (VCPS)
 
 ![CI Status](https://github.com/Giordano10/VCSP/actions/workflows/security_scan.yml/badge.svg)
@@ -28,7 +50,7 @@ No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muito
 
 ### Opção B: Em Projeto Já Existente
 1. Baixe este repositório (ZIP ou Clone).
-2. Copie a pasta `src/vcsp_guard` para o seu projeto (ou instale via pip).
+2. Copie os arquivos `install_hooks.py`, `scan_project.py` e a pasta `.vibe/` para a raiz do seu projeto atual.
 3. Certifique-se de ter o Python 3.10+ instalado.
 
 ### 2. Ativar a Proteção (Obrigatório para ambos os casos)
@@ -47,7 +69,7 @@ Durante a execução, o script perguntará qual IA você utiliza (Cursor, Cline,
 No terminal, na raiz do projeto, rode:
 
 ```bash
-python src/vcsp_guard/install_hooks.py
+python install_hooks.py
 ```
 
 ✅ **Pronto!** Hooks ativados e ferramentas instaladas (Bandit, Pip-Audit, Ruff).
@@ -112,7 +134,7 @@ O script `scan_project.py` executa 4 camadas de verificação e **salva tudo na 
 
 Para rodar a auditoria:
 ```bash
-python src/vcsp_guard/scan_project.py
+python scan_project.py
 ```
 
 📂 **Confira seu progresso:** Abra a pasta `logs/` para ver o histórico de correções e garantir que você não está repetindo erros antigos.
@@ -172,15 +194,3 @@ Este projeto está disponível como um pacote Python oficial.
 1.  **Instalação:** `pip install vcsp-guard`
 2.  **Inicialização:** `vcsp-init` (Configura os hooks e arquivos no projeto atual)
 3.  **Varredura:** `vcsp-scan` (Roda a auditoria de segurança)
-
----
-
-## 🚀 Como Lançar Novas Versões (Mantenedores)
-
-Para manter GitHub e PyPI sempre sincronizados, siga este fluxo:
-
-1.  **Crie uma Release no GitHub:**
-    *   Crie uma nova tag (ex: `v1.1.0`).
-    *   Publique a release.
-2.  **Automação:** O GitHub Actions detectará a tag, ajustará a versão no código e publicará no PyPI automaticamente.
-3.  **Sincronização:** Se a versão já existir no PyPI (ex: você subiu manualmente), o workflow apenas registrará o sucesso no GitHub, mantendo tudo alinhado.

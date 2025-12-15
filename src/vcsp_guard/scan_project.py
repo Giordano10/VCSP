@@ -70,12 +70,12 @@ FORBIDDEN_PATTERNS = [
 
 def ensure_package_installed(package):
     if shutil.which(package) is None:
-        logger.log(f"⚠️  {package} não encontrado. Instalando...", YELLOW)
+        logger.log("⚠️  {package} não encontrado. Instalando...", YELLOW)
         try:
             subprocess.check_call([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL)
-            logger.log(f"✅ {package} instalado.", GREEN)
+            logger.log("✅ {package} instalado.", GREEN)
         except Exception:
-            logger.log(f"❌ Erro ao instalar {package}.", RED)
+            logger.log("❌ Erro ao instalar {package}.", RED)
             return False
     return True
 
@@ -97,11 +97,11 @@ def run_ruff_linter():
         logger.log("✅ Código limpo e organizado.", GREEN)
         return True
     except Exception as e:
-        logger.log(f"❌ Erro ao rodar Ruff: {e}", RED)
+        logger.log("❌ Erro ao rodar Ruff: {e}", RED)
         return False
 
 def run_pip_audit():
-    logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências (SCA)...{RESET}")
+    logger.log("\n{BOLD}📦 Executando Auditoria de Dependências (SCA)...{RESET}")
     
     target_file = ""
     if os.path.exists("requirements.txt"):
@@ -129,7 +129,7 @@ def run_pip_audit():
         return False
 
 def run_bandit():
-    logger.log(f"\n{BOLD}🔫 Executando Análise Lógica (Bandit)...{RESET}")
+    logger.log("\n{BOLD}🔫 Executando Análise Lógica (Bandit)...{RESET}")
     if not ensure_package_installed("bandit"):
         return False
     try:
@@ -145,7 +145,7 @@ def run_bandit():
         logger.log("✅ Lógica segura.", GREEN)
         return True
     except Exception as e:
-        logger.log(f"❌ Erro ao rodar Bandit: {e}", RED)
+        logger.log("❌ Erro ao rodar Bandit: {e}", RED)
         return False
 
 def scan_file(filepath):
@@ -163,8 +163,8 @@ def scan_file(filepath):
     return issues
 
 def main():
-    logger.log(f"{BOLD}🔍 Vibe Security Scan (Secrets + Logic + Deps + Quality){RESET}")
-    logger.log(f"📄 Log salvo em: {LOG_FILE}\n")
+    logger.log("{BOLD}🔍 Vibe Security Scan (Secrets + Logic + Deps + Quality){RESET}")
+    logger.log("📄 Log salvo em: {LOG_FILE}\n")
     
     # 1. Regex
     root_dir = os.getcwd()
@@ -182,7 +182,7 @@ def main():
                 rel_path = os.path.relpath(filepath, root_dir)
                 logger.log(f"❌ [SEGREDO] {rel_path}", RED)
                 for line_num, msg, content in issues:
-                    logger.log(f"   L.{line_num}: {msg}")
+                    logger.log("   L.{line_num}: {msg}")
 
     secrets_ok = (files_with_issues == 0)
     if secrets_ok:

@@ -1,0 +1,3 @@
+[console_scripts]
+vcsp-init = install_hooks:install
+vcsp-scan = scan_project:main

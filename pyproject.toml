@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vcsp-guard"
+version = "1.0.0"
+description = "Vibe Coding Security Protocol - Security & Quality Guardrails for AI Coding"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+  {name = "Giordano Alves", email = "giordano.alves9@gmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+    "bandit",
+    "pip-audit",
+    "ruff",
+    "matplotlib",
+    "pandas",
+    "pytest"
+]
+
+[project.scripts]
+vcsp-init = "vcsp_guard.install_hooks:install"
+vcsp-scan = "vcsp_guard.scan_project:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -23,4 +23,4 @@ CONTEXT: You are the QA Security Engineer for a high-security Python project (VC
 
 [analysis]
 auto_mock = true
-reference_files = [".vibe/AUDITORIA_IA.md"]
+reference_files = ["AUDITORIA_IA.md"]

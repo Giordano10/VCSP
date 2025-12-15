@@ -1,0 +1,6 @@
+bandit
+pip-audit
+ruff
+matplotlib
+pandas
+pytest
