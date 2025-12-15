@@ -68,6 +68,15 @@ FORBIDDEN_PATTERNS = [
     (r"-----BEGIN [A-Z]+ PRIVATE KEY-----", "Chave Privada SSH/RSA"),
 ]
 
+def is_git_ignored(filepath):
+    """Verifica se o arquivo está no .gitignore usando o próprio git."""
+    try:
+        # Retorna 0 (True) se o arquivo for ignorado pelo git
+        subprocess.check_call(["git", "check-ignore", "-q", filepath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+    except Exception:
+        return False
+
 def ensure_package_installed(package):
     if shutil.which(package) is None:
         logger.log(f"⚠️  {package} não encontrado. Instalando...", YELLOW)
@@ -155,6 +164,8 @@ def scan_file(filepath):
             for i, line in enumerate(f, 1):
                 if len(line) > 500:
                     continue
+                if "# nosec" in line: # Permite ignorar linhas específicas
+                    continue
                 for pattern, msg in FORBIDDEN_PATTERNS:
                     if re.search(pattern, line):
                         issues.append((i, msg, line.strip()))
@@ -172,10 +183,17 @@ def main():
     logger.log("1️⃣  Buscando chaves (Regex)...")
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
+        # Otimização: Ignora pastas que o git também ignora
+        dirs[:] = [d for d in dirs if not is_git_ignored(os.path.join(root, d))]
+
         for file in files:
             if file in IGNORED_FILES.split(","):
                 continue
             filepath = os.path.join(root, file)
+            
+            if is_git_ignored(filepath):
+                continue
+
             issues = scan_file(filepath)
             if issues:
                 files_with_issues += 1
