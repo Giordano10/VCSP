@@ -57,6 +57,8 @@ As configurações de IA e CI/CD estão organizadas na pasta **`.vibe/`** para m
 
 Caso queira trocar de IA ou configurar manualmente, basta rodar novamente o `vcsp-init`, e selecionar a opção correspondente a IA que está usando. Caso queira excluir o arquivo de configuração da raiz, rode o `vcsp-init` e selecione a opção 99 para limpar os arquivos da raiz.
 
+> **⚠️ Nota:** Lembre-se de adicionar o arquivo de configuração da sua IA (ex: `.cursorrules`, `.clinerules`) ao seu `.gitignore` caso não queira que ele suba para o GitHub junto com o projeto.
+
 | Ferramenta | Arquivo (em .vibe/) | Função |
 | :--- | :--- | :--- |
 | **Cursor** | `.cursorrules` | Regras de segurança e estilo. |
@@ -93,7 +95,7 @@ Como este kit protege você enquanto a IA codifica?
 **Para que serve o `vcsp-scan`?**
 Enquanto o `vcsp-init` protege o futuro (novos commits), o `vcsp-scan` protege o passado. Ele serve para **varrer todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
 
-O script `vcsp-scan` executa 4 camadas de verificação e **salva tudo na pasta `logs/`**:
+O script `vcsp-scan` executa 4 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
 
 1.  **🔐 Segredos:** Busca por chaves vazadas no código.
 2.  **🔫 Pentest (Bandit):** Busca por falhas de lógica e injeção.

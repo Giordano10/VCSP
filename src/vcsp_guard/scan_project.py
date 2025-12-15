@@ -6,7 +6,7 @@ import shutil
 import datetime
 
 # --- CONFIGURAÇÃO DE LOGS ---
-LOG_DIR = "logs"
+LOG_DIR = "logs_scan_vcsp"
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -52,7 +52,7 @@ logger = Logger(LOG_FILE)
 
 IGNORED_DIRS = {
     '.git', 'venv', 'env', '.venv', '__pycache__', 'node_modules', 
-    '.idea', '.vscode', 'build', 'dist', 'target', '.github', '.ruff_cache', 'logs'
+    '.idea', '.vscode', 'build', 'dist', 'target', '.github', '.ruff_cache', 'logs_scan_vcsp'
 }
 IGNORED_FILES = "scan_project.py,install_hooks.py,setup_vibe_kit.py"
 

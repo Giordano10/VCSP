@@ -7,4 +7,5 @@ venv/
 .vscode/
 node_modules/
 .ruff_cache/
-logs/*.txt
+logs_scan_vcsp/
+.vibe_graph_errors_vcsp/

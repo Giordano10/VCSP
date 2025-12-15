@@ -8,9 +8,9 @@ def main():
     print("📊 Gerando estatísticas de segurança (VCSP)...")
     
     # 1. Encontrar logs
-    list_of_files = glob.glob('logs/scan_*.txt')
+    list_of_files = glob.glob('logs_scan_vcsp/scan_*.txt')
     if not list_of_files:
-        print("⚠️  Nenhum log encontrado em logs/. Rode 'vcsp-scan' primeiro.")
+        print("⚠️  Nenhum log encontrado em logs_scan_vcsp/. Rode 'vcsp-scan' primeiro.")
         return
 
     # Ordenar por data (nome do arquivo contém timestamp)
@@ -53,8 +53,8 @@ def main():
         history.append(stats)
 
     # 3. Gerar Gráfico
-    os.makedirs('.vibe/assets', exist_ok=True)
-    output_img = '.vibe/assets/bug_trend.png'
+    os.makedirs('.vibe_graph_errors_vcsp/assets', exist_ok=True)
+    output_img = '.vibe_graph_errors_vcsp/assets/bug_trend.png'
     
     dates = [h['date'] for h in history]
     
