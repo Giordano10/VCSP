@@ -57,12 +57,12 @@ def scan_file(filepath):
     return issues
 
 def main():
-    print("{GREEN}🛡️  Vibe Security (Pre-commit): Checando Segredos...{RESET}")
+    print(f"{GREEN}🛡️  Vibe Security (Pre-commit): Checando Segredos...{RESET}")
     staged_files = get_staged_files()
     if not staged_files:
         sys.exit(0)
     if any(scan_file(f) for f in staged_files):
-        print("\n{RED}❌ COMMIT ABORTADO.{RESET} Use --no-verify se necessário.")
+        print(f"\n{RED}❌ COMMIT ABORTADO.{RESET} Use --no-verify se necessário.")
         sys.exit(1)
     sys.exit(0)
 
