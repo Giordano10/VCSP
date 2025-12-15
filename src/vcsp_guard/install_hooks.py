@@ -97,7 +97,7 @@ def activate_ai_configs():
         return
 
     for i, (label, _) in enumerate(available, 1):
-        print("  {i}. {label}")
+        print(f"  {i}. {label}")
     print("  99. Limpar configurações (Remover da raiz)")
     print("  0. Sair")
 
@@ -114,7 +114,7 @@ def activate_ai_configs():
                         shutil.rmtree(fname)
                     else:
                         os.remove(fname)
-                    print("🗑️  Removido: {fname}")
+                    print(f"🗑️  Removido: {fname}")
                 except Exception as e:
                     print(f"❌ Erro ao remover {fname}: {e}")
         return
@@ -130,7 +130,7 @@ def activate_ai_configs():
                     shutil.copytree(src, dst, dirs_exist_ok=True)
                 else:
                     shutil.copy2(src, dst)
-                print("✅ Ativado: {lbl}")
+                print(f"✅ Ativado: {lbl}")
             except Exception as e:
                 print(f"❌ Erro: {e}")
 
@@ -152,12 +152,12 @@ def install():
     with open(VIBE_CHECK_FILE, "w", encoding="utf-8") as f:
         f.write(HOOK_BODY)
     
-    shell_content = '#!/bin/sh\n"{CURRENT_PYTHON}" "{VIBE_CHECK_FILE}" "$@"\n'
+    shell_content = f'#!/bin/sh\n"{CURRENT_PYTHON}" "{VIBE_CHECK_FILE}" "$@"\n'
     with open(PRE_COMMIT_FILE, "w", encoding="utf-8", newline='\n') as f:
         f.write(shell_content)
     os.chmod(PRE_COMMIT_FILE, os.stat(PRE_COMMIT_FILE).st_mode | stat.S_IEXEC)
     
-    print("✅ Vibe Security instalado usando: {CURRENT_PYTHON}")
+    print(f"✅ Vibe Security instalado usando: {CURRENT_PYTHON}")
     activate_ai_configs()
     check_conflicts()
     
