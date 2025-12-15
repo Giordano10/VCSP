@@ -180,18 +180,26 @@ def main():
     # 1. Regex
     root_dir = os.getcwd()
     files_with_issues = 0
+    
+    check_gitignore = True
+    if "--all" in sys.argv:
+        check_gitignore = False
+        logger.log("⚠️  Modo --all ativado: Verificando arquivos ignorados pelo Git.", YELLOW)
+
     logger.log("1️⃣  Buscando chaves (Regex)...")
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
-        # Otimização: Ignora pastas que o git também ignora
-        dirs[:] = [d for d in dirs if not is_git_ignored(os.path.join(root, d))]
+        
+        if check_gitignore:
+            # Otimização: Ignora pastas que o git também ignora
+            dirs[:] = [d for d in dirs if not is_git_ignored(os.path.join(root, d))]
 
         for file in files:
             if file in IGNORED_FILES.split(","):
                 continue
             filepath = os.path.join(root, file)
             
-            if is_git_ignored(filepath):
+            if check_gitignore and is_git_ignored(filepath):
                 continue
 
             issues = scan_file(filepath)

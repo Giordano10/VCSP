@@ -83,6 +83,9 @@ jobs:
           plt.savefig('.vibe/assets/bug_trend.png')
           "
       
+      - name: Sincronizar com a Master (Evitar Conflitos)
+        run: git pull origin master --rebase --autostash
+      
       - name: Commit do Gráfico
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
