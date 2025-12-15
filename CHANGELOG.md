@@ -1,5 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.1.2] - 2025-12-15
+
+### Bug Fixes
+
+- Corrigido problema de prefixo no inicio de alguns strings, o que causava um problema de ausencia de exibição de alguns textos ao rodar a lib em outros projetos (92cbb56)
+
+
+### Documentation
+
+- Update CHANGELOG.md (0804576)
+
+
 ## [1.0.1.1] - 2025-12-15
 
 ### Bug Fixes
