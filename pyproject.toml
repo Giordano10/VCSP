@@ -30,6 +30,7 @@ dependencies = [
 [project.scripts]
 vcsp-init = "vcsp_guard.install_hooks:install"
 vcsp-scan = "vcsp_guard.scan_project:main"
+vcsp-stats = "vcsp_guard.generate_stats:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

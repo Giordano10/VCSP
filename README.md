@@ -105,7 +105,19 @@ Para rodar a auditoria:
 vcsp-scan
 ```
 
-📂 **Confira seu progresso:** Abra a pasta `logs/` para ver o histórico de correções e garantir que você não está repetindo erros antigos.
+### 📊 Gráficos e Estatísticas
+
+Para visualizar a evolução da segurança do seu projeto (Bug Trend), você pode gerar o gráfico localmente baseado nos logs de varredura.
+
+```bash
+vcsp-stats
+```
+
+Isso irá:
+1. Ler o histórico da pasta `logs/`.
+2. Gerar um gráfico em `.vibe/assets/bug_trend.png`.
+
+� **Confira seu progresso:** Abra a pasta `logs/` para ver o histórico de correções e garantir que você não está repetindo erros antigos.
 
 ### 📅 Relatório Semanal Automático
 O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feira às 08:00 UTC** via GitHub Actions.
