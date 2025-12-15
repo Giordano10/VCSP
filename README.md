@@ -19,40 +19,30 @@ No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muito
 
 ---
 
-## 🚀 Como usar este Template
+## 🚀 Instalação e Uso
 
-### Opção A: Começando do Zero (Recomendado)
-1. Clique no botão verde **"Use this template"** (topo da página).
-2. Selecione **"Create a new repository"**.
-3. Crie seu projeto.
-
-### Opção B: Em Projeto Já Existente
-1. Baixe este repositório (ZIP ou Clone).
-2. Copie a pasta `src/vcsp_guard` para o seu projeto (ou instale via pip).
-3. Certifique-se de ter o Python 3.10+ instalado.
-
-### 2. Ativar a Proteção (Obrigatório para ambos os casos)
-O Git, por padrão, não baixa scripts de automação (Hooks) por motivos de segurança. Portanto, você precisa rodar este script para "ligar" a proteção na sua máquina.
-
-**O que o `install_hooks.py` faz?**
-1.  **Instala o Pre-Commit Hook:** Cria um arquivo oculto em `.git/hooks/` que intercepta todo comando `git commit`.
-2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit) e as instala se necessário.
-3.  **Limpa Conflitos:** Remove arquivos de exemplo duplicados que possam causar erros.
-
-**🤖 O Menu de Seleção de IA:**
-Durante a execução, o script perguntará qual IA você utiliza (Cursor, Cline, etc.).
-*   **Para que serve?** Ele copia automaticamente os arquivos de configuração (ex: `.cursorrules`) da pasta `.vibe/` para a raiz.
-*   **Por que isso importa?** Isso "ensina" sua IA a gerar código seguro desde o início, evitando que o Guardião bloqueie seus commits depois.
-
-No terminal, na raiz do projeto, rode:
+### 1. Instalação
+Instale a biblioteca oficial via pip em seu ambiente virtual:
 
 ```bash
-python src/vcsp_guard/install_hooks.py
+pip install vcsp-guard
 ```
 
-✅ **Pronto!** Hooks ativados e ferramentas instaladas (Bandit, Pip-Audit, Ruff).
+### 2. Inicialização (Ativar Proteção)
+Na raiz do seu projeto, execute o comando de inicialização. Isso configurará os hooks do Git e copiará os arquivos de configuração de IA necessários.
+
+```bash
+vcsp-init
+```
+
+**O que o `vcsp-init` faz?**
+1.  **Instala o Pre-Commit Hook:** Cria um arquivo oculto em `.git/hooks/` que intercepta todo comando `git commit`.
+2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit) e as instala se necessário.
+3.  **Menu de Seleção de IA:** Pergunta qual IA você utiliza (Cursor, Cline, etc.) e aplica as regras de segurança correspondentes.
 
 ### 3. Configurar Ambiente
+Crie um arquivo `.env` para suas variáveis de ambiente:
+
 ```bash
 cp .env.example .env
 # Edite o .env com suas chaves (ele já é ignorado pelo Git)
@@ -63,9 +53,9 @@ cp .env.example .env
 ## 🤖 Automação de IA (Magic Files)
 
 As configurações de IA e CI/CD estão organizadas na pasta **`.vibe/`** para manter a raiz limpa.
-**Se você rodou o `install_hooks.py` (Passo 2), a configuração da sua IA já foi aplicada automaticamente!**
+**Se você rodou o `vcsp-init` (Passo 2), a configuração da sua IA já foi aplicada automaticamente!**
 
-Caso queira trocar de IA ou configurar manualmente, basta rodar novamente o Install_hooks.py, e selecionar a opção correspondente a IA que está usando. Caso queira excluir o arquivo de configuração da raiz, rode o install_hooks.py e selecione a opção 99 para limpar os arquivos da raiz.
+Caso queira trocar de IA ou configurar manualmente, basta rodar novamente o `vcsp-init`, e selecionar a opção correspondente a IA que está usando. Caso queira excluir o arquivo de configuração da raiz, rode o `vcsp-init` e selecione a opção 99 para limpar os arquivos da raiz.
 
 | Ferramenta | Arquivo (em .vibe/) | Função |
 | :--- | :--- | :--- |
@@ -100,10 +90,10 @@ Como este kit protege você enquanto a IA codifica?
 
 ## 🕵️ Varredura e Histórico (Scanner)
 
-**Para que serve o `scan_project.py`?**
-Enquanto o `install_hooks.py` protege o futuro (novos commits), o `scan_project.py` protege o passado. Ele serve para **varrer todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
+**Para que serve o `vcsp-scan`?**
+Enquanto o `vcsp-init` protege o futuro (novos commits), o `vcsp-scan` protege o passado. Ele serve para **varrer todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
 
-O script `scan_project.py` executa 4 camadas de verificação e **salva tudo na pasta `logs/`**:
+O script `vcsp-scan` executa 4 camadas de verificação e **salva tudo na pasta `logs/`**:
 
 1.  **🔐 Segredos:** Busca por chaves vazadas no código.
 2.  **🔫 Pentest (Bandit):** Busca por falhas de lógica e injeção.
@@ -112,7 +102,7 @@ O script `scan_project.py` executa 4 camadas de verificação e **salva tudo na 
 
 Para rodar a auditoria:
 ```bash
-python src/vcsp_guard/scan_project.py
+vcsp-scan
 ```
 
 📂 **Confira seu progresso:** Abra a pasta `logs/` para ver o histórico de correções e garantir que você não está repetindo erros antigos.
@@ -162,25 +152,3 @@ Este projeto foi criado e é mantido por **Giordano Alves**, Desenvolvedor Backe
 O objetivo deste template é permitir que desenvolvedores usem o poder da IA ("Vibe Coding") sem sacrificar a solidez e a segurança da engenharia de software tradicional.
 
 > *"Codifique na velocidade da luz, mas com a segurança de um cofre."*
-
----
-
-## 📦 Instalação via PyPI
-
-Este projeto está disponível como um pacote Python oficial.
-
-1.  **Instalação:** `pip install vcsp-guard`
-2.  **Inicialização:** `vcsp-init` (Configura os hooks e arquivos no projeto atual)
-3.  **Varredura:** `vcsp-scan` (Roda a auditoria de segurança)
-
----
-
-## 🚀 Como Lançar Novas Versões (Mantenedores)
-
-Para manter GitHub e PyPI sempre sincronizados, siga este fluxo:
-
-1.  **Crie uma Release no GitHub:**
-    *   Crie uma nova tag (ex: `v1.1.0`).
-    *   Publique a release.
-2.  **Automação:** O GitHub Actions detectará a tag, ajustará a versão no código e publicará no PyPI automaticamente.
-3.  **Sincronização:** Se a versão já existir no PyPI (ex: você subiu manualmente), o workflow apenas registrará o sucesso no GitHub, mantendo tudo alinhado.
