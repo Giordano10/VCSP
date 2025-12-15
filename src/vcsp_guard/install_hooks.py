@@ -49,6 +49,7 @@ def scan_file(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             for i, line in enumerate(f, 1):
+                if "# nosec" in line: continue
                 for pattern, msg in FORBIDDEN_PATTERNS:
                     if re.search(pattern, line):
                         print(f"{RED}[BLOQUEADO] {filepath}:{i} -> {msg}{RESET}")
