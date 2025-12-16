@@ -22,7 +22,7 @@ jobs:
           python-version: '3.10'
       
       - name: Instalar Ferramentas
-        run: pip install bandit pip-audit ruff pytest matplotlib pandas
+        run: pip install bandit pip-audit ruff pytest matplotlib
       
       - name: Rodar Testes (Pytest)
         run: pytest

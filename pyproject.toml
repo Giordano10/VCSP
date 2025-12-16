@@ -22,9 +22,7 @@ dependencies = [
     "bandit",
     "pip-audit",
     "ruff",
-    "matplotlib",
-    "pandas",
-    "pytest"
+    "matplotlib"
 ]
 
 [project.scripts]

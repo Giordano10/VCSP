@@ -1,0 +1,9 @@
+# Dependências de Segurança e Auditoria (VCSP)
+bandit
+pip-audit
+ruff
+matplotlib
+
+# Adicione as dependências do seu projeto abaixo:
+# django
+# requests
