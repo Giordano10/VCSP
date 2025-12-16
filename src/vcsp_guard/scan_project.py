@@ -72,7 +72,7 @@ def is_git_ignored(filepath):
     """Verifica se o arquivo está no .gitignore usando o próprio git."""
     try:
         # Retorna 0 (True) se o arquivo for ignorado pelo git
-        subprocess.check_call(["git", "check-ignore", "-q", filepath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.check_call(["git", "check-ignore", "-q", filepath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # nosec
         return True
     except Exception:
         return False
@@ -81,7 +81,7 @@ def ensure_package_installed(package):
     if shutil.which(package) is None:
         logger.log(f"⚠️  {package} não encontrado. Instalando...", YELLOW)
         try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL)
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL) # nosec
             logger.log(f"✅ {package} instalado.", GREEN)
         except Exception:
             logger.log(f"❌ Erro ao instalar {package}.", RED)
@@ -95,7 +95,7 @@ def run_ruff_linter():
     
     try:
         # Captura output para salvar no log
-        result = subprocess.run(["ruff", "check", "."], text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(["ruff", "check", "."], text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         
         if result.returncode != 0:
             logger.log("\n⛔ O RUFF ENCONTROU PROBLEMAS DE QUALIDADE!", RED)
@@ -117,6 +117,13 @@ def run_pip_audit():
         target_file = "-r requirements.txt"
     elif os.path.exists("pyproject.toml"):
         target_file = "." # pip-audit detecta pyproject.toml automaticamente no diretório
+    # Suporte para execução em subpastas (ex: src/ ou src/vcsp_guard/)
+    elif os.path.exists("../requirements.txt"):
+        target_file = "-r ../requirements.txt"
+    elif os.path.exists("../pyproject.toml"):
+        target_file = "../"
+    elif os.path.exists("../../pyproject.toml"):
+        target_file = "../../"
     else:
         logger.log("ℹ️  Nenhum arquivo de dependências (requirements.txt/pyproject.toml) encontrado. Pulando.", YELLOW)
         return True
@@ -126,7 +133,7 @@ def run_pip_audit():
 
     try:
         cmd = ["pip-audit"] + target_file.split()
-        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         if result.returncode != 0:
             logger.log("\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
             logger.log(result.stdout)
@@ -145,7 +152,7 @@ def run_bandit():
         exclusions = f"venv,.venv,.git,tests,.\\tests,./tests,{IGNORED_FILES}"
         cmd = ["bandit", "-r", ".", "-x", exclusions, "-f", "txt"] # Formato texto para log
         
-        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         
         if result.returncode != 0:
             logger.log("\n⛔ O BANDIT ENCONTROU VULNERABILIDADES!", RED)

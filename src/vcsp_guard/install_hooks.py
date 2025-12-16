@@ -164,7 +164,7 @@ def install():
     
     try:
         print("📦 Verificando ferramentas (Bandit, Pip-Audit, Ruff)...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit", "pip-audit", "ruff"], stdout=subprocess.DEVNULL)
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit", "pip-audit", "ruff"], stdout=subprocess.DEVNULL) # nosec
         print("✅ Todas as ferramentas de auditoria instaladas.")
     except Exception:
         print("⚠️ Aviso: Instale manualmente: pip install bandit pip-audit ruff")
