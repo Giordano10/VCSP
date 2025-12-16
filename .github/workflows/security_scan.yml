@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ "main", "master" ]
   schedule:
+           # ┌───────────── minuto (0 - 59)
+           # │ ┌───────────── hora (0 - 23)
+           # │ │ ┌───────────── dia do mês (1 - 31)
+           # │ │ │ ┌───────────── mês (1 - 12)
+           # │ │ │ │ ┌───────────── dia da semana (0 - 6 ou SUN-SAT)
+           # │ │ │ │ │
     - cron: '0 8 * * 1' # Toda segunda-feira às 08:00 UTC
   workflow_dispatch: # Permite rodar manualmente na aba Actions
 
