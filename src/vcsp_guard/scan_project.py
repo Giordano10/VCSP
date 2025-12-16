@@ -5,6 +5,15 @@ import subprocess
 import shutil
 import datetime
 
+# --- DETECÇÃO DE RAIZ DO PROJETO ---
+# Garante que o script rode na raiz (onde está o .git), independente de onde foi chamado
+current_dir = os.getcwd()
+while current_dir != os.path.dirname(current_dir):
+    if os.path.exists(os.path.join(current_dir, ".git")) or os.path.exists(os.path.join(current_dir, "pyproject.toml")):
+        os.chdir(current_dir)
+        break
+    current_dir = os.path.dirname(current_dir)
+
 # --- CONFIGURAÇÃO DE LOGS ---
 LOG_DIR = "logs_scan_vcsp"
 if not os.path.exists(LOG_DIR):
@@ -71,8 +80,10 @@ FORBIDDEN_PATTERNS = [
 def is_git_ignored(filepath):
     """Verifica se o arquivo está no .gitignore usando o próprio git."""
     try:
+        # Usa caminho relativo para evitar erros de path no Windows/Git
+        rel_path = os.path.relpath(filepath, os.getcwd())
         # Retorna 0 (True) se o arquivo for ignorado pelo git
-        subprocess.check_call(["git", "check-ignore", "-q", filepath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # nosec
+        subprocess.check_call(["git", "check-ignore", "-q", rel_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # nosec
         return True
     except Exception:
         return False
