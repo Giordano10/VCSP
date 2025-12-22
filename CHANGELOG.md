@@ -1,5 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.2.1] - 2025-12-22
+
+### Bug Fixes
+
+- Update filelock and ruff versions in requirements.txt (767006b)
+
+
+### Documentation
+
+- Update CHANGELOG.md (0a381a9)
+
+
+### Features
+
+- Add command --version (07162d9)
+
+
 ## [1.0.2] - 2025-12-16
 
 ### Bug Fixes
