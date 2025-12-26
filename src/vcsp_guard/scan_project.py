@@ -175,6 +175,56 @@ def run_bandit():
         logger.log(f"❌ Erro ao rodar Bandit: {e}", RED)
         return False
 
+def run_checkov():
+    logger.log(f"\n{BOLD}🏗️  Executando Análise de Infraestrutura (Checkov)...{RESET}")
+    
+    # Verifica se existem arquivos de infraestrutura para evitar instalação pesada desnecessária
+    has_iac = False
+    for root, dirs, files in os.walk("."):
+        # Ignora pastas comuns
+        if any(ignored in root for ignored in IGNORED_DIRS):
+            continue
+        for file in files:
+            if file == "Dockerfile" or file.endswith(".tf") or file.endswith(".yaml") or file.endswith(".yml"):
+                # Verifica se é docker-compose ou k8s no caso de yaml
+                if file.endswith(".yaml") or file.endswith(".yml"):
+                    if "docker-compose" not in file and "k8s" not in file:
+                        continue
+                has_iac = True
+                break
+        if has_iac:
+            break
+            
+    if not has_iac:
+        logger.log("ℹ️  Nenhum arquivo de infraestrutura (Docker/Terraform) encontrado. Pulando.", YELLOW)
+        return True
+
+    if not ensure_package_installed("checkov"):
+        return False
+
+    try:
+        logger.log("⏳ Rodando Checkov (isso pode levar alguns segundos)...", YELLOW)
+        # --quiet: menos barulho, --compact: output resumido, --no-guide: sem links de ajuda no terminal
+        cmd = ["checkov", "-d", ".", "--quiet", "--compact", "--no-guide"]
+        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        
+        if result.returncode != 0:
+            logger.log("\n⛔ O CHECKOV ENCONTROU PROBLEMAS DE INFRAESTRUTURA!", RED)
+            # Limita o output para não poluir demais se for gigante
+            output_lines = result.stdout.splitlines()
+            if len(output_lines) > 50:
+                logger.log("\n".join(output_lines[:50]))
+                logger.log(f"... e mais {len(output_lines)-50} linhas.", YELLOW)
+            else:
+                logger.log(result.stdout)
+            return False
+        
+        logger.log("✅ Infraestrutura segura.", GREEN)
+        return True
+    except Exception as e:
+        logger.log(f"❌ Erro ao rodar Checkov: {e}", RED)
+        return False
+
 def scan_file(filepath):
     issues = []
     try:
@@ -235,13 +285,16 @@ def main():
     # 2. Bandit
     bandit_ok = run_bandit()
     
-    # 3. Pip Audit
+    # 3. Checkov (Infraestrutura)
+    checkov_ok = run_checkov()
+    
+    # 4. Pip Audit
     audit_ok = run_pip_audit()
 
-    # 4. Ruff
+    # 5. Ruff
     ruff_ok = run_ruff_linter()
 
-    if not secrets_ok or not bandit_ok or not audit_ok or not ruff_ok:
+    if not secrets_ok or not bandit_ok or not checkov_ok or not audit_ok or not ruff_ok:
         logger.log("\n⛔ FALHA NA AUDITORIA. VERIFIQUE OS ERROS ACIMA.", RED)
         sys.exit(1)
     

@@ -14,6 +14,7 @@ import sys
 import re
 import subprocess  # nosec
 import os
+import glob
 
 # Força UTF-8 no Windows para evitar erro de emoji (cp1252)
 if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
@@ -57,14 +58,31 @@ def scan_file(filepath):
     except Exception: pass  # nosec
     return issues
 
+def run_tests():
+    # Verifica se existem testes (pasta tests/ ou arquivos test_*.py)
+    if not os.path.exists("tests") and not glob.glob("test_*.py"):
+        return True
+
+    print(f"{GREEN}🧪 Vibe Security: Rodando Pytest...{RESET}")
+    try:
+        subprocess.check_call([sys.executable, "-m", "pytest", "-q"], shell=False) # nosec
+        return True
+    except subprocess.CalledProcessError:
+        print(f"{RED}❌ BLOQUEADO: Seus testes falharam. Corrija-os antes de commitar.{RESET}")
+        return False
+    except Exception:
+        return True
+
 def main():
     print(f"{GREEN}🛡️  Vibe Security (Pre-commit): Checando Segredos...{RESET}")
     staged_files = get_staged_files()
-    if not staged_files:
-        sys.exit(0)
-    if any(scan_file(f) for f in staged_files):
+    if staged_files and any(scan_file(f) for f in staged_files):
         print(f"\n{RED}❌ COMMIT ABORTADO.{RESET} Use --no-verify se necessário.")
         sys.exit(1)
+    
+    if not run_tests():
+        sys.exit(1)
+        
     sys.exit(0)
 
 if __name__ == "__main__": main()
