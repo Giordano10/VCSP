@@ -12,6 +12,12 @@ license = "MIT"
 authors = [
   {name = "Giordano Alves", email = "giordano.alves9@gmail.com"}
 ]
+
+[project.urls]
+Homepage = "https://github.com/giordano-dev/VCSP"
+Repository = "https://github.com/giordano-dev/VCSP"
+Issues = "https://github.com/giordano-dev/VCSP/issues"
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
