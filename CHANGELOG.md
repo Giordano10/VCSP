@@ -1,5 +1,34 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.3.1] - 2025-12-27
+
+### Bug Fixes
+
+- Remove tomli dependency from requirements.in and update requirements.txt references (48138f6)
+
+- Remove unused dependencies from requirements.txt (8fce063)
+
+- Update output directory for generated graphs in generate_stats.py (5b30d80)
+
+- Update asset paths for security trend chart in workflow (a7e1cad)
+
+- Handle missing 'semgrep' data in vulnerability trend graph (34d823a)
+
+- Update README.md for cache busting of bug trend image (3e94bcf)
+
+
+### Documentation
+
+- Update CHANGELOG.md (53c76df)
+
+- Update security trend chart (db8968b)
+
+
+### Features
+
+- Add dependency file detection and unused libraries check in scan_project.py (ac13457)
+
+
 ## [1.0.3] - 2025-12-27
 
 ### Bug Fixes
