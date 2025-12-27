@@ -28,7 +28,7 @@ jobs:
           python-version: '3.11'
       
       - name: Instalar Ferramentas
-        run: pip install bandit pip-audit ruff pytest matplotlib
+        run: pip install bandit pip-audit ruff pytest matplotlib semgrep
       
       - name: Rodar Testes (Pytest)
         run: pytest
