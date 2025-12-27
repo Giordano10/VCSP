@@ -91,6 +91,21 @@ jobs:
           plt.legend()
           plt.grid(True, linestyle='--', alpha=0.7)
           plt.savefig('.vibe/assets/bug_trend.png')
+          
+          # 5. Atualizar README.md (Cache Busting)
+          readme_path = 'README.md'
+          if os.path.exists(readme_path):
+              with open(readme_path, 'r', encoding='utf-8') as f:
+                  readme_content = f.read()
+              
+              new_content = re.sub(
+                  r'(!\\[Bug Trend\\]\\(\\.vibe/assets/bug_trend\\.png)(?:\\?v=\\d+)?\\)',
+                  f'\\1?v={datetime.now().strftime("%Y%m%d%H%M%S")})',
+                  readme_content
+              )
+              
+              with open(readme_path, 'w', encoding='utf-8') as f:
+                  f.write(new_content)
           "
       
       - name: Sincronizar com a Master (Evitar Conflitos)
@@ -100,7 +115,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "docs: update security trend chart"
-          file_pattern: .vibe/stats.json .vibe/assets/bug_trend.png
+          file_pattern: .vibe/stats.json .vibe/assets/bug_trend.png README.md
       
       - name: Upload Logs (Artifact)
         if: always()
