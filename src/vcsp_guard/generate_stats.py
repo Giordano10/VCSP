@@ -57,8 +57,8 @@ def main():
         history.append(stats)
 
     # 3. Gerar Gráfico
-    os.makedirs('.vibe_graph_errors_vcsp/assets', exist_ok=True)
-    output_img = '.vibe_graph_errors_vcsp/assets/bug_trend.png'
+    os.makedirs('.vibe/assets', exist_ok=True)
+    output_img = '.vibe/assets/bug_trend.png'
     
     dates = [h['date'] for h in history]
     
