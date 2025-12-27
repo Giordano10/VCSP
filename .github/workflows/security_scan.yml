@@ -28,7 +28,7 @@ jobs:
           python-version: '3.11'
       
       - name: Instalar Ferramentas
-        run: pip install bandit pip-audit ruff pytest matplotlib semgrep
+        run: pip install --upgrade pip && pip install bandit pip-audit ruff pytest matplotlib "semgrep>=1.0.0"
       
       - name: Rodar Testes (Pytest)
         run: pytest

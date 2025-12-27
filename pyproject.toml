@@ -23,7 +23,7 @@ dependencies = [
     "pip-audit",
     "ruff",
     "matplotlib",
-    "semgrep; sys_platform != 'win32'"
+    "semgrep>=1.0.0; sys_platform != 'win32'"
 ]
 
 [project.scripts]
