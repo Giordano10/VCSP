@@ -229,7 +229,7 @@ python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   matplotlib
-pywin32==311
+pywin32==311; sys_platform == 'win32'
     # via docker
 pyyaml==6.0.3
     # via
