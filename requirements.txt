@@ -6,8 +6,6 @@
 #
 bandit==1.9.2
     # via -r requirements.in
-boolean-py==5.0
-    # via license-expression
 cachecontrol[filecache]==0.14.4
     # via
     #   cachecontrol
@@ -34,8 +32,6 @@ idna==3.11
     # via requests
 kiwisolver==1.4.9
     # via matplotlib
-license-expression==30.4.4
-    # via cyclonedx-python-lib
 markdown-it-py==4.0.0
     # via rich
 matplotlib==3.10.8
@@ -48,8 +44,6 @@ numpy==2.4.0
     # via
     #   contourpy
     #   matplotlib
-packageurl-python==0.17.6
-    # via cyclonedx-python-lib
 packaging==25.0
     # via
     #   matplotlib
@@ -65,8 +59,6 @@ pip-requirements-parser==32.0.1
     # via pip-audit
 platformdirs==4.5.1
     # via pip-audit
-py-serializable==2.1.0
-    # via cyclonedx-python-lib
 pygments==2.19.2
     # via rich
 pyparsing==3.3.1
@@ -89,14 +81,10 @@ ruff==0.14.10
     # via -r requirements.in
 six==1.17.0
     # via python-dateutil
-sortedcontainers==2.4.0
-    # via cyclonedx-python-lib
 stevedore==5.6.0
     # via bandit
 tomli==2.3.0
-    # via
-    #   -r requirements.in
-    #   pip-audit
+    # via pip-audit
 tomli-w==1.2.0
     # via pip-audit
 urllib3==2.6.2

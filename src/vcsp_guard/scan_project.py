@@ -338,8 +338,10 @@ def run_unused_libs_check():
     try:
         if sys.version_info < (3, 10):
             from importlib_metadata import packages_distributions
+            from importlib_metadata import distribution
         else:
             from importlib.metadata import packages_distributions
+            from importlib.metadata import distribution
     except ImportError:
         logger.log("⚠️  'importlib-metadata' não encontrado (necessário para Python < 3.10).", YELLOW)
         return True
@@ -361,18 +363,42 @@ def run_unused_libs_check():
                 if pkg_name:
                     declared_pkgs.add(pkg_name.lower())
 
+        # --- LÓGICA ESTILO PIPDEPTREE (FILTRO DE SUB-DEPENDÊNCIAS) ---
+        # Identifica quais pacotes são apenas dependências de outros pacotes listados
+        # para evitar cobrar importação explícita deles (ex: rich, que vem com bandit).
+        transitive_deps = set()
+        for pkg in declared_pkgs:
+            try:
+                # Obtém os metadados do pacote instalado
+                dist = distribution(pkg)
+                if dist.requires:
+                    for req in dist.requires:
+                        # O formato vem como 'requests (>=2.0)' ou 'requests; extra == "dev"'
+                        # Pegamos apenas o nome base
+                        req_name = re.split(r'[ ;<=>!]', req)[0].strip().lower()
+                        if req_name:
+                            transitive_deps.add(req_name)
+            except Exception:
+                # Se o pacote não estiver instalado no ambiente, ignoramos
+                continue
+
         used_imports = get_project_imports(PROJECT_ROOT)
         
         # Lista de ferramentas e libs de sistema que não são importadas diretamente
         ignored_pkgs = {
             'pip', 'setuptools', 'wheel', 'gunicorn', 'uvicorn', 
             'bandit', 'pip-audit', 'ruff', 'semgrep', 'pytest', 
-            'black', 'flake8', 'coverage', 'pylint', 'mypy', 'tox'
+            'black', 'flake8', 'coverage', 'pylint', 'mypy', 'tox',
+            'pipdeptree', 'pip-tools'
         }
 
         unused_pkgs = []
         for pkg in declared_pkgs:
             if pkg in ignored_pkgs:
+                continue
+            
+            # Se o pacote é uma sub-dependência de outro pacote listado, ele é "usado" indiretamente
+            if pkg in transitive_deps:
                 continue
             
             # Verifica se algum módulo provido pelo pacote está sendo importado
