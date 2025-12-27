@@ -1,5 +1,32 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.3] - 2025-12-27
+
+### Bug Fixes
+
+- Remove unused import of sys in test_sample.py (939bfc1)
+
+- Add error handling for pip-audit installation failures in CI/CD environments (aea1f43)
+
+- Specify platform dependency for pywin32 in requirements.txt (ed6111b)
+
+
+### Documentation
+
+- Update CHANGELOG.md (473f5e7)
+
+
+### Features
+
+- Add Checkov infrastructure analysis and enhance security tool tests (7ce8739)
+
+- Add Semgrep support for IaC scanning and update security audit workflow (bb5bbab)
+
+- Add Semgrep to security scan workflow for enhanced vulnerability detection (70e1f2a)
+
+- Upgrade semgrep version in dependencies and installation scripts (d158856)
+
+
 ## [1.0.2.1] - 2025-12-22
 
 ### Bug Fixes
