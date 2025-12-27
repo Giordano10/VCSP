@@ -4,6 +4,7 @@ import sys
 import subprocess
 import shutil
 import datetime
+import ast
 
 # --- DETECÇÃO DE RAIZ DO PROJETO ---
 def get_project_root():
@@ -109,6 +110,28 @@ def ensure_package_installed(package):
             return False
     return True
 
+def find_dependency_file(start_dir):
+    """Encontra requirements.txt ou pyproject.toml na raiz ou subpastas."""
+    # 1. Prioridade: Raiz
+    req_path = os.path.join(start_dir, "requirements.txt")
+    if os.path.exists(req_path):
+        return req_path
+    
+    toml_path = os.path.join(start_dir, "pyproject.toml")
+    if os.path.exists(toml_path):
+        return toml_path
+        
+    # 2. Busca Recursiva
+    SEARCH_IGNORE = {'.git', 'venv', 'env', '.venv', '__pycache__', 'node_modules', 'site-packages', '.idea', '.vscode', 'dist', 'build'}
+    
+    for root, dirs, files in os.walk(start_dir):
+        dirs[:] = [d for d in dirs if d not in SEARCH_IGNORE]
+        if "requirements.txt" in files:
+            return os.path.join(root, "requirements.txt")
+        if "pyproject.toml" in files:
+            return os.path.join(root, "pyproject.toml")
+    return None
+
 def run_ruff_linter():
     logger.log(f"\n{BOLD}🧹 Executando Linter (Ruff - Qualidade de Código)...{RESET}")
     if not ensure_package_installed("ruff"):
@@ -133,27 +156,19 @@ def run_ruff_linter():
 def run_pip_audit():
     logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências (SCA)...{RESET}")
     
-    target_file = ""
-    if os.path.exists("requirements.txt"):
-        target_file = "-r requirements.txt"
-    elif os.path.exists("pyproject.toml"):
-        target_file = "." # pip-audit detecta pyproject.toml automaticamente no diretório
-    # Suporte para execução em subpastas (ex: src/ ou src/vcsp_guard/)
-    elif os.path.exists("../requirements.txt"):
-        target_file = "-r ../requirements.txt"
-    elif os.path.exists("../pyproject.toml"):
-        target_file = "../"
-    elif os.path.exists("../../pyproject.toml"):
-        target_file = "../../"
-    else:
+    dep_file = find_dependency_file(PROJECT_ROOT)
+    
+    if not dep_file:
         logger.log("ℹ️  Nenhum arquivo de dependências (requirements.txt/pyproject.toml) encontrado. Pulando.", YELLOW)
         return True
         
+    logger.log(f"   📄 Arquivo de dependências detectado: {dep_file}", YELLOW)
     if not ensure_package_installed("pip-audit"):
         return False
 
     try:
-        cmd = ["pip-audit"] + target_file.split()
+        cmd = ["pip-audit", "-r", dep_file] if dep_file.endswith("requirements.txt") else ["pip-audit", os.path.dirname(dep_file)]
+        
         result = subprocess.run(cmd, text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         if result.returncode != 0:
             # Tratamento de erro específico para falha de instalação (comum em CI/CD Linux vs Windows)
@@ -162,6 +177,13 @@ def run_pip_audit():
                 logger.log("   O pip-audit falhou ao instalar as dependências. Isso geralmente ocorre", YELLOW)
                 logger.log("   quando há bibliotecas exclusivas de Windows (ex: pywin32) rodando no Linux.", YELLOW)
                 logger.log("   📝 SOLUÇÃO: Adicione '; sys_platform == \"win32\"' no requirements.txt para essas libs.", YELLOW)
+                logger.log(result.stdout)
+                return False
+
+            if "ModuleNotFoundError" in result.stdout or "Traceback" in result.stdout:
+                logger.log("\n⚠️  ERRO DE EXECUÇÃO (DEPENDÊNCIA FALTANDO)", YELLOW)
+                logger.log("   O pip-audit não conseguiu rodar pois faltam bibliotecas no ambiente.", YELLOW)
+                logger.log("   💡 Tente rodar: pip install -r requirements.txt --force-reinstall", YELLOW)
                 logger.log(result.stdout)
                 return False
 
@@ -275,6 +297,100 @@ def run_iac_scan():
         logger.log(f"❌ Erro ao rodar Semgrep: {e}", RED)
         return False
 
+def get_project_imports(root_dir):
+    """Varre arquivos .py e retorna um conjunto de nomes de módulos importados."""
+    imports = set()
+    for dirpath, _, filenames in os.walk(root_dir):
+        # Ignora pastas virtuais e de cache
+        if any(x in dirpath for x in ['venv', '.git', '__pycache__', 'site-packages', 'node_modules', '.venv', 'env']):
+            continue
+        for filename in filenames:
+            if filename.endswith(".py"):
+                filepath = os.path.join(dirpath, filename)
+                try:
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        tree = ast.parse(f.read(), filename=filepath)
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.Import):
+                            for alias in node.names:
+                                imports.add(alias.name.split('.')[0])
+                        elif isinstance(node, ast.ImportFrom):
+                            if node.module:
+                                imports.add(node.module.split('.')[0])
+                except Exception:
+                    continue
+    return imports
+
+def run_unused_libs_check():
+    logger.log(f"\n{BOLD}🗑️  Verificando Dependências Não Utilizadas...{RESET}")
+    
+    dep_file = find_dependency_file(PROJECT_ROOT)
+    
+    if not dep_file or not dep_file.endswith("requirements.txt"):
+        if dep_file:
+             logger.log(f"ℹ️  Arquivo detectado: {dep_file}. Este check suporta apenas requirements.txt por enquanto.", YELLOW)
+        else:
+             logger.log("ℹ️  requirements.txt não encontrado no projeto. Pulando verificação.", YELLOW)
+        return True
+    
+    requirements_path = dep_file
+
+    try:
+        if sys.version_info < (3, 10):
+            from importlib_metadata import packages_distributions
+        else:
+            from importlib.metadata import packages_distributions
+    except ImportError:
+        logger.log("⚠️  'importlib-metadata' não encontrado (necessário para Python < 3.10).", YELLOW)
+        return True
+
+    try:
+        dist_map = packages_distributions()
+        pkg_to_imports = {}
+        for import_name, dists in dist_map.items():
+            for dist in dists:
+                pkg_to_imports.setdefault(dist.lower(), []).append(import_name)
+
+        declared_pkgs = set()
+        with open(requirements_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#') or line.startswith('-'):
+                    continue
+                pkg_name = re.split(r'[=<>~!;]', line)[0].strip()
+                if pkg_name:
+                    declared_pkgs.add(pkg_name.lower())
+
+        used_imports = get_project_imports(PROJECT_ROOT)
+        
+        # Lista de ferramentas e libs de sistema que não são importadas diretamente
+        ignored_pkgs = {
+            'pip', 'setuptools', 'wheel', 'gunicorn', 'uvicorn', 
+            'bandit', 'pip-audit', 'ruff', 'semgrep', 'pytest', 
+            'black', 'flake8', 'coverage', 'pylint', 'mypy', 'tox'
+        }
+
+        unused_pkgs = []
+        for pkg in declared_pkgs:
+            if pkg in ignored_pkgs:
+                continue
+            
+            # Verifica se algum módulo provido pelo pacote está sendo importado
+            possible_imports = pkg_to_imports.get(pkg, []) or [pkg]
+            if not any(mod in used_imports for mod in possible_imports):
+                unused_pkgs.append(pkg)
+
+        if unused_pkgs:
+            logger.log("⚠️  ATENÇÃO: As seguintes bibliotecas estão no requirements mas NÃO são importadas:", YELLOW)
+            for p in unused_pkgs:
+                logger.log(f"   ❌ {p}")
+            logger.log(f"💡 Para limpar: pip uninstall {' '.join(unused_pkgs)}")
+        else:
+            logger.log(f"✅ Todas as dependências ({len(declared_pkgs)}) parecem estar em uso.", GREEN)
+    except Exception as e:
+        logger.log(f"❌ Erro ao verificar libs: {e}", RED)
+    return True
+
 def scan_file(filepath):
     issues = []
     try:
@@ -343,6 +459,9 @@ def main():
 
     # 5. Ruff
     ruff_ok = run_ruff_linter()
+
+    # 6. Unused Libs (Apenas informativo, não falha o build)
+    run_unused_libs_check()
 
     if not secrets_ok or not bandit_ok or not iac_ok or not audit_ok or not ruff_ok:
         logger.log("\n⛔ FALHA NA AUDITORIA. VERIFIQUE OS ERROS ACIMA.", RED)

@@ -5,6 +5,7 @@ ruff
 matplotlib
 semgrep>=1.0.0; sys_platform != 'win32'
 tomli>=2.2.1
+importlib-metadata; python_version < "3.10"
 
 # Adicione as dependências do seu projeto abaixo:
 # django
