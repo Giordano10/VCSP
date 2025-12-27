@@ -156,6 +156,15 @@ def run_pip_audit():
         cmd = ["pip-audit"] + target_file.split()
         result = subprocess.run(cmd, text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         if result.returncode != 0:
+            # Tratamento de erro específico para falha de instalação (comum em CI/CD Linux vs Windows)
+            if "No matching distribution found" in result.stdout or "internal pip failure" in result.stdout:
+                logger.log("\n⚠️  ERRO DE AMBIENTE NO PIP-AUDIT", YELLOW)
+                logger.log("   O pip-audit falhou ao instalar as dependências. Isso geralmente ocorre", YELLOW)
+                logger.log("   quando há bibliotecas exclusivas de Windows (ex: pywin32) rodando no Linux.", YELLOW)
+                logger.log("   📝 SOLUÇÃO: Adicione '; sys_platform == \"win32\"' no requirements.txt para essas libs.", YELLOW)
+                logger.log(result.stdout)
+                return False
+
             logger.log("\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
             logger.log(result.stdout)
             return False
