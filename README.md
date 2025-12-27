@@ -4,10 +4,10 @@
 ![Latest Release](https://img.shields.io/github/v/release/Giordano10/VCSP)
 ![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Security](https://img.shields.io/badge/security-bandit%20%7C%20pip--audit-red)
+![Security](https://img.shields.io/badge/security-bandit%20%7C%20pip--audit%20%7C%20semgrep-red)
 
 Biblioteca segura para desenvolvimento ágil com IA (Vibe Coding).
-Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências**, **Quality Gate** e **Histórico de Logs**.
+Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências**, **Quality Gate**, **Análise de IaC** e **Histórico de Logs**.
 
 ---
 
@@ -37,7 +37,7 @@ vcsp-init
 
 **O que o `vcsp-init` faz?**
 1.  **Instala o Pre-Commit Hook:** Cria um arquivo oculto em `.git/hooks/` que intercepta todo comando `git commit`.
-2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit) e as instala se necessário.
+2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit, Semgrep) e as instala se necessário.
 3.  **Menu de Seleção de IA:** Pergunta qual IA você utiliza (Cursor, Cline, etc.) e aplica as regras de segurança correspondentes.
 
 ### 3. Configurar Ambiente
@@ -95,12 +95,15 @@ Como este kit protege você enquanto a IA codifica?
 **Para que serve o `vcsp-scan`?**
 Enquanto o `vcsp-init` protege o futuro (novos commits), o `vcsp-scan` protege o passado. Ele serve para **varrer todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
 
-O script `vcsp-scan` executa 4 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
+O script `vcsp-scan` executa 5 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
 
 1.  **🔐 Segredos:** Busca por chaves vazadas no código.
 2.  **🔫 Pentest (Bandit):** Busca por falhas de lógica e injeção.
 3.  **📦 SCA (Pip Audit):** Busca por bibliotecas desatualizadas/vulneráveis.
 4.  **🧹 Linter (Ruff):** Busca por bugs, variáveis não usadas e código sujo.
+5.  **🏗️ Infraestrutura (Semgrep):** Busca vulnerabilidades em Docker, Kubernetes e Terraform.
+
+> **⚠️ Usuários Windows:** Para a análise de infraestrutura (Docker/Terraform), é necessário ter o **Docker Desktop** instalado e rodando. O VCSP detecta automaticamente e usa um container para realizar a varredura, já que o Semgrep não roda nativamente no Windows.
 
 Para rodar a auditoria:
 ```bash

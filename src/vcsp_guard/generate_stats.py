@@ -22,7 +22,7 @@ def main():
     print(f"📂 Processando {len(list_of_files)} logs...")
 
     for log_file in list_of_files:
-        stats = {'date': '', 'secrets': 0, 'bandit': 0, 'audit': 0, 'ruff': 0}
+        stats = {'date': '', 'secrets': 0, 'bandit': 0, 'audit': 0, 'ruff': 0, 'semgrep': 0}
         
         # Extrair data do nome do arquivo: scan_2025-12-15_11-10-45.txt
         filename = os.path.basename(log_file)
@@ -49,6 +49,10 @@ def main():
             ruff_match = re.search(r'Found (\d+) error', content)
             if ruff_match:
                 stats['ruff'] = int(ruff_match.group(1))
+            
+            semgrep_match = re.search(r'Found (\d+) infrastructure issues', content)
+            if semgrep_match:
+                stats['semgrep'] = int(semgrep_match.group(1))
         
         history.append(stats)
 
@@ -63,6 +67,7 @@ def main():
     plt.plot(dates, [h['bandit'] for h in history], label='Bandit (Logic)', marker='o', color='orange')
     plt.plot(dates, [h['audit'] for h in history], label='Pip-Audit (Deps)', marker='o', color='blue')
     plt.plot(dates, [h['ruff'] for h in history], label='Ruff (Lint)', marker='o', color='green')
+    plt.plot(dates, [h['semgrep'] for h in history], label='Semgrep (IaC)', marker='o', color='purple')
     
     plt.title('Tendência de Vulnerabilidades (VCSP)')
     plt.xlabel('Execuções (Data/Hora)')

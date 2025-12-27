@@ -1,5 +1,6 @@
 import shutil
 import importlib.util
+import sys
 from pathlib import Path
 import pytest
 
@@ -9,7 +10,9 @@ def test_security_tools_installed():
     Isso evita falhas silenciosas no CI/CD ou localmente.
     """
     required_tools = ["bandit", "ruff", "pip-audit"]
-    # Checkov é opcional/instalado sob demanda, então não quebramos se faltar
+    
+    if sys.platform != "win32":
+        required_tools.append("semgrep")
     
     missing = [tool for tool in required_tools if shutil.which(tool) is None]
     assert not missing, f"Ferramentas de segurança faltando no PATH: {', '.join(missing)}"
@@ -41,5 +44,5 @@ def test_scanner_module_integrity():
         
         # Verifica se as funções principais existem
         assert hasattr(module, "main"), "O script de scan deve ter uma função main()"
-        assert hasattr(module, "run_checkov"), "O scanner deve suportar Checkov (run_checkov)"
+        assert hasattr(module, "run_iac_scan"), "O scanner deve suportar IaC (Semgrep)"
         assert hasattr(module, "run_bandit"), "O scanner deve suportar Bandit"

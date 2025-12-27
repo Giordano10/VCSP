@@ -2,5 +2,5 @@ bandit
 pip-audit
 ruff
 matplotlib
-pandas
-pytest
+checkov
+cyclonedx-python-lib<8.0.0

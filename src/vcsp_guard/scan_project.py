@@ -6,13 +6,23 @@ import shutil
 import datetime
 
 # --- DETECÇÃO DE RAIZ DO PROJETO ---
-# Garante que o script rode na raiz (onde está o .git), independente de onde foi chamado
-current_dir = os.getcwd()
-while current_dir != os.path.dirname(current_dir):
-    if os.path.exists(os.path.join(current_dir, ".git")) or os.path.exists(os.path.join(current_dir, "pyproject.toml")):
-        os.chdir(current_dir)
-        break
-    current_dir = os.path.dirname(current_dir)
+def get_project_root():
+    # Começa a busca a partir do diretório onde este script está localizado
+    current = os.path.dirname(os.path.abspath(__file__))
+    while True:
+        if os.path.exists(os.path.join(current, ".git")) or os.path.exists(os.path.join(current, "pyproject.toml")):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current: # Chegou na raiz do sistema
+            return os.getcwd()
+        current = parent
+
+PROJECT_ROOT = get_project_root()
+if os.getcwd() != PROJECT_ROOT:
+    print(f"🔄 Mudando diretório de trabalho para a raiz do projeto: {PROJECT_ROOT}")
+    os.chdir(PROJECT_ROOT)
+else:
+    print(f"📂 Diretório de trabalho (Raiz): {PROJECT_ROOT}")
 
 # --- CONFIGURAÇÃO DE LOGS ---
 LOG_DIR = "logs_scan_vcsp"
@@ -106,7 +116,7 @@ def run_ruff_linter():
     
     try:
         # Captura output para salvar no log
-        result = subprocess.run(["ruff", "check", "."], text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        result = subprocess.run(["ruff", "check", "."], text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         
         if result.returncode != 0:
             logger.log("\n⛔ O RUFF ENCONTROU PROBLEMAS DE QUALIDADE!", RED)
@@ -144,7 +154,7 @@ def run_pip_audit():
 
     try:
         cmd = ["pip-audit"] + target_file.split()
-        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        result = subprocess.run(cmd, text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         if result.returncode != 0:
             logger.log("\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
             logger.log(result.stdout)
@@ -163,7 +173,7 @@ def run_bandit():
         exclusions = f"venv,.venv,.git,tests,.\\tests,./tests,{IGNORED_FILES}"
         cmd = ["bandit", "-r", ".", "-x", exclusions, "-f", "txt"] # Formato texto para log
         
-        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        result = subprocess.run(cmd, text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         
         if result.returncode != 0:
             logger.log("\n⛔ O BANDIT ENCONTROU VULNERABILIDADES!", RED)
@@ -175,43 +185,74 @@ def run_bandit():
         logger.log(f"❌ Erro ao rodar Bandit: {e}", RED)
         return False
 
-def run_checkov():
-    logger.log(f"\n{BOLD}🏗️  Executando Análise de Infraestrutura (Checkov)...{RESET}")
+def run_iac_scan():
+    logger.log(f"\n{BOLD}🏗️  Executando Análise de Infraestrutura (Semgrep)...{RESET}")
     
     # Verifica se existem arquivos de infraestrutura para evitar instalação pesada desnecessária
-    has_iac = False
-    for root, dirs, files in os.walk("."):
-        # Ignora pastas comuns
-        if any(ignored in root for ignored in IGNORED_DIRS):
-            continue
+    # Pastas de sistema/libs que devem ser ignoradas (mas permitimos build/dist/etc para IaC)
+    IAC_IGNORE = {'.git', 'venv', 'env', '.venv', '__pycache__', 'node_modules', '.idea', '.vscode', '.ruff_cache', 'logs_scan_vcsp'}
+    
+    iac_files = []
+    for root, dirs, files in os.walk(PROJECT_ROOT):
+        # Modifica dirs in-place para pular pastas ignoradas (Otimização)
+        dirs[:] = [d for d in dirs if d not in IAC_IGNORE]
+        
         for file in files:
-            if file == "Dockerfile" or file.endswith(".tf") or file.endswith(".yaml") or file.endswith(".yml"):
+            if "Dockerfile" in file or file.endswith(".dockerfile") or file.endswith(".tf") or file.endswith(".yaml") or file.endswith(".yml"):
                 # Verifica se é docker-compose ou k8s no caso de yaml
                 if file.endswith(".yaml") or file.endswith(".yml"):
                     if "docker-compose" not in file and "k8s" not in file:
                         continue
-                has_iac = True
-                break
-        if has_iac:
-            break
+                path = os.path.join(root, file)
+                iac_files.append(path)
+                logger.log(f"   📄 Arquivo de infraestrutura detectado: {path}", YELLOW)
             
-    if not has_iac:
+    if not iac_files:
         logger.log("ℹ️  Nenhum arquivo de infraestrutura (Docker/Terraform) encontrado. Pulando.", YELLOW)
         return True
 
-    if not ensure_package_installed("checkov"):
-        return False
+    # Configs do Semgrep
+    configs = []
+    if any("Dockerfile" in f or f.endswith(".dockerfile") for f in iac_files):
+        configs.extend(["--config", "p/dockerfile"])
+    if any(f.endswith(".tf") for f in iac_files):
+        configs.extend(["--config", "p/terraform"])
+    if any(f.endswith(".yaml") or f.endswith(".yml") for f in iac_files):
+        configs.extend(["--config", "p/kubernetes"])
+    
+    if not configs:
+        configs.extend(["--config", "p/security-audit"])
+
+    cmd = []
+    
+    if sys.platform == "win32":
+        if shutil.which("docker") is None:
+            logger.log("\n⚠️  DOCKER NÃO ENCONTRADO!", YELLOW)
+            logger.log("   Para escanear arquivos de infraestrutura no Windows, o Semgrep requer o Docker Desktop.", YELLOW)
+            logger.log("   Instale em: https://www.docker.com/products/docker-desktop/", YELLOW)
+            logger.log("   (Pulando verificação de IaC por enquanto...)", YELLOW)
+            return True
+        
+        logger.log("🐳 Windows detectado: Rodando Semgrep via Docker...", YELLOW)
+        # Converte caminhos absolutos para relativos (para funcionar dentro do container montado em /src)
+        # E força barras normais (/) pois o container é Linux
+        rel_files = [os.path.relpath(f, PROJECT_ROOT).replace("\\", "/") for f in iac_files]
+        
+        cmd = ["docker", "run", "--rm", "-v", f"{PROJECT_ROOT}:/src", "semgrep/semgrep", "semgrep", "scan", "--error", "--metrics=off", "--quiet", "--no-git-ignore"] + configs + rel_files
+    else:
+        if not ensure_package_installed("semgrep"):
+            return False
+        logger.log("⏳ Rodando Semgrep (Nativo)...", YELLOW)
+        cmd = ["semgrep", "scan", "--error", "--metrics=off", "--quiet", "--no-git-ignore"] + configs + iac_files
 
     try:
-        logger.log("⏳ Rodando Checkov (isso pode levar alguns segundos)...", YELLOW)
-        # --quiet: menos barulho, --compact: output resumido, --no-guide: sem links de ajuda no terminal
-        cmd = ["checkov", "-d", ".", "--quiet", "--compact", "--no-guide"]
-        result = subprocess.run(cmd, text=True, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        result = subprocess.run(cmd, text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
         
         if result.returncode != 0:
-            logger.log("\n⛔ O CHECKOV ENCONTROU PROBLEMAS DE INFRAESTRUTURA!", RED)
+            logger.log("\n⛔ O SEMGREP ENCONTROU PROBLEMAS DE INFRAESTRUTURA!", RED)
             # Limita o output para não poluir demais se for gigante
             output_lines = result.stdout.splitlines()
+            logger.log(f"Found {len(output_lines)} infrastructure issues.")
             if len(output_lines) > 50:
                 logger.log("\n".join(output_lines[:50]))
                 logger.log(f"... e mais {len(output_lines)-50} linhas.", YELLOW)
@@ -222,7 +263,7 @@ def run_checkov():
         logger.log("✅ Infraestrutura segura.", GREEN)
         return True
     except Exception as e:
-        logger.log(f"❌ Erro ao rodar Checkov: {e}", RED)
+        logger.log(f"❌ Erro ao rodar Semgrep: {e}", RED)
         return False
 
 def scan_file(filepath):
@@ -286,7 +327,7 @@ def main():
     bandit_ok = run_bandit()
     
     # 3. Checkov (Infraestrutura)
-    checkov_ok = run_checkov()
+    iac_ok = run_iac_scan()
     
     # 4. Pip Audit
     audit_ok = run_pip_audit()
@@ -294,7 +335,7 @@ def main():
     # 5. Ruff
     ruff_ok = run_ruff_linter()
 
-    if not secrets_ok or not bandit_ok or not checkov_ok or not audit_ok or not ruff_ok:
+    if not secrets_ok or not bandit_ok or not iac_ok or not audit_ok or not ruff_ok:
         logger.log("\n⛔ FALHA NA AUDITORIA. VERIFIQUE OS ERROS ACIMA.", RED)
         sys.exit(1)
     

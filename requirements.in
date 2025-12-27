@@ -3,6 +3,8 @@ bandit
 pip-audit
 ruff
 matplotlib
+semgrep; sys_platform != 'win32'
+tomli>=2.2.1
 
 # Adicione as dependências do seu projeto abaixo:
 # django

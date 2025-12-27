@@ -3,7 +3,9 @@ MANIFEST.in
 README.md
 pyproject.toml
 src/vcsp_guard/__init__.py
+src/vcsp_guard/generate_stats.py
 src/vcsp_guard/install_hooks.py
+src/vcsp_guard/main.py
 src/vcsp_guard/scan_project.py
 src/vcsp_guard.egg-info/PKG-INFO
 src/vcsp_guard.egg-info/SOURCES.txt
