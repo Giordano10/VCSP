@@ -40,22 +40,29 @@ FORBIDDEN_PATTERNS = [
 
 def get_staged_files():
     try:
-        result = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True)  # nosec
+        # noqa: S603, S607
+        cmd = ['git', 'diff', '--cached', '--name-only']
+        result = subprocess.check_output(cmd, text=True)
         return [f for f in result.splitlines() if os.path.exists(f)]
-    except subprocess.CalledProcessError: return []
+    except subprocess.CalledProcessError:
+        return []
 
 def scan_file(filepath):
-    if "env.example" in filepath or "install_hooks.py" in filepath or "scan_project.py" in filepath: return False
+    ignored = ["env.example", "install_hooks.py", "scan_project.py"]
+    if any(x in filepath for x in ignored):
+        return False
     issues = False
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             for i, line in enumerate(f, 1):
-                if "# nosec" in line: continue
+                if "# nosec" in line:
+                    continue
                 for pattern, msg in FORBIDDEN_PATTERNS:
                     if re.search(pattern, line):
                         print(f"{RED}[BLOQUEADO] {filepath}:{i} -> {msg}{RESET}")
                         issues = True
-    except Exception: pass  # nosec
+    except Exception:
+        pass  # noqa: S110
     return issues
 
 def run_tests():
@@ -65,10 +72,11 @@ def run_tests():
 
     print(f"{GREEN}🧪 Vibe Security: Rodando Pytest...{RESET}")
     try:
-        subprocess.check_call([sys.executable, "-m", "pytest", "-q"], shell=False) # nosec
+        # noqa: S603
+        subprocess.check_call([sys.executable, "-m", "pytest", "-q"], shell=False)
         return True
     except subprocess.CalledProcessError:
-        print(f"{RED}❌ BLOQUEADO: Seus testes falharam. Corrija-os antes de commitar.{RESET}")
+        print(f"{RED}❌ BLOQUEADO: Testes falharam. Corrija antes de commitar.{RESET}")
         return False
     except Exception:
         return True
@@ -85,7 +93,8 @@ def main():
         
     sys.exit(0)
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
 """
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -120,7 +129,8 @@ def activate_ai_configs():
     print("  99. Limpar configurações (Remover da raiz)")
     print("  0. Sair")
 
-    selection = input("\nDigite os números (ex: 1,3 (separe por virgulas caso queira mais de uma)): ").strip()
+    msg = "\nDigite os números (ex: 1,3 (separe por virgulas)): "
+    selection = input(msg).strip()
     if not selection or selection == '0':
         return
 
@@ -182,7 +192,9 @@ def install():
     
     try:
         print("📦 Verificando ferramentas (Bandit, Pip-Audit, Ruff)...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "bandit", "pip-audit", "ruff"], stdout=subprocess.DEVNULL) # nosec
+        pkgs = ["bandit", "pip-audit", "ruff"]
+        cmd = [sys.executable, "-m", "pip", "install"] + pkgs
+        subprocess.check_call(cmd, stdout=subprocess.DEVNULL)  # nosec
         print("✅ Todas as ferramentas de auditoria instaladas.")
     except Exception:
         print("⚠️ Aviso: Instale manualmente: pip install bandit pip-audit ruff")

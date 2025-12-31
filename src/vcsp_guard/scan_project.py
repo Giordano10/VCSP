@@ -8,15 +8,29 @@ import ast
 
 # --- DETECÇÃO DE RAIZ DO PROJETO ---
 def get_project_root():
-    # Começa a busca a partir do diretório onde este script está localizado
-    current = os.path.dirname(os.path.abspath(__file__))
+    # 1. Busca a partir do diretório atual (CWD) - Prioridade para quem roda o comando
+    current = os.getcwd()
     while True:
-        if os.path.exists(os.path.join(current, ".git")) or os.path.exists(os.path.join(current, "pyproject.toml")):
+        if os.path.exists(os.path.join(current, ".git")) or \
+           os.path.exists(os.path.join(current, "pyproject.toml")):
             return current
         parent = os.path.dirname(current)
-        if parent == current: # Chegou na raiz do sistema
-            return os.getcwd()
+        if parent == current:  # Chegou na raiz do sistema
+            break
         current = parent
+
+    # 2. Fallback: Busca a partir do local do script (__file__)
+    current = os.path.dirname(os.path.abspath(__file__))
+    while True:
+        if os.path.exists(os.path.join(current, ".git")) or \
+           os.path.exists(os.path.join(current, "pyproject.toml")):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current:
+            break
+        current = parent
+
+    return os.getcwd()
 
 PROJECT_ROOT = get_project_root()
 if os.getcwd() != PROJECT_ROOT:
@@ -72,12 +86,13 @@ logger = Logger(LOG_FILE)
 
 IGNORED_DIRS = {
     '.git', 'venv', 'env', '.venv', '__pycache__', 'node_modules', 
-    '.idea', '.vscode', 'build', 'dist', 'target', '.github', '.ruff_cache', 'logs_scan_vcsp'
+    '.idea', '.vscode', 'build', 'dist', 'target', '.github', 
+    '.ruff_cache', 'logs_scan_vcsp'
 }
 IGNORED_FILES = "scan_project.py,install_hooks.py,setup_vibe_kit.py"
 
 FORBIDDEN_PATTERNS = [
-    (r"(?i)(api_key|apikey|access_token)\s*=['\"]", "Possível Chave de API (Variação de nome)"),
+    (r"(?i)(api_key|apikey|access_token)\s*=['\"]", "Possível Chave de API"),
     (r"(?i)(password|passwd|pwd)\s*=['\"]", "Senha explícita"),
     (r"(?i)(secret|client_secret)\s*=['\"]", "Segredo explícito"),
     (r"sk-[a-zA-Z0-9]{20,}", "Chave OpenAI"),
@@ -94,7 +109,12 @@ def is_git_ignored(filepath):
         # Usa caminho relativo para evitar erros de path no Windows/Git
         rel_path = os.path.relpath(filepath, os.getcwd())
         # Retorna 0 (True) se o arquivo for ignorado pelo git
-        subprocess.check_call(["git", "check-ignore", "-q", rel_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # nosec
+        # noqa: S603, S607
+        subprocess.check_call(
+            ["git", "check-ignore", "-q", rel_path],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         return True
     except Exception:
         return False
@@ -103,7 +123,11 @@ def ensure_package_installed(package):
     if shutil.which(package) is None:
         logger.log(f"⚠️  {package} não encontrado. Instalando...", YELLOW)
         try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL) # nosec
+            # noqa: S603
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", package],
+                stdout=subprocess.DEVNULL,
+            )
             logger.log(f"✅ {package} instalado.", GREEN)
         except Exception:
             logger.log(f"❌ Erro ao instalar {package}.", RED)
@@ -122,7 +146,10 @@ def find_dependency_file(start_dir):
         return toml_path
         
     # 2. Busca Recursiva
-    SEARCH_IGNORE = {'.git', 'venv', 'env', '.venv', '__pycache__', 'node_modules', 'site-packages', '.idea', '.vscode', 'dist', 'build'}
+    SEARCH_IGNORE = {
+        '.git', 'venv', 'env', '.venv', '__pycache__', 'node_modules', 
+        'site-packages', '.idea', '.vscode', 'dist', 'build'
+    }
     
     for root, dirs, files in os.walk(start_dir):
         dirs[:] = [d for d in dirs if d not in SEARCH_IGNORE]
@@ -139,7 +166,16 @@ def run_ruff_linter():
     
     try:
         # Captura output para salvar no log
-        result = subprocess.run(["ruff", "check", "."], text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        # Ignora S (Security) aqui pois já foi verificado no passo de segurança lógica
+        cmd = ["ruff", "check", ".", "--ignore", "S"]
+        result = subprocess.run(
+            cmd,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )  # noqa: S603
         
         if result.returncode != 0:
             logger.log("\n⛔ O RUFF ENCONTROU PROBLEMAS DE QUALIDADE!", RED)
@@ -159,7 +195,7 @@ def run_pip_audit():
     dep_file = find_dependency_file(PROJECT_ROOT)
     
     if not dep_file:
-        logger.log("ℹ️  Nenhum arquivo de dependências (requirements.txt/pyproject.toml) encontrado. Pulando.", YELLOW)
+        logger.log("ℹ️  Nenhum arquivo de dependências encontrado. Pulando.", YELLOW)
         return True
         
     logger.log(f"   📄 Arquivo de dependências detectado: {dep_file}", YELLOW)
@@ -167,23 +203,48 @@ def run_pip_audit():
         return False
 
     try:
-        cmd = ["pip-audit", "-r", dep_file] if dep_file.endswith("requirements.txt") else ["pip-audit", os.path.dirname(dep_file)]
+        if dep_file.endswith("requirements.txt"):
+            cmd = ["pip-audit", "-r", dep_file]
+        else:
+            cmd = ["pip-audit", os.path.dirname(dep_file)]
         
-        result = subprocess.run(cmd, text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        # noqa: S603
+        result = subprocess.run(
+            cmd,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
         if result.returncode != 0:
-            # Tratamento de erro específico para falha de instalação (comum em CI/CD Linux vs Windows)
-            if "No matching distribution found" in result.stdout or "internal pip failure" in result.stdout:
+            # Tratamento de erro específico para falha de instalação
+            # (comum em CI/CD Linux vs Windows)
+            err = result.stdout
+            if "No matching distribution found" in err or "internal pip failure" in err:
                 logger.log("\n⚠️  ERRO DE AMBIENTE NO PIP-AUDIT", YELLOW)
-                logger.log("   O pip-audit falhou ao instalar as dependências. Isso geralmente ocorre", YELLOW)
-                logger.log("   quando há bibliotecas exclusivas de Windows (ex: pywin32) rodando no Linux.", YELLOW)
-                logger.log("   📝 SOLUÇÃO: Adicione '; sys_platform == \"win32\"' no requirements.txt para essas libs.", YELLOW)
+                logger.log("   O pip-audit falhou ao instalar as dependências.", YELLOW)
+                logger.log(
+                    "   Isso ocorre com libs exclusivas de Windows no Linux.", YELLOW
+                )
+                logger.log(
+                    "   📝 SOLUÇÃO: Adicione '; sys_platform == \"win32\"'",
+                    YELLOW,
+                )
+                logger.log("   no requirements.txt para essas libs.", YELLOW)
                 logger.log(result.stdout)
                 return False
 
             if "ModuleNotFoundError" in result.stdout or "Traceback" in result.stdout:
-                logger.log("\n⚠️  ERRO DE EXECUÇÃO (DEPENDÊNCIA FALTANDO)", YELLOW)
-                logger.log("   O pip-audit não conseguiu rodar pois faltam bibliotecas no ambiente.", YELLOW)
-                logger.log("   💡 Tente rodar: pip install -r requirements.txt --force-reinstall", YELLOW)
+                logger.log("\n⚠️  ERRO DE EXECUÇÃO (DEPENDÊNCIA FALTANDO)", YELLOW)  # noqa: E501
+                logger.log(
+                    "   O pip-audit não conseguiu rodar pois faltam bibliotecas.",
+                    YELLOW,
+                )
+                logger.log(
+                    "   💡 Tente: pip install -r requirements.txt --force",
+                    YELLOW,
+                )
                 logger.log(result.stdout)
                 return False
 
@@ -196,32 +257,51 @@ def run_pip_audit():
         logger.log(f"❌ Erro ao rodar pip-audit: {e}", RED)
         return False
 
-def run_bandit():
-    logger.log(f"\n{BOLD}🔫 Executando Análise Lógica (Bandit)...{RESET}")
-    if not ensure_package_installed("bandit"):
+def run_security_logic():
+    logger.log(f"\n{BOLD}🔫 Executando Análise Lógica (Ruff Security)...{RESET}")
+    if not ensure_package_installed("ruff"):
         return False
     try:
-        exclusions = f"venv,.venv,.git,tests,.\\tests,./tests,{IGNORED_FILES}"
-        cmd = ["bandit", "-r", ".", "-x", exclusions, "-f", "txt"] # Formato texto para log
+        # Usa regras 'S' (flake8-bandit) do Ruff
+        cmd = ["ruff", "check", ".", "--select", "S", "--extend-exclude", IGNORED_FILES]
         
-        result = subprocess.run(cmd, text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        # noqa: S603
+        result = subprocess.run(
+            cmd,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
         
         if result.returncode != 0:
-            logger.log("\n⛔ O BANDIT ENCONTROU VULNERABILIDADES!", RED)
+            logger.log("\n⛔ O RUFF (SECURITY) ENCONTROU VULNERABILIDADES!", RED)
             logger.log(result.stdout)
             return False
         logger.log("✅ Lógica segura.", GREEN)
         return True
     except Exception as e:
-        logger.log(f"❌ Erro ao rodar Bandit: {e}", RED)
+        logger.log(f"❌ Erro ao rodar Ruff Security: {e}", RED)
         return False
 
 def run_iac_scan():
     logger.log(f"\n{BOLD}🏗️  Executando Análise de Infraestrutura (Semgrep)...{RESET}")
     
-    # Verifica se existem arquivos de infraestrutura para evitar instalação pesada desnecessária
-    # Pastas de sistema/libs que devem ser ignoradas (mas permitimos build/dist/etc para IaC)
-    IAC_IGNORE = {'.git', 'venv', 'env', '.venv', '__pycache__', 'node_modules', '.idea', '.vscode', '.ruff_cache', 'logs_scan_vcsp'}
+    # Verifica se existem arquivos de infraestrutura para evitar
+    # instalação pesada desnecessária
+    IAC_IGNORE = {
+        ".git",
+        "venv",
+        "env",
+        ".venv",
+        "__pycache__",
+        "node_modules",
+        ".idea",
+        ".vscode",
+        ".ruff_cache",
+        "logs_scan_vcsp",
+    }
     
     iac_files = []
     for root, dirs, files in os.walk(PROJECT_ROOT):
@@ -229,7 +309,8 @@ def run_iac_scan():
         dirs[:] = [d for d in dirs if d not in IAC_IGNORE]
         
         for file in files:
-            if "Dockerfile" in file or file.endswith(".dockerfile") or file.endswith(".tf") or file.endswith(".yaml") or file.endswith(".yml"):
+            exts = (".dockerfile", ".tf", ".yaml", ".yml")
+            if "Dockerfile" in file or file.endswith(exts):
                 # Verifica se é docker-compose ou k8s no caso de yaml
                 if file.endswith(".yaml") or file.endswith(".yml"):
                     if "docker-compose" not in file and "k8s" not in file:
@@ -239,7 +320,7 @@ def run_iac_scan():
                 logger.log(f"   📄 Arquivo de infraestrutura detectado: {path}", YELLOW)
             
     if not iac_files:
-        logger.log("ℹ️  Nenhum arquivo de infraestrutura (Docker/Terraform) encontrado. Pulando.", YELLOW)
+        logger.log("ℹ️  Nenhum arquivo de infraestrutura encontrado. Pulando.", YELLOW)
         return True
 
     # Configs do Semgrep
@@ -259,25 +340,42 @@ def run_iac_scan():
     if sys.platform == "win32":
         if shutil.which("docker") is None:
             logger.log("\n⚠️  DOCKER NÃO ENCONTRADO!", YELLOW)
-            logger.log("   Para escanear arquivos de infraestrutura no Windows, o Semgrep requer o Docker Desktop.", YELLOW)
-            logger.log("   Instale em: https://www.docker.com/products/docker-desktop/", YELLOW)
+            logger.log("   Semgrep no Windows requer Docker Desktop.", YELLOW)
+            logger.log("   Instale: https://www.docker.com/products/docker-desktop/", YELLOW) # noqa: E501
             logger.log("   (Pulando verificação de IaC por enquanto...)", YELLOW)
             return True
         
         logger.log("🐳 Windows detectado: Rodando Semgrep via Docker...", YELLOW)
-        # Converte caminhos absolutos para relativos (para funcionar dentro do container montado em /src)
+        # Converte caminhos absolutos para relativos
+        # (para funcionar dentro do container montado em /src)
         # E força barras normais (/) pois o container é Linux
-        rel_files = [os.path.relpath(f, PROJECT_ROOT).replace("\\", "/") for f in iac_files]
+        rel_files = [
+            os.path.relpath(f, PROJECT_ROOT).replace("\\", "/") for f in iac_files
+        ]
         
-        cmd = ["docker", "run", "--rm", "-v", f"{PROJECT_ROOT}:/src", "semgrep/semgrep", "semgrep", "scan", "--error", "--metrics=off", "--quiet", "--no-git-ignore"] + configs + rel_files
+        base_cmd = [
+            "docker", "run", "--rm", "-v", f"{PROJECT_ROOT}:/src",
+            "semgrep/semgrep", "semgrep", "scan"
+        ]
+        flags = ["--error", "--metrics=off", "--quiet", "--no-git-ignore"]
+        cmd = base_cmd + flags + configs + rel_files
     else:
         if not ensure_package_installed("semgrep"):
             return False
         logger.log("⏳ Rodando Semgrep (Nativo)...", YELLOW)
-        cmd = ["semgrep", "scan", "--error", "--metrics=off", "--quiet", "--no-git-ignore"] + configs + iac_files
+        flags = ["--error", "--metrics=off", "--quiet", "--no-git-ignore"]
+        cmd = ["semgrep", "scan"] + flags + configs + iac_files
 
     try:
-        result = subprocess.run(cmd, text=True, encoding='utf-8', errors='ignore', stdout=subprocess.PIPE, stderr=subprocess.STDOUT) # nosec
+        # noqa: S603
+        result = subprocess.run(
+            cmd,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
         
         if result.returncode != 0:
             logger.log("\n⛔ O SEMGREP ENCONTROU PROBLEMAS DE INFRAESTRUTURA!", RED)
@@ -302,7 +400,11 @@ def get_project_imports(root_dir):
     imports = set()
     for dirpath, _, filenames in os.walk(root_dir):
         # Ignora pastas virtuais e de cache
-        if any(x in dirpath for x in ['venv', '.git', '__pycache__', 'site-packages', 'node_modules', '.venv', 'env']):
+        ignored = [
+            "venv", ".git", "__pycache__", "site-packages",
+            "node_modules", ".venv", "env"
+        ]
+        if any(x in dirpath for x in ignored):
             continue
         for filename in filenames:
             if filename.endswith(".py"):
@@ -328,9 +430,9 @@ def run_unused_libs_check():
     
     if not dep_file or not dep_file.endswith("requirements.txt"):
         if dep_file:
-             logger.log(f"ℹ️  Arquivo detectado: {dep_file}. Este check suporta apenas requirements.txt por enquanto.", YELLOW)
+             logger.log(f"ℹ️  Arquivo: {dep_file}. Check limita-se a requirements.txt.", YELLOW) # noqa: E501
         else:
-             logger.log("ℹ️  requirements.txt não encontrado no projeto. Pulando verificação.", YELLOW)
+             logger.log("ℹ️  requirements.txt não encontrado. Pulando.", YELLOW)
         return True
     
     requirements_path = dep_file
@@ -343,7 +445,7 @@ def run_unused_libs_check():
             from importlib.metadata import packages_distributions
             from importlib.metadata import distribution
     except ImportError:
-        logger.log("⚠️  'importlib-metadata' não encontrado (necessário para Python < 3.10).", YELLOW)
+        logger.log("⚠️  'importlib-metadata' não encontrado (Python < 3.10).", YELLOW)
         return True
 
     try:
@@ -373,7 +475,8 @@ def run_unused_libs_check():
                 dist = distribution(pkg)
                 if dist.requires:
                     for req in dist.requires:
-                        # O formato vem como 'requests (>=2.0)' ou 'requests; extra == "dev"'
+                        # O formato vem como 'requests (>=2.0)' ou
+                        # 'requests; extra == "dev"'
                         # Pegamos apenas o nome base
                         req_name = re.split(r'[ ;<=>!]', req)[0].strip().lower()
                         if req_name:
@@ -397,7 +500,7 @@ def run_unused_libs_check():
             if pkg in ignored_pkgs:
                 continue
             
-            # Se o pacote é uma sub-dependência de outro pacote listado, ele é "usado" indiretamente
+            # Se o pacote é sub-dependência de outro listado, ele é "usado"
             if pkg in transitive_deps:
                 continue
             
@@ -407,12 +510,15 @@ def run_unused_libs_check():
                 unused_pkgs.append(pkg)
 
         if unused_pkgs:
-            logger.log("⚠️  ATENÇÃO: As seguintes bibliotecas estão no requirements mas NÃO são importadas:", YELLOW)
+            logger.log("⚠️  ATENÇÃO: Bibliotecas listadas mas NÃO importadas:", YELLOW)
             for p in unused_pkgs:
                 logger.log(f"   ❌ {p}")
             logger.log(f"💡 Para limpar: pip uninstall {' '.join(unused_pkgs)}")
         else:
-            logger.log(f"✅ Todas as dependências ({len(declared_pkgs)}) parecem estar em uso.", GREEN)
+            logger.log(
+                f"✅ Todas as dependências ({len(declared_pkgs)}) em uso.",
+                GREEN,
+            )
     except Exception as e:
         logger.log(f"❌ Erro ao verificar libs: {e}", RED)
     return True
@@ -444,7 +550,7 @@ def main():
     check_gitignore = True
     if "--all" in sys.argv:
         check_gitignore = False
-        logger.log("⚠️  Modo --all ativado: Verificando arquivos ignorados pelo Git.", YELLOW)
+        logger.log("⚠️  Modo --all: Verificando arquivos ignorados pelo Git.", YELLOW)
 
     logger.log("1️⃣  Buscando chaves (Regex)...")
     for root, dirs, files in os.walk(root_dir):
@@ -467,15 +573,15 @@ def main():
                 files_with_issues += 1
                 rel_path = os.path.relpath(filepath, root_dir)
                 logger.log(f"❌ [SEGREDO] {rel_path}", RED)
-                for line_num, msg, content in issues:
+                for line_num, msg, _ in issues:
                     logger.log(f"   L.{line_num}: {msg}")
 
     secrets_ok = (files_with_issues == 0)
     if secrets_ok:
         logger.log("✅ Nenhuma chave encontrada.", GREEN)
     
-    # 2. Bandit
-    bandit_ok = run_bandit()
+    # 2. Security Logic (Ruff)
+    security_ok = run_security_logic()
     
     # 3. Checkov (Infraestrutura)
     iac_ok = run_iac_scan()
@@ -489,7 +595,7 @@ def main():
     # 6. Unused Libs (Apenas informativo, não falha o build)
     run_unused_libs_check()
 
-    if not secrets_ok or not bandit_ok or not iac_ok or not audit_ok or not ruff_ok:
+    if not secrets_ok or not security_ok or not iac_ok or not audit_ok or not ruff_ok:
         logger.log("\n⛔ FALHA NA AUDITORIA. VERIFIQUE OS ERROS ACIMA.", RED)
         sys.exit(1)
     

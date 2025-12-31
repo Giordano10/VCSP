@@ -1,4 +1,4 @@
-# 🛡️ Vibe Coding Security Protocol (VCPS)
+# 🛡️ Vibe Coding Security Protocol (VCSP)
 
 ![CI Status](https://github.com/Giordano10/VCSP/actions/workflows/security_scan.yml/badge.svg)
 ![Latest Release](https://img.shields.io/github/v/release/Giordano10/VCSP)
@@ -27,6 +27,12 @@ Instale a biblioteca oficial via pip em seu ambiente virtual:
 ```bash
 pip install vcsp-guard
 ```
+Para incluir a geração de gráficos (estatísticas):
+
+```bash
+pip install "vcsp-guard[stats]"
+```
+
 
 ### 2. Inicialização (Ativar Proteção)
 Na raiz do seu projeto, execute o comando de inicialização. Isso configurará os hooks do Git e copiará os arquivos de configuração de IA necessários.
@@ -95,13 +101,14 @@ Como este kit protege você enquanto a IA codifica?
 **Para que serve o `vcsp-scan`?**
 Enquanto o `vcsp-init` protege o futuro (novos commits), o `vcsp-scan` protege o passado. Ele serve para **varrer todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
 
-O script `vcsp-scan` executa 5 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
+O script `vcsp-scan` executa 6 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
 
-1.  **🔐 Segredos:** Busca por chaves vazadas no código.
-2.  **🔫 Pentest (Bandit):** Busca por falhas de lógica e injeção.
-3.  **📦 SCA (Pip Audit):** Busca por bibliotecas desatualizadas/vulneráveis.
-4.  **🧹 Linter (Ruff):** Busca por bugs, variáveis não usadas e código sujo.
-5.  **🏗️ Infraestrutura (Semgrep):** Busca vulnerabilidades em Docker, Kubernetes e Terraform.
+1.  **Busca de Segredos:** Identifica chaves de API, tokens e senhas hardcoded (Regex).
+2.  **Segurança Lógica (SAST):** Analisa vulnerabilidades no código Python usando **Ruff** (regras de segurança `S`).
+3.  **Auditoria de Dependências (SCA):** Verifica vulnerabilidades conhecidas (CVEs) nas bibliotecas instaladas usando **Pip-Audit**.
+4.  **Qualidade de Código:** Linting e padronização PEP 8 via **Ruff**.
+5.  **Infraestrutura como Código (IaC):** Escaneia arquivos Docker, Kubernetes e Terraform usando **Semgrep**.
+6.  **Dependências Não Utilizadas:** Verifica se as libs do `requirements.txt` são realmente importadas no projeto.
 
 > **⚠️ Usuários Windows:** Para a análise de infraestrutura (Docker/Terraform), é necessário ter o **Docker Desktop** instalado e rodando. O VCSP detecta automaticamente e usa um container para realizar a varredura, já que o Semgrep não roda nativamente no Windows.
 

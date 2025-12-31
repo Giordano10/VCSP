@@ -22,7 +22,14 @@ def main():
     print(f"📂 Processando {len(list_of_files)} logs...")
 
     for log_file in list_of_files:
-        stats = {'date': '', 'secrets': 0, 'bandit': 0, 'audit': 0, 'ruff': 0, 'semgrep': 0}
+        stats = {
+            'date': '', 
+            'secrets': 0, 
+            'bandit': 0, 
+            'audit': 0, 
+            'ruff': 0, 
+            'semgrep': 0
+        }
         
         # Extrair data do nome do arquivo: scan_2025-12-15_11-10-45.txt
         filename = os.path.basename(log_file)
@@ -63,11 +70,16 @@ def main():
     dates = [h['date'] for h in history]
     
     plt.figure(figsize=(12, 6))
-    plt.plot(dates, [h['secrets'] for h in history], label='Secrets', marker='o', color='red')
-    plt.plot(dates, [h['bandit'] for h in history], label='Bandit (Logic)', marker='o', color='orange')
-    plt.plot(dates, [h['audit'] for h in history], label='Pip-Audit (Deps)', marker='o', color='blue')
-    plt.plot(dates, [h['ruff'] for h in history], label='Ruff (Lint)', marker='o', color='green')
-    plt.plot(dates, [h['semgrep'] for h in history], label='Semgrep (IaC)', marker='o', color='purple')
+    
+    # Helper para plotar
+    def plot_line(key, label, color):
+        plt.plot(dates, [h[key] for h in history], label=label, marker='o', color=color)
+
+    plot_line('secrets', 'Secrets', 'red')
+    plot_line('bandit', 'Bandit (Logic)', 'orange')
+    plot_line('audit', 'Pip-Audit (Deps)', 'blue')
+    plot_line('ruff', 'Ruff (Lint)', 'green')
+    plot_line('semgrep', 'Semgrep (IaC)', 'purple')
     
     plt.title('Tendência de Vulnerabilidades (VCSP)')
     plt.xlabel('Execuções (Data/Hora)')

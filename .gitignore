@@ -9,3 +9,4 @@ node_modules/
 .ruff_cache/
 logs_scan_vcsp/
 .vibe_graph_errors_vcsp/
+assets/

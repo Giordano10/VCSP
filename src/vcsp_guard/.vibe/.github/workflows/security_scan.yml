@@ -22,10 +22,11 @@ jobs:
   security-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
+          cache: 'pip'
       
       - name: Instalar Ferramentas
         run: pip install --upgrade pip && pip install bandit pip-audit ruff pytest matplotlib "semgrep>=1.0.0"
@@ -108,14 +109,15 @@ jobs:
                   f.write(new_content)
           "
       
-      - name: Sincronizar com a Master (Evitar Conflitos)
-        run: git pull origin master --rebase --autostash
+      - name: Sincronizar com a Branch Atual (Evitar Conflitos)
+        run: git pull origin ${{ github.ref_name }} --rebase --autostash
       
       - name: Commit do Gráfico
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "docs: update security trend chart"
           file_pattern: .vibe/stats.json .vibe/assets/bug_trend.png README.md
+          branch: ${{ github.ref_name }}
       
       - name: Upload Logs (Artifact)
         if: always()

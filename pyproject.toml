@@ -12,6 +12,7 @@ license = "MIT"
 authors = [
   {name = "Giordano Alves", email = "giordano.alves9@gmail.com"}
 ]
+keywords = ["security", "ai", "audit", "code-quality", "guardrails", "static-analysis"]
 
 [project.urls]
 Homepage = "https://github.com/giordano-dev/VCSP"
@@ -25,12 +26,14 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
 ]
 dependencies = [
-    "bandit",
-    "pip-audit",
-    "ruff",
-    "matplotlib",
+    "pip-audit>=2.6.0",
+    "ruff>=0.1.0",
     "semgrep>=1.0.0; sys_platform != 'win32'"
 ]
+
+[project.optional-dependencies]
+stats = ["matplotlib>=3.7.0"]
+dev = ["pytest", "black", "mypy", "types-setuptools"]
 
 [project.scripts]
 vcsp-guard = "vcsp_guard.main:main"
@@ -40,3 +43,12 @@ vcsp-stats = "vcsp_guard.generate_stats:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "S"]
+ignore = ["S101"]
+exclude = ["tests", "venv"]
