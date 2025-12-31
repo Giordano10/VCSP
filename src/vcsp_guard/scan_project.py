@@ -163,7 +163,7 @@ def run_ruff_linter():
     logger.log(f"\n{BOLD}🧹 Executando Linter (Ruff - Qualidade de Código)...{RESET}")
     if not ensure_package_installed("ruff"):
         return False
-    
+
     try:
         # Captura output para salvar no log
         # Ignora S (Security) aqui pois já foi verificado no passo de segurança lógica
@@ -176,13 +176,13 @@ def run_ruff_linter():
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )  # noqa: S603
-        
+
         if result.returncode != 0:
             logger.log("\n⛔ O RUFF ENCONTROU PROBLEMAS DE QUALIDADE!", RED)
-            logger.log(result.stdout) # Salva o erro detalhado no log
+            logger.log(result.stdout)  # Salva o erro detalhado no log
             logger.log("☝️  Corrija os erros acima.", RED)
             return False
-            
+
         logger.log("✅ Código limpo e organizado.", GREEN)
         return True
     except Exception as e:
@@ -604,3 +604,26 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Compatibility shims: export expected entrypoints without overwriting existing
+# implementations
+if "run_ruff" not in globals():
+    def run_ruff(*args, **kwargs):
+        """
+        Compat shim for run_ruff. Delegates to any available implementation found
+        in the module.
+        """
+        candidates = (
+            "run_ruff_impl",
+            "run_security_scan",
+            "run_lint",
+            "run_scan",
+            "run_bandit",
+        )
+        for candidate in candidates:
+            fn = globals().get(candidate)
+            if callable(fn):
+                return fn(*args, **kwargs)
+        raise NotImplementedError(
+            "run_ruff not implemented: provide run_ruff_impl or equivalent"
+        )
