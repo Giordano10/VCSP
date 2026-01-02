@@ -41,7 +41,7 @@ jobs:
       
       - name: Gerar Gráfico de Tendência
         run: |
-          python -c "
+          python - <<'PY'
           import os, json, glob, re, matplotlib.pyplot as plt
           from datetime import datetime
 
@@ -100,14 +100,14 @@ jobs:
                   readme_content = f.read()
               
               new_content = re.sub(
-                  r'(!\\[Bug Trend\\]\\(\\.vibe/assets/bug_trend\\.png)(?:\\?v=\\d+)?\\)',
+                  r'(!\[Bug Trend\]\(\.vibe/assets/bug_trend\.png)(?:\?v=\d+)?\)',
                   f'\\1?v={datetime.now().strftime("%Y%m%d%H%M%S")})',
                   readme_content
               )
               
               with open(readme_path, 'w', encoding='utf-8') as f:
                   f.write(new_content)
-          "
+          PY
       
       - name: Sincronizar com a Branch Atual (Evitar Conflitos)
         run: git pull origin ${{ github.ref_name }} --rebase --autostash
