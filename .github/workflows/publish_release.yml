@@ -41,7 +41,7 @@ jobs:
           OUTPUT: CHANGELOG.md
 
       - name: Commit Changelog and Version Bump
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore(release): update changelog and version to ${{ github.ref_name }}"
           
