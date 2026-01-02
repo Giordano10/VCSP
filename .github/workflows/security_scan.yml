@@ -113,7 +113,7 @@ jobs:
         run: git pull origin ${{ github.ref_name }} --rebase --autostash
       
       - name: Commit do Gráfico
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "docs: update security trend chart"
           file_pattern: .vibe/stats.json .vibe/assets/bug_trend.png README.md
