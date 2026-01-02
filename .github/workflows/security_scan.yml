@@ -121,7 +121,7 @@ jobs:
       
       - name: Upload Logs (Artifact)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: security-logs
           path: logs_scan_vcsp/
