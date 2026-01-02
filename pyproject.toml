@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vcsp-guard"
-version = "1.0.3"
+version = "1.0.3.2"
 description = "Vibe Coding Security Protocol - Security & Quality Guardrails for AI Coding"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,11 +13,6 @@ authors = [
   {name = "Giordano Alves", email = "giordano.alves9@gmail.com"}
 ]
 keywords = ["security", "ai", "audit", "code-quality", "guardrails", "static-analysis"]
-
-[project.urls]
-Homepage = "https://github.com/giordano-dev/VCSP"
-Repository = "https://github.com/giordano-dev/VCSP"
-Issues = "https://github.com/giordano-dev/VCSP/issues"
 
 classifiers = [
     "Programming Language :: Python :: 3",
