@@ -24,12 +24,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # garante pytest disponível mesmo se requirements.txt não existir ou não listar pytest
-          pip install pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # garante pytest disponível no mesmo intérprete Python
+          python -m pip install pytest
+          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
           # instala dependências de desenvolvimento se existir (opcional)
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          if [ -f requirements-dev.txt ]; then python -m pip install -r requirements-dev.txt; fi
 
       - name: Run tests
         run: |
-          pytest -q
+          python -m pytest -q
