@@ -41,7 +41,7 @@ jobs:
 
       - name: Attempt auto-merge for Dependabot PRs
         if: steps.semver.outputs.allowed == 'true'
-        uses: pascalgn/automerge-action@v0.14.3
+        uses: pascalgn/automerge-action@v0.16.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
