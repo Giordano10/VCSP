@@ -23,15 +23,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install --upgrade pip setuptools wheel
+          # garante pytest disponível no mesmo intérprete Python
+          python -m pip install --no-cache-dir pytest
+          if [ -f requirements.txt ]; then python -m pip install --no-cache-dir -r requirements.txt; fi
 
       - name: Verify pytest installation (debug)
         run: |
           python -m pip show pytest || true
-          python -c "import sys, shutil; print('python:', sys.executable); print('which pytest:', shutil.which('pytest'))"
-          python -c "import pytest, sys; print('pytest version:', pytest.__version__); print('sys.path:', sys.path[:5])"
+          python -c "import sysconfig, sys, os; print('python:', sys.executable); print('scripts dir:', sysconfig.get_path('scripts')); print('PATH:', os.environ.get('PATH'))"
+          python -c "import pytest; print('pytest version:', pytest.__version__)"
+          python -c "import pytest, sys; print('sys.path:', sys.path[:5])"
 
       - name: Run tests
         run: |
