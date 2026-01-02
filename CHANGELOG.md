@@ -1,5 +1,127 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.3.2] - 2026-01-02
+
+### Bug Fixes
+
+- Update .gitignore to allow committing metrics directory and its assets (f816cdc)
+
+- Correct syntax for Python script execution and update regex in README update logic (9a3cf9e)
+
+- Ensure pytest is installed and run with the correct Python interpreter (f969aa4)
+
+- Enhance dependency installation and logging output in CI workflow (9715ce8)
+
+- Streamline dependency installation in Dependabot PR workflow (901917e)
+
+- Separate pip upgrade and dependency installation in Dependabot PR workflow (4f4b515)
+
+- Improve dependency installation and verification in Dependabot PR workflow (fee5503)
+
+- Streamline Dependabot PR test workflow and improve dependency installation (8c1c337)
+
+- Update requirements files to include missing dependencies and improve formatting (5e4e5bc)
+
+- Remove unused dependencies from requirements.txt (3aa808b)
+
+
+### Documentation
+
+- Update security trend chart (bbd5ed9)
+
+- Update CHANGELOG.md (ec8478b)
+
+- Update security trend chart (cbdb9c5)
+
+- Update security trend chart (f80b794)
+
+- Update security trend chart (38ff6e8)
+
+- Update security trend chart (428e8b5)
+
+- Update security trend chart (c3b031d)
+
+- Update security trend chart (46565fa)
+
+- Update security trend chart (a081a80)
+
+- Update security trend chart (e598c4c)
+
+- Update security trend chart (0a27c4f)
+
+- Update security trend chart (1b7eb69)
+
+- Update security trend chart (82c30ca)
+
+- Update security trend chart (6c3384e)
+
+- Update security trend chart (d70d72f)
+
+- Update security trend chart (1ff5b5a)
+
+- Update security trend chart (40fbe07)
+
+- Update security trend chart (dd45890)
+
+- Update security trend chart (1c50b39)
+
+- Update security trend chart (d7b86b5)
+
+- Update security trend chart (9af6411)
+
+
+### Features
+
+- Improve linter execution handling (22310d4)
+
+- Add GitHub workflows for release publishing and security auditing (56ca7af)
+
+- Add Dependabot configuration and documentation (89fb56b)
+
+- Add Vibe Coding Security Protocol (VCSP) guidelines (4a3a69f)
+
+
+### Miscellaneous Tasks
+
+- Update GitHub Actions workflows and dependencies; improve security checks and documentation (d78b25d)
+
+- Downgrade Python version from 3.13 to 3.12 in security scan workflows (8663633)
+
+- Update Python version to 3.11 in workflows for consistency (0b63c36)
+
+- Remove deprecated GitHub workflows and security instructions (1b387d8)
+
+- Remove deprecated GitHub workflows and security instructions (3048683)
+
+- Remove obsolete Copilot instructions for VCSP (9ae9955)
+
+- Update Dependabot PR Tests workflow name and improve dependency installation comments (68593cb)
+
+- Remove suggestion to add Dependabot content to README.md (1c71e73)
+
+- Bump actions/setup-python from 4 to 6 (c2ea40a)
+
+- Bump pascalgn/automerge-action from 0.14.3 to 0.16.4 (d540206)
+
+- Bump actions/upload-artifact from 4 to 6 (5205b01)
+
+- Bump stefanzweifel/git-auto-commit-action from 5 to 7 (1d07ffb)
+
+
+### Refactor
+
+- Enhance test readability and update assertions for security tools (60a3ca1)
+
+- Add noqa comments for improved linting in test cases (ea76c5a)
+
+
+### Testing
+
+- Update security tool checks and module import behavior; replace bandit with ruff (eb224dc)
+
+- Enhance function signature checks for scanner module (f2d02bf)
+
+
 ## [1.0.3.1] - 2025-12-27
 
 ### Bug Fixes

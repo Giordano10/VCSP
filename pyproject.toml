@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vcsp-guard"
-version = "1.0.3"
+version = "1.0.3.2"
 description = "Vibe Coding Security Protocol - Security & Quality Guardrails for AI Coding"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -46,7 +46,7 @@ where = ["src"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "1.0.3.2"
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "S"]
