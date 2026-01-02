@@ -198,7 +198,7 @@ def run_pip_audit():
         logger.log("ℹ️  Nenhum arquivo de dependências encontrado. Pulando.", YELLOW)
         return True
         
-    logger.log(f"   📄 Arquivo de dependências detectado: {dep_file}", YELLOW)
+    logger.log(f"📄 Arquivo de dependências detectado: {dep_file}", YELLOW)
     if not ensure_package_installed("pip-audit"):
         return False
 
