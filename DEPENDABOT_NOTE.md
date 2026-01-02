@@ -11,5 +11,3 @@ monitorar e propor atualizações de dependências. Observações importantes:
     nas PRs do Dependabot antes do merge.
   - `.github/workflows/dependabot-auto-merge.yml` — política de auto-merge para
     updates patch/minor (configurada neste repositório).
-
-Se preferir, posso inserir este conteúdo diretamente no `README.md`.
