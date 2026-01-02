@@ -1,0 +1,52 @@
+name: Auto-merge Dependabot
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+jobs:
+  automerge:
+    name: Auto-merge Dependabot PRs (patch/minor only)
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Determine semver level from PR title
+        id: semver
+        run: |
+          PR_TITLE='${{ github.event.pull_request.title }}'
+          echo "PR title: $PR_TITLE"
+          node - <<'NODE'
+          const title = process.env.PR_TITLE || '';
+          const m = title.match(/from\s+([0-9]+(?:\.[0-9]+)+)\s+to\s+([0-9]+(?:\.[0-9]+)+)/i);
+          let allowed = 'false';
+          if (m) {
+            const oldv = m[1].split('.').map(n=>parseInt(n,10)||0);
+            const newv = m[2].split('.').map(n=>parseInt(n,10)||0);
+            const [oM,oN,oP] = [oldv[0]||0, oldv[1]||0, oldv[2]||0];
+            const [nM,nN,nP] = [newv[0]||0, newv[1]||0, newv[2]||0];
+            if (nM > oM) allowed='false';
+            else if (nN > oN) allowed='true';
+            else if (nP > oP) allowed='true';
+            else allowed='false';
+          } else {
+            allowed='false';
+          }
+          const fs = require('fs');
+          const out = process.env.GITHUB_OUTPUT || '/github/workflow/output';
+          fs.appendFileSync(out, `allowed=${allowed}\n`);
+          console.log('allowed=' + allowed);
+          NODE
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+
+      - name: Attempt auto-merge for Dependabot PRs
+        if: steps.semver.outputs.allowed == 'true'
+        uses: pascalgn/automerge-action@v0.14.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          mergeMethod: squash
+          mergeWhen: green
+          allowAuthor: dependabot[bot]
+          label: dependencies
+          title: '^Bump '

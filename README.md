@@ -141,6 +141,8 @@ O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feir
 
 ---
 
+Saiba mais sobre o Dependabot e como este projeto o utiliza: [DEPENDABOT_NOTE.md](DEPENDABOT_NOTE.md)
+
 ## 🚨 PROTOCOLO DE PÂNICO (Vazamento de Credenciais)
 
 Se você acidentalmente comitou uma chave de API ou senha:
