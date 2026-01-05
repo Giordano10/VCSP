@@ -1,5 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.3.4] - 2026-01-05
+
+### Bug Fixes
+
+- Corrige conflito de git e regex de versao no release (8ec0247)
+
+
+### Documentation
+
+- Update security trend chart (9abc9d9)
+
+- Update security trend chart (88a1fee)
+
+
+### Miscellaneous Tasks
+
+- Update changelog and version to v1.0.3.3 (6ca1b5e)
+
+
 ## [1.0.3.3] - 2026-01-05
 
 ### Bug Fixes
