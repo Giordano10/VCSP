@@ -12,6 +12,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/vcsp-guard
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
@@ -69,6 +72,6 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages_dir: dist/
-          skip_existing: true
+          packages-dir: dist/
+          skip-existing: true
           
