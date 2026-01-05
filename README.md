@@ -1,4 +1,4 @@
-# 🛡️ Vibe Coding Security Protocol (VCSP)
+# 🛡️ VCSP Guard (Vibe Coding Security Protocol)
 
 ![CI Status](https://github.com/Giordano10/VCSP/actions/workflows/security_scan.yml/badge.svg)
 ![Latest Release](https://img.shields.io/github/v/release/Giordano10/VCSP)
@@ -6,22 +6,29 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Security](https://img.shields.io/badge/security-bandit%20%7C%20pip--audit%20%7C%20semgrep-red)
 
-Biblioteca segura para desenvolvimento ágil com IA (Vibe Coding).
-Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências**, **Quality Gate**, **Análise de IaC** e **Histórico de Logs**.
+**VCSP Guard** é a camada de segurança definitiva para o desenvolvimento ágil com IA ("Vibe Coding").
+Ele atua como um **Engenheiro de Segurança Sênior automatizado**, auditando cada linha de código gerada por LLMs (como GPT-4, Claude, Copilot) em busca de vulnerabilidades, segredos expostos e falhas de infraestrutura. Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências**, **Quality Gate**, **Análise de IaC** e **Histórico de Logs**.
 
 ---
 
-## 🎯 Para que serve?
+## 🚀 Funcionalidades (Tech Stack)
 
-No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muitos projetos ganharam um boost na produção e no lançamento de features. Porém, nem todo mundo está preocupado com a manutenção e segurança do próprio código, podendo ficar vulnerável caso não haja um revisor experiente para encontrar brechas que podem ser exploradas por atacantes.
+No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muitos projetos ganharam um boost na produção e no lançamento de features. Porém, nem todo mundo está preocupado com a manutenção e segurança do próprio código, podendo ficar vulnerável caso não haja um revisor experiente para encontrar brechas que podem ser exploradas por atacantes. O VCSP orquestra as melhores ferramentas de mercado em um fluxo unificado:
 
 **Foi pensando nisso que criei essa ferramenta:** ela vai varrer seu código, seja ele criado por IA ou não, em busca dessas potenciais falhas, atuando como uma camada de segurança automatizada.
 
+| Ferramenta | Tipo | O que ela protege? |
+| :--- | :--- | :--- |
+| **Ruff** | Linter/SAST | Qualidade de código, bugs e segurança lógica (substitui Bandit/Flake8). |
+| **Pip-Audit** | SCA | Verifica se suas dependências possuem vulnerabilidades conhecidas (CVEs). |
+| **Semgrep** | IaC/SAST | Varredura profunda em Dockerfiles, Terraform e padrões complexos. |
+| **Secrets** | Regex | Bloqueia chaves de API, tokens e senhas antes do commit. |
+
 ---
 
-## 🚀 Instalação e Uso
+## 📦 Instalação e Uso
 
-### 1. Instalação
+### 1. Instalação Via PyPI (Recomendado)
 Instale a biblioteca oficial via pip em seu ambiente virtual:
 
 ```bash
