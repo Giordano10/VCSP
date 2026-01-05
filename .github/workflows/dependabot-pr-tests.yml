@@ -27,5 +27,4 @@ jobs:
           python -m pip install pytest
 
       - name: Run tests
-        run: |
-          python - <<'PY'
+        run: python -m pytest -q
