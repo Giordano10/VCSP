@@ -1,5 +1,39 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.3.3] - 2026-01-05
+
+### Bug Fixes
+
+- Fix (f1885ed)
+
+- Version of vcsp-guard incorrect on pyproject.toml (08cee43)
+
+- Corrige conflito de git e regex de versao no release (06b27c8)
+
+
+### Documentation
+
+- Update security trend chart (d0cc7b4)
+
+- Update security trend chart (503b46f)
+
+- Update security trend chart (bffcfb9)
+
+- Update security trend chart (613d320)
+
+
+### Fix
+
+- Version (992c6e4)
+
+- Version (7f643d2)
+
+
+### Miscellaneous Tasks
+
+- Update changelog and version to v1.0.3.2 (b2be7b3)
+
+
 ## [1.0.3.2] - 2026-01-02
 
 ### Bug Fixes
