@@ -2,9 +2,6 @@ name: Dependabot PR Tests
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, labeled, unlabeled]
-  schedule:
-    - cron: '0 3 * * 1' # Executa semanalmente as segundas às 03:00 UTC
-  workflow_dispatch: # Permite rodar manualmente na aba Actions
 
 jobs:
   dependabot-tests:
