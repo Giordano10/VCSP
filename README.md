@@ -148,7 +148,13 @@ O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feir
 
 ---
 
-Saiba mais sobre o Dependabot e como este projeto o utiliza: [DEPENDABOT_NOTE.md](DEPENDABOT_NOTE.md)
+## 🤖 Monitoramento de Dependências (Dependabot)
+
+A segurança de um projeto não depende apenas do seu código, mas também das bibliotecas que você utiliza. O **Dependabot** atua como um vigia silencioso, monitorando constantemente o ecossistema Python em busca de atualizações de segurança para as dependências listadas no seu projeto.
+
+O VCSP Guard já vem com workflows configurados para integrar o Dependabot, garantindo que você receba alertas e correções automáticas (Pull Requests) sempre que uma vulnerabilidade for descoberta em uma biblioteca externa.
+
+👉 **Aprofunde-se:** [Leia nossa documentação sobre a estratégia do Dependabot](DEPENDABOT_NOTE.md)
 
 ## 🚨 PROTOCOLO DE PÂNICO (Vazamento de Credenciais)
 

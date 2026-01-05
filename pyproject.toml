@@ -12,6 +12,11 @@ license = "MIT"
 authors = [
   {name = "Giordano Alves", email = "giordano.alves9@gmail.com"}
 ]
+[project.urls]
+Homepage = "https://github.com/giordano10/VCSP"
+Repository = "https://github.com/giordano10/VCSP"
+Issues = "https://github.com/giordano10/VCSP/issues"
+
 keywords = ["security", "ai", "audit", "code-quality", "guardrails", "static-analysis"]
 
 classifiers = [
