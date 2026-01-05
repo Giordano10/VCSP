@@ -18,6 +18,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout Master
+        run: |
+          git fetch origin master
+          git checkout master
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -29,7 +34,7 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "🚀 Configurando versão para: $VERSION"
           # Ajuste conforme sua ferramenta (poetry, setuptools, etc). O sed abaixo funciona para toml padrão.
-          sed -i 's/version = ".*"/version = "'$VERSION'"/' pyproject.toml
+          sed -i 's/^version = ".*"/version = "'$VERSION'"/' pyproject.toml
 
       - name: Generate Changelog
         id: git_cliff
