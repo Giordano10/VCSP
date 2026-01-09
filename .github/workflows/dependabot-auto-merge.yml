@@ -4,49 +4,54 @@ on:
   pull_request_target:
     types: [opened, reopened, synchronize, labeled, unlabeled]
 
+# Permissões necessárias para que o merge aconteça de fato
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   automerge:
     name: Auto-merge Dependabot PRs (patch/minor only)
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'Giordano10' }}
+    
     steps:
       - name: Determine semver level from PR title
         id: semver
         run: |
-          PR_TITLE='${{ github.event.pull_request.title }}'
-          echo "PR title: $PR_TITLE"
           node - <<'NODE'
           const title = process.env.PR_TITLE || '';
+          // Regex para capturar versões como "from 1.2.3 to 1.2.4"
           const m = title.match(/from\s+([0-9]+(?:\.[0-9]+)+)\s+to\s+([0-9]+(?:\.[0-9]+)+)/i);
           let allowed = 'false';
+          
           if (m) {
-            const oldv = m[1].split('.').map(n=>parseInt(n,10)||0);
-            const newv = m[2].split('.').map(n=>parseInt(n,10)||0);
-            const [oM,oN,oP] = [oldv[0]||0, oldv[1]||0, oldv[2]||0];
-            const [nM,nN,nP] = [newv[0]||0, newv[1]||0, newv[2]||0];
-            if (nM > oM) allowed='false';
-            else if (nN > oN) allowed='true';
-            else if (nP > oP) allowed='true';
-            else allowed='false';
-          } else {
-            allowed='false';
+            const oldv = m[1].split('.').map(n => parseInt(n, 10) || 0);
+            const newv = m[2].split('.').map(n => parseInt(n, 10) || 0);
+            const [oM, oN, oP] = [oldv[0] || 0, oldv[1] || 0, oldv[2] || 0];
+            const [nM, nN, nP] = [newv[0] || 0, newv[1] || 0, newv[2] || 0];
+
+            // Bloqueia Major updates (nM > oM)
+            if (nM > oM) allowed = 'false';
+            // Permite Minor ou Patch
+            else if (nN > oN || nP > oP) allowed = 'true';
           }
+          
           const fs = require('fs');
-          const out = process.env.GITHUB_OUTPUT || '/github/workflow/output';
-          fs.appendFileSync(out, `allowed=${allowed}\n`);
-          console.log('allowed=' + allowed);
+          // Uso correto do arquivo de outputs moderno
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `allowed=${allowed}\n`);
+          console.log('SemVer Allowed: ' + allowed);
           NODE
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
 
       - name: Attempt auto-merge for Dependabot PRs
-        if: steps.semver.outputs.allowed == 'true'
+        # Só executa se for o bot E a versão for permitida
+        if: steps.semver.outputs.allowed == 'true' && github.actor == 'dependabot[bot]'
         uses: pascalgn/automerge-action@v0.16.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           mergeMethod: squash
-          mergeWhen: green
+          mergeWhen: green # Só faz o merge se os testes passarem (ficarem verdes)
           allowAuthor: dependabot[bot]
-          label: dependencies
-          title: '^Bump '
