@@ -3,6 +3,7 @@ name: Auto-merge Dependabot
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, labeled, unlabeled]
+  workflow_dispatch: 
 
 # Permissões necessárias para que o merge aconteça de fato
 permissions:
