@@ -29,16 +29,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           
-          # 1. Instala o Semgrep via binário oficial (ignora conflitos do pip)
-          curl https://semgrep.dev/install.sh | sh
+          # 1. Baixa o script oficial e salva em disco
+          curl -fLsS https://semgrep.dev/install.sh -o install_semgrep.sh
           
-          # 2. Instala as ferramentas que o seu teste exige no PATH
+          # 2. Executa o script salvo (evita erros de pipe/corrupção de fluxo)
+          sh install_semgrep.sh
+          
+          # 3. Instala as demais ferramentas e dependências do projeto
           python -m pip install pytest ruff pip-audit
-          
-          # 3. Instala os requisitos do projeto
-          # Se o semgrep estiver no requirements.txt, o pip verá que já existe uma 
-          # versão no sistema ou tentará atualizar, mas o binário terá prioridade.
           if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+        env:
+          
+          PREFIX: /usr/local
 
       - name: Run tests
         run: python -m pytest -q
