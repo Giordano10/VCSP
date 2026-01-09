@@ -25,22 +25,20 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install dependencies and tools
         run: |
+          # 1. Atualiza o pip do ambiente principal
           python -m pip install --upgrade pip
           
-          # 1. Baixa o script oficial e salva em disco
-          curl -fLsS https://semgrep.dev/install.sh -o install_semgrep.sh
+          # 2. Instala as ferramentas de segurança em ambientes isolados (evita conflitos)
+          # O pipx garante que o binário esteja no PATH para passar no seu teste.
+          pipx install semgrep
+          pipx install ruff
+          pipx install pip-audit
           
-          # 2. Executa o script salvo (evita erros de pipe/corrupção de fluxo)
-          sh install_semgrep.sh
-          
-          # 3. Instala as demais ferramentas e dependências do projeto
-          python -m pip install pytest ruff pip-audit
+          # 3. Instala as dependências do projeto e o pytest no ambiente principal
+          python -m pip install pytest
           if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
-        env:
-          
-          PREFIX: /usr/local
 
       - name: Run tests
         run: python -m pytest -q
