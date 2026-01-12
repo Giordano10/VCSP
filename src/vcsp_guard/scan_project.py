@@ -192,22 +192,44 @@ def run_ruff_linter():
 def run_pip_audit():
     logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências (SCA)...{RESET}")
     
-    dep_file = find_dependency_file(PROJECT_ROOT)
+    # 1. Identificar quais arquivos existem
+    target_filenames = ["requirements.txt", "requirements-dev.txt"]
+    found_files = []
     
-    if not dep_file:
-        logger.log("ℹ️  Nenhum arquivo de dependências encontrado. Pulando.", YELLOW)
-        return True
-        
-    logger.log(f"📄 Arquivo de dependências detectado: {dep_file}", YELLOW)
+    for fname in target_filenames:
+        fpath = os.path.join(PROJECT_ROOT, fname)
+        if os.path.exists(fpath):
+            found_files.append(fpath)
+    
+    # Se não achar nada, tenta procurar qualquer coisa genérica (lógica antiga)
+    # ou retorna erro dependendo da sua estratégia. Vamos avisar e tentar escanear o ambiente.
+    if not found_files:
+        # Tenta achar um arquivo genérico se os específicos não existirem
+        dep_file = find_dependency_file(PROJECT_ROOT)
+        if dep_file:
+            found_files.append(dep_file)
+        else:
+            logger.log("ℹ️  Nenhum arquivo de dependências encontrado. Pulando.", YELLOW)
+            return True
+
+    files_list_str = ", ".join([os.path.basename(f) for f in found_files])
+    logger.log(f"📄 Arquivos de dependências detectados: {files_list_str}", YELLOW)
+
     if not ensure_package_installed("pip-audit"):
         return False
 
     try:
-        if dep_file.endswith("requirements.txt"):
-            cmd = ["pip-audit", "-r", dep_file]
-        else:
-            cmd = ["pip-audit", os.path.dirname(dep_file)]
+        # 2. Montar o comando dinâmico
+        # Começa com o comando base
+        cmd = ["pip-audit"]
         
+        # Adiciona cada arquivo encontrado com a flag -r
+        for f in found_files:
+            cmd.extend(["-r", f])
+
+        # Se quiser adicionar flags extras como --desc, coloque aqui
+        # cmd.append("--desc")
+
         # noqa: S603
         result = subprocess.run(
             cmd,
@@ -217,9 +239,9 @@ def run_pip_audit():
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
+        
         if result.returncode != 0:
             # Tratamento de erro específico para falha de instalação
-            # (comum em CI/CD Linux vs Windows)
             err = result.stdout
             if "No matching distribution found" in err or "internal pip failure" in err:
                 logger.log("\n⚠️  ERRO DE AMBIENTE NO PIP-AUDIT", YELLOW)
@@ -235,14 +257,14 @@ def run_pip_audit():
                 logger.log(result.stdout)
                 return False
 
-            if "ModuleNotFoundError" in result.stdout or "Traceback" in result.stdout:
+            if "ModuleNotFoundError" in err or "Traceback" in err:
                 logger.log("\n⚠️  ERRO DE EXECUÇÃO (DEPENDÊNCIA FALTANDO)", YELLOW)  # noqa: E501
                 logger.log(
                     "   O pip-audit não conseguiu rodar pois faltam bibliotecas.",
                     YELLOW,
                 )
                 logger.log(
-                    "   💡 Tente: pip install -r requirements.txt --force",
+                    "   💡 Tente: pip install -r requirements.txt -r requirements-dev.txt",
                     YELLOW,
                 )
                 logger.log(result.stdout)
@@ -251,6 +273,7 @@ def run_pip_audit():
             logger.log("\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
             logger.log(result.stdout)
             return False
+            
         logger.log("✅ Dependências seguras.", GREEN)
         return True
     except Exception as e:
