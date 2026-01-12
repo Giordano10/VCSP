@@ -5,6 +5,7 @@ import subprocess
 import shutil
 import datetime
 import ast
+import json
 
 # --- DETECÇÃO DE RAIZ DO PROJETO ---
 def get_project_root():
@@ -189,6 +190,34 @@ def run_ruff_linter():
         logger.log(f"❌ Erro ao rodar Ruff: {e}", RED)
         return False
 
+def build_reverse_dependency_map():
+    """Cria um mapa: pacote -> lista de pacotes que dependem dele."""
+    try:
+        if sys.version_info < (3, 10):
+            from importlib_metadata import distributions
+        else:
+            from importlib.metadata import distributions
+    except ImportError:
+        return {}
+
+    rev_map = {}
+    try:
+        for dist in distributions():
+            name = dist.metadata['Name']
+            version = dist.version
+            if dist.requires:
+                for req in dist.requires:
+                    # Ex: "requests (>=2.0)" -> "requests"
+                    match = re.match(r'^([A-Za-z0-9_\-\.]+)', req)
+                    if match:
+                        req_name = match.group(1).lower()
+                        if req_name not in rev_map:
+                            rev_map[req_name] = []
+                        rev_map[req_name].append(f"{name} ({version})")
+    except Exception:
+        pass
+    return rev_map
+
 def run_pip_audit():
     logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências (SCA)...{RESET}")
     
@@ -221,15 +250,12 @@ def run_pip_audit():
 
     try:
         # 2. Montar o comando dinâmico
-        # Começa com o comando base
-        cmd = ["pip-audit"]
+        # Usamos JSON para poder processar e mostrar a árvore de dependência
+        cmd = ["pip-audit", "-f", "json"]
         
         # Adiciona cada arquivo encontrado com a flag -r
         for f in found_files:
             cmd.extend(["-r", f])
-
-        # Se quiser adicionar flags extras como --desc, coloque aqui
-        # cmd.append("--desc")
 
         # noqa: S603
         result = subprocess.run(
@@ -238,12 +264,45 @@ def run_pip_audit():
             encoding="utf-8",
             errors="ignore",
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            stderr=subprocess.PIPE, # Separado para não sujar o JSON
         )
         
         if result.returncode != 0:
-            # Tratamento de erro específico para falha de instalação
-            err = result.stdout
+            # Tenta parsear JSON para ver se são vulnerabilidades
+            try:
+                audit_data = json.loads(result.stdout)
+                rev_deps = build_reverse_dependency_map()
+                
+                logger.log("\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
+                
+                if isinstance(audit_data, list):
+                    packages = audit_data
+                else:
+                    packages = audit_data.get('dependencies', [])
+                
+                for pkg in packages:
+                    if pkg.get('vulns'):
+                        name = pkg['name']
+                        version = pkg['version']
+                        parents = rev_deps.get(name.lower(), [])
+                        
+                        logger.log(f"\n📦 {BOLD}{name}{RESET} ({version})", RED)
+                        if parents:
+                            intro = f"   ↳ Introduzido por: {', '.join(parents)}"
+                            logger.log(intro, YELLOW)
+                        else:
+                            logger.log("   ↳ Dependência direta ou raiz.", YELLOW)
+                            
+                        for v in pkg['vulns']:
+                            vid = v.get('id', 'N/A')
+                            fix = v.get('fix_versions', ['?'])
+                            logger.log(f"   - {RED}[{vid}]{RESET} Fix: {fix}")
+                return False
+
+            except json.JSONDecodeError:
+                # Erro de ambiente/instalação (não é JSON)
+                err = result.stderr + result.stdout
+
             if "No matching distribution found" in err or "internal pip failure" in err:
                 logger.log("\n⚠️  ERRO DE AMBIENTE NO PIP-AUDIT", YELLOW)
                 logger.log("   O pip-audit falhou ao instalar as dependências.", YELLOW)
@@ -255,7 +314,7 @@ def run_pip_audit():
                     YELLOW,
                 )
                 logger.log("   no requirements.txt para essas libs.", YELLOW)
-                logger.log(result.stdout)
+                logger.log(err)
                 return False
 
             if "ModuleNotFoundError" in err or "Traceback" in err:
@@ -269,11 +328,11 @@ def run_pip_audit():
                     "-r requirements-dev.txt",
                     YELLOW,
                 )
-                logger.log(result.stdout)
+                logger.log(err)
                 return False
 
-            logger.log("\n⛔ VULNERABILIDADE EM BIBLIOTECA ENCONTRADA!", RED)
-            logger.log(result.stdout)
+            logger.log("\n⛔ ERRO AO RODAR PIP-AUDIT", RED)
+            logger.log(err)
             return False
             
         logger.log("✅ Dependências seguras.", GREEN)
