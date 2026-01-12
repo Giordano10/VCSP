@@ -25,20 +25,16 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies and tools
+      - name: Install dependencies
         run: |
-          # 1. Atualiza o pip do ambiente principal
+          # 1. Atualiza o pip do ambiente
           python -m pip install --upgrade pip
           
-          # 2. Instala as ferramentas de segurança em ambientes isolados (evita conflitos)
-          # O pipx garante que o binário esteja no PATH para passar no seu teste.
-          pipx install semgrep
-          pipx install ruff
-          pipx install pip-audit
+          # 2. Instala as dependências de produção (Django, etc.)
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           
-          # 3. Instala as dependências do projeto e o pytest no ambiente principal
-          python -m pip install pytest
-          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
-
+          # 3. Instala as dependências de desenvolvimento (Ruff, Semgrep, Pytest, etc.)
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          
       - name: Run tests
         run: python -m pytest -q
