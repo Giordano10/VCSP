@@ -428,7 +428,7 @@ def run_unused_libs_check():
     
     dep_file = find_dependency_file(PROJECT_ROOT)
     
-    if not dep_file or not dep_file.endswith("requirements.txt"):
+    if not dep_file or not dep_file.endswith(("requirements.txt", "requirements-dev.txt")):
         if dep_file:
              logger.log(f"ℹ️  Arquivo: {dep_file}. Check limita-se a requirements.txt.", YELLOW) # noqa: E501
         else:
