@@ -1,5 +1,77 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+<<<<<<< HEAD
+=======
+## [Unreleased]
+
+### Documentation
+
+- Update security trend chart (b59f34f)
+
+- Update security trend chart (1fd6473)
+
+- Update security trend chart (62dfbaa)
+
+- Update security trend chart (19b30ae)
+
+- Update security trend chart (61a269e)
+
+- Update security trend chart (c166f89)
+
+- Update security trend chart (97072ad)
+
+- Update security trend chart (a042935)
+
+- Update security trend chart (7dc8f34)
+
+- Update security trend chart (47b2758)
+
+- Update security trend chart (6fa1cb7)
+
+- Update security trend chart (858d6c0)
+
+- Update security trend chart (61adf33)
+
+- Update security trend chart (fa8fde2)
+
+- Update security trend chart (b4dc574)
+
+- Update security trend chart (625f567)
+
+- Update security trend chart (a1ff128)
+
+- Update security trend chart (326d3ec)
+
+- Update security trend chart (17cb541)
+
+- Update security trend chart (8900541)
+
+
+### Miscellaneous Tasks
+
+- Update changelog and version to v1.0.3.4 (3b69620)
+
+- Chore (e6c9461)
+
+- Ajusta workflow para usar requirements separados (f8d4ef2)
+
+- Bump actions/setup-python from 5 to 6 (177195b)
+
+- Ajusta workflow para usar requirements separados (14bebe5)
+
+- Bump pillow from 12.0.0 to 12.1.0 (690bb90)
+
+- Update changelog and version to v1.0.3.5 (4edbba1)
+
+- Update changelog and version to v1.0.3.5 (39d9bcb)
+
+
+### Att
+
+- README melhorado com informações mais pertinentes (0bf59de)
+
+
+>>>>>>> 78e4629040f2c4d869da52804c2e1189e7ac423c
 ## [1.0.3.4] - 2026-01-05
 
 ### Bug Fixes
