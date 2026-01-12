@@ -1,12 +1,6 @@
-# Dependências de Segurança e Auditoria (VCSP)
-bandit
-pip-audit
-ruff
+# Dependências do Projeto (Runtime)
 matplotlib
-semgrep>=1.0.0; sys_platform != 'win32'
-importlib-metadata; python_version < "3.10"
-pytest
 
-# Adicione as dependências do seu projeto abaixo:
+# Descomente abaixo quando for utilizar:
 # django
 # requests

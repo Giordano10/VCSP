@@ -1,0 +1,12 @@
+# Ferramentas de QA, Segurança e Testes
+bandit
+pip-audit
+ruff
+pytest
+semgrep>=1.0.0; sys_platform != 'win32'
+
+# Compatibilidade para versões antigas do Python
+importlib-metadata; python_version < "3.10"
+
+# Referência ao arquivo principal (opcional, mas recomendado para garantir compatibilidade)
+-c requirements.txt
