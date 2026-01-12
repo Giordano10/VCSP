@@ -426,17 +426,25 @@ def get_project_imports(root_dir):
 def run_unused_libs_check():
     logger.log(f"\n{BOLD}🗑️  Verificando Dependências Não Utilizadas...{RESET}")
     
-    dep_file = find_dependency_file(PROJECT_ROOT)
-    
-    if not dep_file or not dep_file.endswith(("requirements.txt", "requirements-dev.txt")):
-        if dep_file:
-             logger.log(f"ℹ️  Arquivo: {dep_file}. Check limita-se a requirements.txt.", YELLOW) # noqa: E501
-        else:
-             logger.log("ℹ️  requirements.txt não encontrado. Pulando.", YELLOW)
-        return True
-    
-    requirements_path = dep_file
+    # 1. Definimos explicitamente quais arquivos queremos escanear
+    target_filenames = ["requirements.txt", "requirements-dev.txt"]
+    found_files = []
 
+    # 2. Verificamos quais existem no disco
+    for fname in target_filenames:
+        fpath = os.path.join(PROJECT_ROOT, fname)
+        if os.path.exists(fpath):
+            found_files.append(fpath)
+
+    # Se nenhum existir, encerra
+    if not found_files:
+        logger.log("ℹ️  Nenhum arquivo requirements encontrado. Pulando check.", YELLOW)
+        return True
+
+    # Informa o usuário quais arquivos serão lidos
+    logger.log(f"ℹ️  Arquivos identificados: {', '.join([os.path.basename(f) for f in found_files])}", YELLOW)
+
+    # --- Bloco de importlib ---
     try:
         if sys.version_info < (3, 10):
             from importlib_metadata import packages_distributions
@@ -449,45 +457,45 @@ def run_unused_libs_check():
         return True
 
     try:
+        # Mapeia instalações do ambiente
         dist_map = packages_distributions()
         pkg_to_imports = {}
         for import_name, dists in dist_map.items():
             for dist in dists:
                 pkg_to_imports.setdefault(dist.lower(), []).append(import_name)
 
+        # 3. LER E ACUMULAR DEPENDÊNCIAS
         declared_pkgs = set()
-        with open(requirements_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#') or line.startswith('-'):
-                    continue
-                pkg_name = re.split(r'[=<>~!;]', line)[0].strip()
-                if pkg_name:
-                    declared_pkgs.add(pkg_name.lower())
+        
+        for requirements_path in found_files:
+            with open(requirements_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    # Ignora comentários, linhas vazias e referências a arquivos (-c, -r)
+                    if not line or line.startswith('#') or line.startswith('-'):
+                        continue
+                    
+                    # Remove versionamento (ex: "pandas>=1.0" vira "pandas")
+                    pkg_name = re.split(r'[=<>~!;]', line)[0].strip()
+                    if pkg_name:
+                        declared_pkgs.add(pkg_name.lower())
 
         # --- LÓGICA ESTILO PIPDEPTREE (FILTRO DE SUB-DEPENDÊNCIAS) ---
-        # Identifica quais pacotes são apenas dependências de outros pacotes listados
-        # para evitar cobrar importação explícita deles (ex: rich, que vem com bandit).
         transitive_deps = set()
         for pkg in declared_pkgs:
             try:
-                # Obtém os metadados do pacote instalado
                 dist = distribution(pkg)
                 if dist.requires:
                     for req in dist.requires:
-                        # O formato vem como 'requests (>=2.0)' ou
-                        # 'requests; extra == "dev"'
-                        # Pegamos apenas o nome base
                         req_name = re.split(r'[ ;<=>!]', req)[0].strip().lower()
                         if req_name:
                             transitive_deps.add(req_name)
             except Exception:
-                # Se o pacote não estiver instalado no ambiente, ignoramos
                 continue
 
         used_imports = get_project_imports(PROJECT_ROOT)
         
-        # Lista de ferramentas e libs de sistema que não são importadas diretamente
+        # Lista de ignorados (Dev tools que não são importadas no código fonte)
         ignored_pkgs = {
             'pip', 'setuptools', 'wheel', 'gunicorn', 'uvicorn', 
             'bandit', 'pip-audit', 'ruff', 'semgrep', 'pytest', 
@@ -500,11 +508,9 @@ def run_unused_libs_check():
             if pkg in ignored_pkgs:
                 continue
             
-            # Se o pacote é sub-dependência de outro listado, ele é "usado"
             if pkg in transitive_deps:
                 continue
             
-            # Verifica se algum módulo provido pelo pacote está sendo importado
             possible_imports = pkg_to_imports.get(pkg, []) or [pkg]
             if not any(mod in used_imports for mod in possible_imports):
                 unused_pkgs.append(pkg)
