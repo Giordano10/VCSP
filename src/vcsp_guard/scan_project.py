@@ -202,7 +202,8 @@ def run_pip_audit():
             found_files.append(fpath)
     
     # Se não achar nada, tenta procurar qualquer coisa genérica (lógica antiga)
-    # ou retorna erro dependendo da sua estratégia. Vamos avisar e tentar escanear o ambiente.
+    # ou retorna erro dependendo da sua estratégia.
+    # Vamos avisar e tentar escanear o ambiente.
     if not found_files:
         # Tenta achar um arquivo genérico se os específicos não existirem
         dep_file = find_dependency_file(PROJECT_ROOT)
@@ -264,7 +265,8 @@ def run_pip_audit():
                     YELLOW,
                 )
                 logger.log(
-                    "   💡 Tente: pip install -r requirements.txt -r requirements-dev.txt",
+                    "   💡 Tente: pip install -r requirements.txt "
+                    "-r requirements-dev.txt",
                     YELLOW,
                 )
                 logger.log(result.stdout)
