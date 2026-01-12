@@ -144,7 +144,7 @@ O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feir
 *   **Objetivo:** Gerar um relatório de tudo que foi produzido na semana anterior.
 *   **Benefício:** Permite que você revise e corrija dívidas técnicas ou de segurança antes de iniciar o novo ciclo de desenvolvimento.
 
-![Bug Trend](.vibe/assets/bug_trend.png?v=20260112140443)
+![Bug Trend](.vibe/assets/bug_trend.png?v=20260112150314)
 
 ---
 
