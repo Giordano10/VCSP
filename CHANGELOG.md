@@ -1,8 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
-<<<<<<< HEAD
-=======
-## [Unreleased]
+## [1.0.3.5] - 2026-01-12
+
+### Bug Fixes
+
+- Project.toml (bdf5f17)
+
+- Pyproject.toml (592206c)
+
+- Corrigida a verificação de libs nao usadas, agora contemplando a verificação de arquivos requirements-dev.txt como haviamos segmentado anteriormente (0d38ce3)
+
+- Fix (a293ba2)
+
+- Quality problem linter (cdb4e97)
+
+- Fix (ddff544)
+
+- Fix (b501378)
+
+- Fix (7c24f95)
+
 
 ### Documentation
 
@@ -46,6 +63,20 @@ All notable changes to this project will be documented in this file.
 
 - Update security trend chart (8900541)
 
+- Update security trend chart (bd1a0b3)
+
+- Update security trend chart (6a68801)
+
+- Update security trend chart (cc60d65)
+
+- Update security trend chart (7cfa14a)
+
+- Update security trend chart (303efb2)
+
+- Update security trend chart (ce1e984)
+
+- Update security trend chart (9d3832c)
+
 
 ### Miscellaneous Tasks
 
@@ -65,13 +96,14 @@ All notable changes to this project will be documented in this file.
 
 - Update changelog and version to v1.0.3.5 (39d9bcb)
 
+- Update changelog and version to v1.0.3.5 (78e4629)
+
 
 ### Att
 
 - README melhorado com informações mais pertinentes (0bf59de)
 
 
->>>>>>> 78e4629040f2c4d869da52804c2e1189e7ac423c
 ## [1.0.3.4] - 2026-01-05
 
 ### Bug Fixes
