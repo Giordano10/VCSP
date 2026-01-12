@@ -110,7 +110,7 @@ jobs:
           PY
       
       - name: Sincronizar com a Branch Atual (Evitar Conflitos)
-        run: git pull origin ${{ github.ref_name }} --rebase --autostash
+        run: git pull origin ${{ github.head_ref }} --rebase --autostash
       
       - name: Commit do Gráfico
         uses: stefanzweifel/git-auto-commit-action@v7
