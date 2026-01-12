@@ -442,7 +442,9 @@ def run_unused_libs_check():
         return True
 
     # Informa o usuário quais arquivos serão lidos
-    logger.log(f"ℹ️  Arquivos identificados: {', '.join([os.path.basename(f) for f in found_files])}", YELLOW)
+    logger.log(f"ℹ️  Arquivos identificados: {
+        ', '.join([os.path.basename(f) for f in found_files])
+        }", YELLOW)
 
     # --- Bloco de importlib ---
     try:
@@ -471,7 +473,7 @@ def run_unused_libs_check():
             with open(requirements_path, 'r', encoding='utf-8') as f:
                 for line in f:
                     line = line.strip()
-                    # Ignora comentários, linhas vazias e referências a arquivos (-c, -r)
+                    
                     if not line or line.startswith('#') or line.startswith('-'):
                         continue
                     
