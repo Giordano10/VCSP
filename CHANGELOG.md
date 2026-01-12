@@ -1,6 +1,6 @@
 # Changelog
 All notable changes to this project will be documented in this file.
-## [1.0.3.5] - 2026-01-12
+## [Unreleased]
 
 ### Documentation
 
@@ -58,6 +58,8 @@ All notable changes to this project will be documented in this file.
 - Ajusta workflow para usar requirements separados (14bebe5)
 
 - Bump pillow from 12.0.0 to 12.1.0 (690bb90)
+
+- Update changelog and version to v1.0.3.5 (4edbba1)
 
 
 ### Att
