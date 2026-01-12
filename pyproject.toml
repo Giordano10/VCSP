@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vcsp-guard"
-version = "1.0.3.5" 
+version = "1.0.3.5"
 description = "Vibe Coding Security Protocol - Security & Quality Guardrails for AI Coding"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,6 +13,7 @@ authors = [
   {name = "Giordano Alves", email = "giordano.alves9@gmail.com"}
 ]
 
+# --- BLOCO CORRIGIDO: Keywords e Classifiers dentro de [project] ---
 keywords = ["security", "ai", "audit", "code-quality", "guardrails", "static-analysis"]
 
 classifiers = [
@@ -27,12 +28,15 @@ dependencies = [
     "ruff>=0.1.0",
     "semgrep>=1.0.0; sys_platform != 'win32'"
 ]
+# -------------------------------------------------------------------
 
+# --- BLOCO MOVIDO PARA BAIXO: URLs isoladas ---
 [project.urls]
 Homepage = "https://github.com/giordano10/VCSP"
 Repository = "https://github.com/giordano10/VCSP"
 Issues = "https://github.com/giordano10/VCSP/issues"
 
+# --- Outras seções ---
 [project.optional-dependencies]
 stats = ["matplotlib>=3.7.0"]
 dev = ["pytest", "black", "mypy", "types-setuptools"]
