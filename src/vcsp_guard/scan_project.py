@@ -442,10 +442,9 @@ def run_unused_libs_check():
         return True
 
     # Informa o usuário quais arquivos serão lidos
-    logger.log(f"ℹ️  Arquivos identificados: {
-        ', '.join([os.path.basename(f) for f in found_files])
-        }", YELLOW)
-
+    files_list_str = ", ".join([os.path.basename(f) for f in found_files])
+    logger.log(f"ℹ️  Arquivos identificados: {files_list_str}", YELLOW)
+    
     # --- Bloco de importlib ---
     try:
         if sys.version_info < (3, 10):

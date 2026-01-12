@@ -7,7 +7,6 @@ import inspect
 def test_security_tools_installed():
     """
     Verifica se as ferramentas de segurança esperadas estão no PATH.
-    Bandit foi substituído por ruff.
     """
     required_tools = ["ruff", "pip-audit"]
     if sys.platform != "win32":
@@ -43,7 +42,6 @@ def _load_scan_module():
 def test_scanner_module_integrity():
     """
     Verifica se o módulo de scan é importável e exporta as funções principais esperadas.
-    Atualizado para exigir run_ruff em vez de run_bandit.
     """
     module = _load_scan_module()
     assert hasattr(module, "main"), "O script deve expor main()"  # noqa: S101
