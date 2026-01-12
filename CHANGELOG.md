@@ -61,6 +61,8 @@ All notable changes to this project will be documented in this file.
 
 - Update changelog and version to v1.0.3.5 (4edbba1)
 
+- Update changelog and version to v1.0.3.5 (39d9bcb)
+
 
 ### Att
 
