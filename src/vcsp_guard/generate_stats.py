@@ -25,6 +25,7 @@ def main():
         stats = {
             'date': '', 
             'secrets': 0, 
+            'detect_secrets': 0,  # Novo campo para detect-secrets
             'bandit': 0, 
             'audit': 0, 
             'ruff': 0, 
@@ -44,6 +45,8 @@ def main():
             content = f.read()
             # Regex baseados na saída do scan_project.py
             stats['secrets'] = len(re.findall(r'❌ \[SEGREDO\]', content))
+            # Novo: detect-secrets
+            stats['detect_secrets'] = len(re.findall(r'❌ Detect-secrets encontrou possíveis segredos!', content))
             
             bandit_match = re.search(r'Total issues: (\d+)', content)
             if bandit_match:
@@ -76,6 +79,7 @@ def main():
         plt.plot(dates, [h[key] for h in history], label=label, marker='o', color=color)
 
     plot_line('secrets', 'Secrets', 'red')
+    plot_line('detect_secrets', 'Detect-secrets', 'brown')
     plot_line('bandit', 'Bandit (Logic)', 'orange')
     plot_line('audit', 'Pip-Audit (Deps)', 'blue')
     plot_line('ruff', 'Ruff (Lint)', 'green')

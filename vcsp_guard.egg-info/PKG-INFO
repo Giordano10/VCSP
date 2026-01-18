@@ -20,7 +20,7 @@ Requires-Dist: pandas
 Requires-Dist: pytest
 Dynamic: license-file
 
-# 🛡️ Vibe Coding Security Protocol (VCPS)
+# 🛡️ Vibe Coding Security Protocol (VCSP)
 
 ![CI Status](https://github.com/Giordano10/VCSP/actions/workflows/security_scan.yml/badge.svg)
 ![Latest Release](https://img.shields.io/github/v/release/Giordano10/VCSP)

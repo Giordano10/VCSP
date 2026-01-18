@@ -1,6 +1,14 @@
-bandit
-pip-audit
-ruff
-matplotlib
-checkov
-cyclonedx-python-lib<8.0.0
+pip-audit>=2.6.0
+ruff>=0.1.0
+
+[:sys_platform != "win32"]
+semgrep>=1.0.0
+
+[dev]
+pytest
+black
+mypy
+types-setuptools
+
+[stats]
+matplotlib>=3.7.0

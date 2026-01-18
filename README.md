@@ -48,6 +48,10 @@ Na raiz do seu projeto, execute o comando de inicialização. Isso configurará 
 vcsp-init
 ```
 
+**Nota importante:**  
+Se você selecionar a opção **4. Github Copilot/Action (.github)** durante a configuração, o VCSP irá instalar tanto os workflows do GitHub Actions para varredura automática do código (usando o `vcsp-scan`), quanto as regras de instrução para o Copilot (arquivo `copilot-instructions.md`).  
+Caso você utilize outra IA para codificar, basta excluir o arquivo `copilot-instructions.md` e rodar novamente o comando `vcsp-init`, selecionando a IA desejada conforme a lista apresentada.
+
 **O que o `vcsp-init` faz?**
 1.  **Instala o Pre-Commit Hook:** Cria um arquivo oculto em `.git/hooks/` que intercepta todo comando `git commit`.
 2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit, Semgrep) e as instala se necessário.
@@ -124,9 +128,52 @@ Para rodar a auditoria:
 vcsp-scan
 ```
 
+## MANUAL DE COMANDOS
+
+### Comandos principais
+
+- `vcsp-init`  
+  Inicializa o ambiente de segurança, instala hooks de pré-commit e configurações de IA.
+
+- `vcsp-scan`  
+  Realiza uma varredura completa de segurança no projeto, incluindo busca de segredos, análise lógica, auditoria de dependências, qualidade de código, IaC e dependências não utilizadas.
+
+- `vcsp-stats`  
+  Gera gráficos e estatísticas de segurança com base nos logs de varredura.
+
+### Flags do comando `vcsp-scan`
+
+- `--all`  
+  Varredura completa em todos os arquivos e pastas do projeto, incluindo arquivos ignorados e ocultos.
+  ```bash
+  vcsp-scan --all
+  ```
+
+- `--local`  
+  Varredura apenas na pasta atual, sem considerar a raiz do projeto.
+  ```bash
+  vcsp-scan --local
+  ```
+
+- `--deps <arquivo>`  
+  Permite informar um arquivo de dependências personalizado para auditoria, caso você utilize um nome diferente de `requirements.txt` ou `requirements-dev.txt`.
+  ```bash
+  vcsp-scan --deps minhas_dependencias.txt
+  ```
+
+- `--help`  
+  Exibe a lista de comandos e flags disponíveis no terminal.
+
 ### 📊 Gráficos e Estatísticas
 
+Para incluir a geração de gráficos (estatísticas):
+
+```bash
+pip install "vcsp-guard[stats]"
+```
+
 Para visualizar a evolução da segurança do seu projeto (Bug Trend), você pode gerar o gráfico localmente baseado nos logs de varredura.
+
 
 ```bash
 vcsp-stats
@@ -144,7 +191,20 @@ O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feir
 *   **Objetivo:** Gerar um relatório de tudo que foi produzido na semana anterior.
 *   **Benefício:** Permite que você revise e corrija dívidas técnicas ou de segurança antes de iniciar o novo ciclo de desenvolvimento.
 
-![Bug Trend](.vibe/assets/bug_trend.png?v=20260114015816)
+## Auditorias e Gráficos de Segurança
+
+O VCSP realiza as seguintes verificações automáticas em cada execução:
+
+- **Busca de segredos via Regex** (chaves, tokens, senhas)
+- **Detect-secrets** (detecção avançada de segredos, incluindo entropia e padrões de chaves)
+- **Análise lógica de código** (Ruff Security)
+- **Auditoria de dependências** (Pip-Audit)
+- **Linter de código** (Ruff)
+- **Infraestrutura como código** (Semgrep)
+
+O gráfico abaixo mostra a tendência das vulnerabilidades encontradas, incluindo o novo parâmetro de segredos detectados pelo detect-secrets:
+
+![Bug Trend](.vibe/assets/bug_trend.png)
 
 ---
 

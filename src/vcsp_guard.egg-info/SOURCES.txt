@@ -19,6 +19,5 @@ src/vcsp_guard/.vibe/.cursorrules
 src/vcsp_guard/.vibe/AUDITORIA_IA.md
 src/vcsp_guard/.vibe/GEMINI.md
 src/vcsp_guard/.vibe/.github/copilot-instructions.md
-src/vcsp_guard/.vibe/.github/workflows/publish_release.yml
-src/vcsp_guard/.vibe/.github/workflows/security_scan.yml
+src/vcsp_guard/.vibe/assets/bug_trend.png
 tests/test_sample.py

@@ -6,25 +6,26 @@ import shutil
 import datetime
 import ast
 import json
+import argparse
 
 # --- DETECÇÃO DE RAIZ DO PROJETO ---
 def get_project_root():
-    # 1. Busca a partir do diretório atual (CWD) - Prioridade para quem roda o comando
+    # 1. Prioridade Absoluta: .git (Define a raiz do repositório)
     current = os.getcwd()
     while True:
-        if os.path.exists(os.path.join(current, ".git")) or \
-           os.path.exists(os.path.join(current, "pyproject.toml")):
+        if os.path.exists(os.path.join(current, ".git")):
             return current
         parent = os.path.dirname(current)
         if parent == current:  # Chegou na raiz do sistema
             break
         current = parent
 
-    # 2. Fallback: Busca a partir do local do script (__file__)
-    current = os.path.dirname(os.path.abspath(__file__))
+    # 2. Fallback: Arquivos de configuração (pyproject.toml, setup.py, .vibe)
+    # Se não houver .git, usamos arquivos comuns para identificar a raiz
+    markers = ["pyproject.toml", "requirements.txt", ".env",]
+    current = os.getcwd()
     while True:
-        if os.path.exists(os.path.join(current, ".git")) or \
-           os.path.exists(os.path.join(current, "pyproject.toml")):
+        if any(os.path.exists(os.path.join(current, m)) for m in markers):
             return current
         parent = os.path.dirname(current)
         if parent == current:
@@ -34,7 +35,10 @@ def get_project_root():
     return os.getcwd()
 
 PROJECT_ROOT = get_project_root()
-if os.getcwd() != PROJECT_ROOT:
+if "--local" in sys.argv:
+    PROJECT_ROOT = os.getcwd()
+    print(f"📂 Modo Local (--local): Varrendo a partir de: {PROJECT_ROOT}")
+elif os.getcwd() != PROJECT_ROOT:
     print(f"🔄 Mudando diretório de trabalho para a raiz do projeto: {PROJECT_ROOT}")
     os.chdir(PROJECT_ROOT)
 else:
@@ -65,7 +69,7 @@ class Logger:
         self.filepath = filepath
         # Cria o arquivo e escreve o cabeçalho
         with open(self.filepath, "w", encoding="utf-8") as f:
-            f.write("=== RELATÓRIO DE SEGURANÇA VCPS ===\n")
+            f.write("=== RELATÓRIO DE SEGURANÇA VCSP ===\n")
             f.write(f"Data: {datetime.datetime.now()}\n")
             f.write("===================================\n\n")
 
@@ -107,8 +111,8 @@ FORBIDDEN_PATTERNS = [
 def is_git_ignored(filepath):
     """Verifica se o arquivo está no .gitignore usando o próprio git."""
     try:
-        # Usa caminho relativo para evitar erros de path no Windows/Git
-        rel_path = os.path.relpath(filepath, os.getcwd())
+        # Usa caminho relativo em relação à raiz do projeto para evitar erros de path
+        rel_path = os.path.relpath(filepath, PROJECT_ROOT)
         # Retorna 0 (True) se o arquivo for ignorado pelo git
         # noqa: S603, S607
         subprocess.check_call(
@@ -218,7 +222,7 @@ def build_reverse_dependency_map():
         pass
     return rev_map
 
-def run_pip_audit():
+def run_pip_audit(custom_deps_file=None):
     logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências (SCA)...{RESET}")
     
     # 1. Identificar quais arquivos existem
@@ -229,6 +233,11 @@ def run_pip_audit():
         fpath = os.path.join(PROJECT_ROOT, fname)
         if os.path.exists(fpath):
             found_files.append(fpath)
+    # Se o usuário passou um arquivo personalizado, adiciona ele
+    if custom_deps_file:
+        custom_path = os.path.join(PROJECT_ROOT, custom_deps_file)
+        if os.path.exists(custom_path):
+            found_files.append(custom_path)
     
     # Se não achar nada, tenta procurar qualquer coisa genérica (lógica antiga)
     # ou retorna erro dependendo da sua estratégia.
@@ -631,21 +640,57 @@ def scan_file(filepath):
     return issues
 
 def main():
-    logger.log(f"{BOLD}🔍 Vibe Security Scan (Secrets + Logic + Deps + Quality){RESET}")
-    logger.log(f"📄 Log salvo em: {LOG_FILE}\n")
-    
+    global PROJECT_ROOT
+    parser = argparse.ArgumentParser(
+        description="VCSP Guard - Scanner de Segurança para projetos Python com IA."
+    )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Varredura completa em todos os arquivos e pastas, incluindo ignorados."
+    )
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Varredura apenas na pasta atual, sem considerar a raiz do projeto."
+    )
+    parser.add_argument(
+        "--deps",
+        type=str,
+        help="Arquivo de dependências personalizado para auditoria."
+    )
+    args, unknown = parser.parse_known_args()
+
+    custom_deps_file = args.deps
+
     # 1. Regex
-    root_dir = os.getcwd()
+    # Garante que a varredura sempre começa da raiz detectada do projeto
+    root_dir = PROJECT_ROOT
     files_with_issues = 0
     
     check_gitignore = True
-    if "--all" in sys.argv:
+    active_ignored_dirs = IGNORED_DIRS.copy()
+    if args.all:
         check_gitignore = False
-        logger.log("⚠️  Modo --all: Verificando arquivos ignorados pelo Git.", YELLOW)
+        active_ignored_dirs = {'.git', '__pycache__', '.ruff_cache'}
+        logger.log(
+            "⚠️  Modo --all: Verificando TUDO "
+            "(incluindo arquivos ignorados e pastas ocultas).",
+            YELLOW,
+        )
+    if args.local:
+        PROJECT_ROOT = os.getcwd()
+        logger.log(
+            f"📂 Modo Local (--local): Varrendo a partir de: {PROJECT_ROOT}",
+            YELLOW,
+        )
+        root_dir = PROJECT_ROOT
+    else:
+        root_dir = PROJECT_ROOT
 
     logger.log("1️⃣  Buscando chaves (Regex)...")
     for root, dirs, files in os.walk(root_dir):
-        dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
+        dirs[:] = [d for d in dirs if d not in active_ignored_dirs]
         
         if check_gitignore:
             # Otimização: Ignora pastas que o git também ignora
@@ -670,23 +715,33 @@ def main():
     secrets_ok = (files_with_issues == 0)
     if secrets_ok:
         logger.log("✅ Nenhuma chave encontrada.", GREEN)
-    
-    # 2. Security Logic (Ruff)
+
+    # 2. Detect-secrets (antes do Ruff Security)
+    detect_secrets_ok = run_detect_secrets_scan(PROJECT_ROOT)
+
+    # 3. Security Logic (Ruff)
     security_ok = run_security_logic()
     
-    # 3. Checkov (Infraestrutura)
+    # 4. Checkov (Infraestrutura)
     iac_ok = run_iac_scan()
     
-    # 4. Pip Audit
-    audit_ok = run_pip_audit()
+    # 5. Pip Audit
+    audit_ok = run_pip_audit(custom_deps_file if custom_deps_file else None)
 
-    # 5. Ruff
+    # 6. Ruff
     ruff_ok = run_ruff_linter()
 
-    # 6. Unused Libs (Apenas informativo, não falha o build)
+    # 7. Unused Libs (Apenas informativo, não falha o build)
     run_unused_libs_check()
 
-    if not secrets_ok or not security_ok or not iac_ok or not audit_ok or not ruff_ok:
+    if (
+        not secrets_ok
+        or not detect_secrets_ok
+        or not security_ok
+        or not iac_ok
+        or not audit_ok
+        or not ruff_ok
+    ):
         logger.log("\n⛔ FALHA NA AUDITORIA. VERIFIQUE OS ERROS ACIMA.", RED)
         sys.exit(1)
     
@@ -696,8 +751,7 @@ def main():
 if __name__ == "__main__":
     main()
 
-# Compatibility shims: export expected entrypoints without overwriting existing
-# implementations
+
 if "run_ruff" not in globals():
     def run_ruff(*args, **kwargs):
         """
@@ -718,3 +772,47 @@ if "run_ruff" not in globals():
         raise NotImplementedError(
             "run_ruff not implemented: provide run_ruff_impl or equivalent"
         )
+
+def run_detect_secrets_scan(root_dir):
+    
+    logger.log(
+        "\n{}🔑 Executando Detect-secrets (Detecção Avançada de Segredos)...{}".format(
+            BOLD, RESET
+        )
+    )
+    if not ensure_package_installed("detect-secrets"):
+        return True  # Não falha o build, apenas avisa
+
+    try:
+        cmd = [
+            "detect-secrets", "scan", "--all-files",
+            "--exclude-files", "logs_scan_vcsp",
+            "--exclude-files", ".ruff_cache"
+        ]
+        result = subprocess.run(
+            cmd,
+            cwd=root_dir,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        output = result.stdout
+        
+        if (
+            '"results": {}' in output
+            or (
+                '"results":{' in output
+                and '"type":' not in output
+            )
+        ):
+            logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
+            return True
+
+        logger.log("❌ Detect-secrets encontrou possíveis segredos!", RED)
+        logger.log(output)
+        return False
+    except Exception as e:
+        logger.log(f"❌ Erro ao rodar detect-secrets: {e}", RED)
+        return True  # Não falha o build, apenas avisa

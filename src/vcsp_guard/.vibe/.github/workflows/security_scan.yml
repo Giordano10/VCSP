@@ -51,20 +51,25 @@ jobs:
           latest_file = max(list_of_files, key=os.path.getctime)
 
           # 2. Parsear Log
-          stats = {'date': datetime.now().strftime('%Y-%m-%d'), 'secrets': 0, 'bandit': 0, 'audit': 0, 'ruff': 0, 'semgrep': 0}
+          stats = {
+              'date': datetime.now().strftime('%Y-%m-%d'),
+              'secrets': 0,
+              'detect_secrets': 0,  # Novo campo detect-secrets
+              'bandit': 0,
+              'audit': 0,
+              'ruff': 0,
+              'semgrep': 0
+          }
           with open(latest_file, 'r', encoding='utf-8') as f:
               content = f.read()
               stats['secrets'] = len(re.findall(r'❌ \[SEGREDO\]', content))
-              
+              stats['detect_secrets'] = len(re.findall(r'❌ Detect-secrets encontrou possíveis segredos!', content))
               bandit_match = re.search(r'Total issues: (\d+)', content)
               if bandit_match: stats['bandit'] = int(bandit_match.group(1))
-              
               audit_match = re.search(r'Found (\d+) known vulnerabilit', content)
               if audit_match: stats['audit'] = int(audit_match.group(1))
-              
               ruff_match = re.search(r'Found (\d+) error', content)
               if ruff_match: stats['ruff'] = int(ruff_match.group(1))
-              
               semgrep_match = re.search(r'Found (\d+) infrastructure issues', content)
               if semgrep_match: stats['semgrep'] = int(semgrep_match.group(1))
 
@@ -82,6 +87,7 @@ jobs:
           dates = [h['date'] for h in history]
           plt.figure(figsize=(10, 5))
           plt.plot(dates, [h['secrets'] for h in history], label='Secrets', marker='o', color='red')
+          plt.plot(dates, [h['detect_secrets'] for h in history], label='Detect-secrets', marker='o', color='brown')
           plt.plot(dates, [h['bandit'] for h in history], label='Bandit (Logic)', marker='o', color='orange')
           plt.plot(dates, [h['audit'] for h in history], label='Pip-Audit (Deps)', marker='o', color='blue')
           plt.plot(dates, [h['ruff'] for h in history], label='Ruff (Lint)', marker='o', color='green')
@@ -92,7 +98,7 @@ jobs:
           plt.legend()
           plt.grid(True, linestyle='--', alpha=0.7)
           plt.savefig('.vibe/assets/bug_trend.png')
-          
+
           # 5. Atualizar README.md (Cache Busting)
           readme_path = 'README.md'
           if os.path.exists(readme_path):

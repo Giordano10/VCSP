@@ -1,9 +1,13 @@
 Metadata-Version: 2.4
 Name: vcsp-guard
-Version: 1.0.2.1
+Version: 1.0.3.5
 Summary: Vibe Coding Security Protocol - Security & Quality Guardrails for AI Coding
 Author-email: Giordano Alves <giordano.alves9@gmail.com>
-License-Expression: MIT
+License: MIT
+Project-URL: Homepage, https://github.com/giordano10/VCSP
+Project-URL: Repository, https://github.com/giordano10/VCSP
+Project-URL: Issues, https://github.com/giordano10/VCSP/issues
+Keywords: security,ai,audit,code-quality,guardrails,static-analysis
 Classifier: Programming Language :: Python :: 3
 Classifier: Operating System :: OS Independent
 Classifier: Topic :: Security
@@ -11,43 +15,60 @@ Classifier: Topic :: Software Development :: Quality Assurance
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: bandit
-Requires-Dist: pip-audit
-Requires-Dist: ruff
-Requires-Dist: matplotlib
-Requires-Dist: checkov
-Requires-Dist: cyclonedx-python-lib<8.0.0
+Requires-Dist: pip-audit>=2.6.0
+Requires-Dist: ruff>=0.1.0
+Requires-Dist: semgrep>=1.0.0; sys_platform != "win32"
+Provides-Extra: stats
+Requires-Dist: matplotlib>=3.7.0; extra == "stats"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: types-setuptools; extra == "dev"
 Dynamic: license-file
 
-# 🛡️ Vibe Coding Security Protocol (VCPS)
+# 🛡️ VCSP Guard (Vibe Coding Security Protocol)
 
 ![CI Status](https://github.com/Giordano10/VCSP/actions/workflows/security_scan.yml/badge.svg)
 ![Latest Release](https://img.shields.io/github/v/release/Giordano10/VCSP)
 ![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Security](https://img.shields.io/badge/security-bandit%20%7C%20pip--audit-red)
+![Security](https://img.shields.io/badge/security-bandit%20%7C%20pip--audit%20%7C%20semgrep-red)
 
-Biblioteca segura para desenvolvimento ágil com IA (Vibe Coding).
-Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências**, **Quality Gate** e **Histórico de Logs**.
+**VCSP Guard** é a camada de segurança definitiva para o desenvolvimento ágil com IA ("Vibe Coding").
+Ele atua como um **Engenheiro de Segurança Sênior automatizado**, auditando cada linha de código gerada por LLMs (como GPT-4, Claude, Copilot) em busca de vulnerabilidades, segredos expostos e falhas de infraestrutura. Já vem configurado com **Scanner de Segredos**, **Pentest Lógico**, **Auditoria de Dependências**, **Quality Gate**, **Análise de IaC** e **Histórico de Logs**.
 
 ---
 
-## 🎯 Para que serve?
+## 🚀 Funcionalidades (Tech Stack)
 
-No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muitos projetos ganharam um boost na produção e no lançamento de features. Porém, nem todo mundo está preocupado com a manutenção e segurança do próprio código, podendo ficar vulnerável caso não haja um revisor experiente para encontrar brechas que podem ser exploradas por atacantes.
+No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muitos projetos ganharam um boost na produção e no lançamento de features. Porém, nem todo mundo está preocupado com a manutenção e segurança do próprio código, podendo ficar vulnerável caso não haja um revisor experiente para encontrar brechas que podem ser exploradas por atacantes. O VCSP orquestra as melhores ferramentas de mercado em um fluxo unificado:
 
 **Foi pensando nisso que criei essa ferramenta:** ela vai varrer seu código, seja ele criado por IA ou não, em busca dessas potenciais falhas, atuando como uma camada de segurança automatizada.
 
+| Ferramenta | Tipo | O que ela protege? |
+| :--- | :--- | :--- |
+| **Ruff** | Linter/SAST | Qualidade de código, bugs e segurança lógica (substitui Bandit/Flake8). |
+| **Pip-Audit** | SCA | Verifica se suas dependências possuem vulnerabilidades conhecidas (CVEs). |
+| **Semgrep** | IaC/SAST | Varredura profunda em Dockerfiles, Terraform e padrões complexos. |
+| **Secrets** | Regex | Bloqueia chaves de API, tokens e senhas antes do commit. |
+
 ---
 
-## 🚀 Instalação e Uso
+## 📦 Instalação e Uso
 
-### 1. Instalação
+### 1. Instalação Via PyPI (Recomendado)
 Instale a biblioteca oficial via pip em seu ambiente virtual:
 
 ```bash
 pip install vcsp-guard
 ```
+Para incluir a geração de gráficos (estatísticas):
+
+```bash
+pip install "vcsp-guard[stats]"
+```
+
 
 ### 2. Inicialização (Ativar Proteção)
 Na raiz do seu projeto, execute o comando de inicialização. Isso configurará os hooks do Git e copiará os arquivos de configuração de IA necessários.
@@ -58,7 +79,7 @@ vcsp-init
 
 **O que o `vcsp-init` faz?**
 1.  **Instala o Pre-Commit Hook:** Cria um arquivo oculto em `.git/hooks/` que intercepta todo comando `git commit`.
-2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit) e as instala se necessário.
+2.  **Configura o Ambiente:** Verifica se você tem as ferramentas de auditoria (Bandit, Ruff, Pip-Audit, Semgrep) e as instala se necessário.
 3.  **Menu de Seleção de IA:** Pergunta qual IA você utiliza (Cursor, Cline, etc.) e aplica as regras de segurança correspondentes.
 
 ### 3. Configurar Ambiente
@@ -116,12 +137,16 @@ Como este kit protege você enquanto a IA codifica?
 **Para que serve o `vcsp-scan`?**
 Enquanto o `vcsp-init` protege o futuro (novos commits), o `vcsp-scan` protege o passado. Ele serve para **varrer todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
 
-O script `vcsp-scan` executa 4 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
+O script `vcsp-scan` executa 6 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
 
-1.  **🔐 Segredos:** Busca por chaves vazadas no código.
-2.  **🔫 Pentest (Bandit):** Busca por falhas de lógica e injeção.
-3.  **📦 SCA (Pip Audit):** Busca por bibliotecas desatualizadas/vulneráveis.
-4.  **🧹 Linter (Ruff):** Busca por bugs, variáveis não usadas e código sujo.
+1.  **Busca de Segredos:** Identifica chaves de API, tokens e senhas hardcoded (Regex).
+2.  **Segurança Lógica (SAST):** Analisa vulnerabilidades no código Python usando **Ruff** (regras de segurança `S`).
+3.  **Auditoria de Dependências (SCA):** Verifica vulnerabilidades conhecidas (CVEs) nas bibliotecas instaladas usando **Pip-Audit**.
+4.  **Qualidade de Código:** Linting e padronização PEP 8 via **Ruff**.
+5.  **Infraestrutura como Código (IaC):** Escaneia arquivos Docker, Kubernetes e Terraform usando **Semgrep**.
+6.  **Dependências Não Utilizadas:** Verifica se as libs do `requirements.txt` são realmente importadas no projeto.
+
+> **⚠️ Usuários Windows:** Para a análise de infraestrutura (Docker/Terraform), é necessário ter o **Docker Desktop** instalado e rodando. O VCSP detecta automaticamente e usa um container para realizar a varredura, já que o Semgrep não roda nativamente no Windows.
 
 Para rodar a auditoria:
 ```bash
@@ -148,11 +173,17 @@ O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feir
 *   **Objetivo:** Gerar um relatório de tudo que foi produzido na semana anterior.
 *   **Benefício:** Permite que você revise e corrija dívidas técnicas ou de segurança antes de iniciar o novo ciclo de desenvolvimento.
 
-![Bug Trend](.vibe/assets/bug_trend.png)
-
-> **Nota:** Este gráfico ilustra o formato do relatório. Como foi gerado dentro do próprio VCSP (que é um código limpo), ele não apresenta falhas. Ao utilizar esta ferramenta no seu projeto, o gráfico refletirá os dados reais do seu ambiente, variando de acordo com o histórico de cada usuário.
+![Bug Trend](.vibe/assets/bug_trend.png?v=20260114015816)
 
 ---
+
+## 🤖 Monitoramento de Dependências (Dependabot)
+
+A segurança de um projeto não depende apenas do seu código, mas também das bibliotecas que você utiliza. O **Dependabot** atua como um vigia silencioso, monitorando constantemente o ecossistema Python em busca de atualizações de segurança para as dependências listadas no seu projeto.
+
+O VCSP Guard já vem com workflows configurados para integrar o Dependabot, garantindo que você receba alertas e correções automáticas (Pull Requests) sempre que uma vulnerabilidade for descoberta em uma biblioteca externa.
+
+👉 **Aprofunde-se:** [Leia nossa documentação sobre a estratégia do Dependabot](DEPENDABOT_NOTE.md)
 
 ## 🚨 PROTOCOLO DE PÂNICO (Vazamento de Credenciais)
 
