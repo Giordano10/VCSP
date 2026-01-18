@@ -774,7 +774,6 @@ if "run_ruff" not in globals():
         )
 
 def run_detect_secrets_scan(root_dir):
-    
     logger.log(
         "\n{}🔑 Executando Detect-secrets (Detecção Avançada de Segredos)...{}".format(
             BOLD, RESET
@@ -799,7 +798,7 @@ def run_detect_secrets_scan(root_dir):
             stderr=subprocess.STDOUT,
         )
         output = result.stdout
-        
+
         if (
             '"results": {}' in output
             or (
