@@ -25,7 +25,7 @@ def main():
         stats = {
             'date': '', 
             'secrets': 0, 
-            'detect_secrets': 0,
+            'detect_secrets': 0,  # Garante sempre presente
             'bandit': 0, 
             'audit': 0, 
             'ruff': 0, 
@@ -51,19 +51,15 @@ def main():
                     content
                 )
             )
-            
-            ruff_match_sec = re.search(r'Total issues: (\d+)', content)
-            if ruff_match_sec:
-                stats['bandit'] = int(ruff_match_sec.group(1))
-            
+            bandit_match = re.search(r'Total issues: (\d+)', content)
+            if bandit_match:
+                stats['bandit'] = int(bandit_match.group(1))
             audit_match = re.search(r'Found (\d+) known vulnerabilit', content)
             if audit_match:
                 stats['audit'] = int(audit_match.group(1))
-            
             ruff_match = re.search(r'Found (\d+) error', content)
             if ruff_match:
                 stats['ruff'] = int(ruff_match.group(1))
-            
             semgrep_match = re.search(r'Found (\d+) infrastructure issues', content)
             if semgrep_match:
                 stats['semgrep'] = int(semgrep_match.group(1))
@@ -81,7 +77,13 @@ def main():
     # Helper para plotar
     def plot_line(key, label, color):
         # Usa .get para evitar KeyError em históricos antigos
-        plt.plot(dates, [h.get(key, 0) for h in history], label=label, marker='o', color=color)
+        plt.plot(
+            dates,
+            [h.get(key, 0) for h in history],
+            label=label,
+            marker='o',
+            color=color
+        )
 
     plot_line('secrets', 'Secrets', 'red')
     plot_line('detect_secrets', 'Detect-secrets', 'brown')
