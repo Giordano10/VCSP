@@ -1,0 +1,40 @@
+name: Dependabot PR Tests
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependabot-tests:
+    name: Run tests for PRs
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'Giordano10' }}
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          # 1. Atualiza o pip do ambiente
+          python -m pip install --upgrade pip
+          
+          # 2. Instala as dependências de produção (Django, etc.)
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          
+          # 3. Instala as dependências de desenvolvimento (Ruff, Semgrep, Pytest, etc.)
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          
+      - name: Run tests
+        run: python -m pytest -q
