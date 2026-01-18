@@ -2,7 +2,6 @@ import shutil
 import importlib.util
 import sys
 from pathlib import Path
-import inspect
 
 def test_security_tools_installed():
     """
@@ -45,7 +44,11 @@ def _load_scan_module():
             scan_path = candidate
             break
     if scan_path is None:
-        msg = f"Arquivo scan_project.py não encontrado nos caminhos esperados: {candidates}"
+        # Quebra linha longa para E501
+        msg = (
+            "Arquivo scan_project.py não encontrado nos caminhos esperados: "
+            f"{candidates}"
+        )
         print("AVISO:", msg)
         return None  # Retorna None se não encontrar, sem assert
     spec = importlib.util.spec_from_file_location("scan_project", str(scan_path))

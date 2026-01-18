@@ -1,5 +1,6 @@
 # Ferramentas de QA, Segurança e Testes
 bandit
+detect-secrets
 pip-audit
 ruff
 pytest
