@@ -191,6 +191,7 @@ O VCSP já vem configurado para rodar uma auditoria completa **toda segunda-feir
 *   **Objetivo:** Gerar um relatório de tudo que foi produzido na semana anterior.
 *   **Benefício:** Permite que você revise e corrija dívidas técnicas ou de segurança antes de iniciar o novo ciclo de desenvolvimento.
 
+<<<<<<< HEAD
 ## Auditorias e Gráficos de Segurança
 
 O VCSP realiza as seguintes verificações automáticas em cada execução:
@@ -205,6 +206,9 @@ O VCSP realiza as seguintes verificações automáticas em cada execução:
 O gráfico abaixo mostra a tendência das vulnerabilidades encontradas, incluindo o novo parâmetro de segredos detectados pelo detect-secrets:
 
 ![Bug Trend](.vibe/assets/bug_trend.png)
+=======
+![Bug Trend](.vibe/assets/bug_trend.png?v=20260116101445)
+>>>>>>> 0a3b6c117be87bd5e4a959cd9b758c8422af25bb
 
 ---
 
