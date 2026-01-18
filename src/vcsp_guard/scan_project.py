@@ -349,6 +349,49 @@ def run_pip_audit(custom_deps_file=None):
     except Exception as e:
         logger.log(f"❌ Erro ao rodar pip-audit: {e}", RED)
         return False
+    
+def run_detect_secrets_scan(root_dir):
+    logger.log(
+        "\n{}🔑 Executando Detect-secrets (Detecção Avançada de Segredos)...{}".format(
+            BOLD, RESET
+        )
+    )
+    if not ensure_package_installed("detect-secrets"):
+        return True  # Não falha o build, apenas avisa
+
+    try:
+        cmd = [
+            "detect-secrets", "scan", "--all-files",
+            "--exclude-files", "logs_scan_vcsp",
+            "--exclude-files", ".ruff_cache"
+        ]
+        result = subprocess.run(
+            cmd,
+            cwd=root_dir,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        output = result.stdout
+
+        if (
+            '"results": {}' in output
+            or (
+                '"results":{' in output
+                and '"type":' not in output
+            )
+        ):
+            logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
+            return True
+
+        logger.log("❌ Detect-secrets encontrou possíveis segredos!", RED)
+        logger.log(output)
+        return False
+    except Exception as e:
+        logger.log(f"❌ Erro ao rodar detect-secrets: {e}", RED)
+        return True  # Não falha o build, apenas avisa    
 
 def run_security_logic():
     logger.log(f"\n{BOLD}🔫 Executando Análise Lógica (Ruff Security)...{RESET}")
@@ -716,7 +759,7 @@ def main():
     if secrets_ok:
         logger.log("✅ Nenhuma chave encontrada.", GREEN)
 
-    # 2. Detect-secrets (antes do Ruff Security)
+    # 2. Detect-secrets ()
     detect_secrets_ok = run_detect_secrets_scan(PROJECT_ROOT)
 
     # 3. Security Logic (Ruff)
@@ -773,45 +816,3 @@ if "run_ruff" not in globals():
             "run_ruff not implemented: provide run_ruff_impl or equivalent"
         )
 
-def run_detect_secrets_scan(root_dir):
-    logger.log(
-        "\n{}🔑 Executando Detect-secrets (Detecção Avançada de Segredos)...{}".format(
-            BOLD, RESET
-        )
-    )
-    if not ensure_package_installed("detect-secrets"):
-        return True  # Não falha o build, apenas avisa
-
-    try:
-        cmd = [
-            "detect-secrets", "scan", "--all-files",
-            "--exclude-files", "logs_scan_vcsp",
-            "--exclude-files", ".ruff_cache"
-        ]
-        result = subprocess.run(
-            cmd,
-            cwd=root_dir,
-            text=True,
-            encoding="utf-8",
-            errors="ignore",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-        )
-        output = result.stdout
-
-        if (
-            '"results": {}' in output
-            or (
-                '"results":{' in output
-                and '"type":' not in output
-            )
-        ):
-            logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
-            return True
-
-        logger.log("❌ Detect-secrets encontrou possíveis segredos!", RED)
-        logger.log(output)
-        return False
-    except Exception as e:
-        logger.log(f"❌ Erro ao rodar detect-secrets: {e}", RED)
-        return True  # Não falha o build, apenas avisa
