@@ -45,12 +45,17 @@ def main():
             content = f.read()
             # Regex baseados na saída do scan_project.py
             stats['secrets'] = len(re.findall(r'❌ \[SEGREDO\]', content))
-            # Novo: detect-secrets
-            stats['detect_secrets'] = len(re.findall(r'❌ Detect-secrets encontrou possíveis segredos!', content))
+            # Novo: detect-secrets (quebra linha longa)
+            stats['detect_secrets'] = len(
+                re.findall(
+                    r'❌ Detect-secrets encontrou possíveis segredos!',
+                    content
+                )
+            )
             
-            bandit_match = re.search(r'Total issues: (\d+)', content)
-            if bandit_match:
-                stats['bandit'] = int(bandit_match.group(1))
+            ruff_match_sec = re.search(r'Total issues: (\d+)', content)
+            if ruff_match_sec:
+                stats['bandit'] = int(ruff_match_sec.group(1))
             
             audit_match = re.search(r'Found (\d+) known vulnerabilit', content)
             if audit_match:

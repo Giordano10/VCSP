@@ -363,7 +363,9 @@ def run_detect_secrets_scan(root_dir):
         cmd = [
             "detect-secrets", "scan", "--all-files",
             "--exclude-files", "logs_scan_vcsp",
-            "--exclude-files", ".ruff_cache"
+            "--exclude-files", ".ruff_cache",
+            "--exclude-files", "__pycache__"
+            "--exclude-files", "pytest_cache",
         ]
         result = subprocess.run(
             cmd,
