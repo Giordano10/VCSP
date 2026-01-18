@@ -25,7 +25,7 @@ def main():
         stats = {
             'date': '', 
             'secrets': 0, 
-            'detect_secrets': 0,  # Novo campo para detect-secrets
+            'detect_secrets': 0,
             'bandit': 0, 
             'audit': 0, 
             'ruff': 0, 
@@ -43,9 +43,8 @@ def main():
 
         with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
-            # Regex baseados na saída do scan_project.py
             stats['secrets'] = len(re.findall(r'❌ \[SEGREDO\]', content))
-            # Novo: detect-secrets (quebra linha longa)
+            # Garante que detect_secrets sempre existe, mesmo se não aparecer no log
             stats['detect_secrets'] = len(
                 re.findall(
                     r'❌ Detect-secrets encontrou possíveis segredos!',
@@ -81,7 +80,8 @@ def main():
     
     # Helper para plotar
     def plot_line(key, label, color):
-        plt.plot(dates, [h[key] for h in history], label=label, marker='o', color=color)
+        # Usa .get para evitar KeyError em históricos antigos
+        plt.plot(dates, [h.get(key, 0) for h in history], label=label, marker='o', color=color)
 
     plot_line('secrets', 'Secrets', 'red')
     plot_line('detect_secrets', 'Detect-secrets', 'brown')

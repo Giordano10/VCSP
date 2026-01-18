@@ -12,8 +12,6 @@ cachecontrol[filecache]==0.14.4
     #   pip-audit
 certifi==2026.1.4
     # via requests
-charset-normalizer==3.4.4
-    # via requests
 colorama==0.4.6
     # via
     #   bandit
