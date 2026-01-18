@@ -22,8 +22,6 @@ cyclonedx-python-lib==11.6.0
     # via pip-audit
 defusedxml==0.7.1
     # via py-serializable
-detect-secrets==1.5.0
-    # via -r requirements-dev.in
 idna==3.11
     # via requests
 iniconfig==2.3.0
