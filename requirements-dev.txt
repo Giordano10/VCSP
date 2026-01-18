@@ -6,8 +6,6 @@
 #
 bandit==1.9.2
     # via -r requirements-dev.in
-boolean-py==5.0
-    # via license-expression
 cachecontrol[filecache]==0.14.4
     # via
     #   cachecontrol
@@ -26,8 +24,6 @@ defusedxml==0.7.1
     # via py-serializable
 detect-secrets==1.5.0
     # via -r requirements-dev.in
-filelock==3.20.3
-    # via cachecontrol
 idna==3.11
     # via requests
 iniconfig==2.3.0
@@ -36,10 +32,6 @@ license-expression==30.4.4
     # via cyclonedx-python-lib
 markdown-it-py==4.0.0
     # via rich
-mdurl==0.1.2
-    # via markdown-it-py
-msgpack==1.1.2
-    # via cachecontrol
 packageurl-python==0.17.6
     # via cyclonedx-python-lib
 packaging==25.0
@@ -90,8 +82,6 @@ sortedcontainers==2.4.0
 stevedore==5.6.0
     # via bandit
 tomli==2.4.0
-    # via pip-audit
-tomli-w==1.2.0
     # via pip-audit
 urllib3==2.6.3
     # via requests
