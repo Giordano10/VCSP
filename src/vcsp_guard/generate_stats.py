@@ -47,7 +47,7 @@ def main():
             # Garante que detect_secrets sempre existe, mesmo se não aparecer no log
             stats['detect_secrets'] = len(
                 re.findall(
-                    r'❌ Detect-secrets encontrou possíveis segredos!',
+                    r'❌ \[DETECT-SECRETS\]|❌ Detect-secrets encontrou',
                     content
                 )
             )

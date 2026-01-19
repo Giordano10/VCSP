@@ -364,7 +364,7 @@ def run_detect_secrets_scan(root_dir):
             "detect-secrets", "scan", "--all-files",
             "--exclude-files", "logs_scan_vcsp",
             "--exclude-files", ".ruff_cache",
-            "--exclude-files", "__pycache__"
+            "--exclude-files", "__pycache__",
             "--exclude-files", "pytest_cache",
         ]
         result = subprocess.run(
@@ -378,19 +378,40 @@ def run_detect_secrets_scan(root_dir):
         )
         output = result.stdout
 
-        if (
-            '"results": {}' in output
-            or (
-                '"results":{' in output
-                and '"type":' not in output
+        try:
+            data = json.loads(output)
+            results = data.get("results", {})
+            
+            has_issues = False
+            for filepath, secrets in results.items():
+                if secrets:
+                    has_issues = True
+                    logger.log(f"❌ [DETECT-SECRETS] {filepath}", RED)
+                    for secret in secrets:
+                        line = secret.get("line_number", "?")
+                        type_ = secret.get("type", "Unknown")
+                        logger.log(f"   L.{line}: {type_}")
+            
+            if not has_issues:
+                logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
+                return True
+                
+            return False
+            
+        except json.JSONDecodeError:
+            # Fallback para verificação simples se o JSON falhar
+            if '"results": {}' in output or (
+                '"results":{' in output and '"type":' not in output
+            ):
+                logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
+                return True
+                
+            logger.log(
+                "❌ Detect-secrets encontrou possíveis segredos (Raw Output)!", RED
             )
-        ):
-            logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
-            return True
-
-        logger.log("❌ Detect-secrets encontrou possíveis segredos!", RED)
-        logger.log(output)
-        return False
+            logger.log(output)
+            return False
+            
     except Exception as e:
         logger.log(f"❌ Erro ao rodar detect-secrets: {e}", RED)
         return True  # Não falha o build, apenas avisa    
@@ -817,4 +838,3 @@ if "run_ruff" not in globals():
         raise NotImplementedError(
             "run_ruff not implemented: provide run_ruff_impl or equivalent"
         )
-
