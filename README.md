@@ -207,8 +207,6 @@ O gráfico abaixo mostra a tendência das vulnerabilidades encontradas, incluind
 
 ![Bug Trend](.vibe/assets/bug_trend.png?v=20260119034652)
 =======
-![Bug Trend](.vibe/assets/bug_trend.png?v=20260119034652)
->>>>>>> 0a3b6c117be87bd5e4a959cd9b758c8422af25bb
 
 ---
 
