@@ -10,6 +10,7 @@ node_modules/
 .ruff_cache*
 logs_scan_vcsp/
 .vibe_graph_errors_vcsp/
+.vibe/*
 assets/
 # Permitir que o diretório de métricas (.vibe) e seus ativos sejam comitados
 !.vibe/
