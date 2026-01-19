@@ -47,7 +47,7 @@ def main():
             # Garante que detect_secrets sempre existe, mesmo se não aparecer no log
             stats['detect_secrets'] = len(
                 re.findall(
-                    r'❌ \[DETECT-SECRETS\]|❌ Detect-secrets encontrou',
+                    r'❌ \[DETECT-SECRETS\]|❌ Detect-secrets encontrou', # Suporta formato novo e antigo
                     content
                 )
             )

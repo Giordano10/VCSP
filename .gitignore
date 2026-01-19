@@ -11,7 +11,7 @@ node_modules/
 logs_scan_vcsp/
 .vibe_graph_errors_vcsp/
 .vibe/*
-assets/
+assets/*
 # Permitir que o diretório de métricas (.vibe) e seus ativos sejam comitados
 !.vibe/
 !.vibe/stats.json

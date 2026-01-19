@@ -63,7 +63,7 @@ jobs:
           with open(latest_file, 'r', encoding='utf-8') as f:
               content = f.read()
               stats['secrets'] = len(re.findall(r'❌ \[SEGREDO\]', content))
-              stats['detect_secrets'] = len(re.findall(r'❌ Detect-secrets encontrou possíveis segredos!', content))
+              stats['detect_secrets'] = len(re.findall(r'❌ \[DETECT-SECRETS\]|❌ Detect-secrets encontrou', content))
               bandit_match = re.search(r'Total issues: (\d+)', content)
               if bandit_match: stats['bandit'] = int(bandit_match.group(1))
               audit_match = re.search(r'Found (\d+) known vulnerabilit', content)
@@ -87,7 +87,7 @@ jobs:
           dates = [h['date'] for h in history]
           plt.figure(figsize=(10, 5))
           plt.plot(dates, [h['secrets'] for h in history], label='Secrets', marker='o', color='red')
-          plt.plot(dates, [h['detect_secrets'] for h in history], label='Detect-secrets', marker='o', color='brown')
+          plt.plot(dates, [h.get('detect_secrets', 0) for h in history], label='Detect-secrets', marker='o', color='brown')
           plt.plot(dates, [h['bandit'] for h in history], label='Bandit (Logic)', marker='o', color='orange')
           plt.plot(dates, [h['audit'] for h in history], label='Pip-Audit (Deps)', marker='o', color='blue')
           plt.plot(dates, [h['ruff'] for h in history], label='Ruff (Lint)', marker='o', color='green')
