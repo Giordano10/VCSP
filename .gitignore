@@ -12,6 +12,7 @@ logs_scan_vcsp/
 .vibe_graph_errors_vcsp/
 .vibe/*
 assets/*
+.git/FETCH_HEAD
 # Permitir que o diretório de métricas (.vibe) e seus ativos sejam comitados
 !.vibe/
 !.vibe/stats.json
