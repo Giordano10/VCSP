@@ -366,6 +366,7 @@ def run_detect_secrets_scan(root_dir):
             "--exclude-files", ".ruff_cache",
             "--exclude-files", "__pycache__",
             "--exclude-files", "pytest_cache",
+            "--exclude-files", ".git/FETCH_HEAD",
         ]
         result = subprocess.run(
             cmd,

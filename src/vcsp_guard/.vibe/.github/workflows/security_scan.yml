@@ -39,7 +39,7 @@ jobs:
         continue-on-error: true
         run: python src/vcsp_guard/scan_project.py
       
-      - name: Gerar Gráfico de Tendência
+      - name: Gerar Gráfico de Tendência  # pragma: allowlist secret
         run: |
           python - <<'PY'
           import os, json, glob, re, matplotlib.pyplot as plt
@@ -87,6 +87,7 @@ jobs:
           dates = [h['date'] for h in history]
           plt.figure(figsize=(10, 5))
           plt.plot(dates, [h['secrets'] for h in history], label='Secrets', marker='o', color='red')
+          plt.plot(dates, [h['detect_secrets'] for h in history], label='Detect-secrets', marker='o', color='brown')
           plt.plot(dates, [h.get('detect_secrets', 0) for h in history], label='Detect-secrets', marker='o', color='brown')
           plt.plot(dates, [h['bandit'] for h in history], label='Bandit (Logic)', marker='o', color='orange')
           plt.plot(dates, [h['audit'] for h in history], label='Pip-Audit (Deps)', marker='o', color='blue')

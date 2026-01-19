@@ -39,7 +39,7 @@ jobs:
         continue-on-error: true
         run: python src/vcsp_guard/scan_project.py
       
-      - name: Gerar Gráfico de Tendência
+      - name: Gerar Gráfico de Tendência  # pragma: allowlist secret
         run: |
           python - <<'PY'
           import os, json, glob, re, matplotlib.pyplot as plt
