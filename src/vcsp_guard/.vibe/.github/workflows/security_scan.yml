@@ -40,7 +40,7 @@ jobs:
         run: python src/vcsp_guard/scan_project.py
       
       - name: Gerar Gráfico de Tendência  # pragma: allowlist secret
-        run: |
+        run: |  # pragma: allowlist secret
           python - <<'PY'
           import os, json, glob, re, matplotlib.pyplot as plt
           from datetime import datetime
