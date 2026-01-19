@@ -205,9 +205,9 @@ O VCSP realiza as seguintes verificações automáticas em cada execução:
 
 O gráfico abaixo mostra a tendência das vulnerabilidades encontradas, incluindo o novo parâmetro de segredos detectados pelo detect-secrets:
 
-![Bug Trend](.vibe/assets/bug_trend.png)
+![Bug Trend](.vibe/assets/bug_trend.png?v=20260119032959)
 =======
-![Bug Trend](.vibe/assets/bug_trend.png?v=20260116101445)
+![Bug Trend](.vibe/assets/bug_trend.png?v=20260119032959)
 >>>>>>> 0a3b6c117be87bd5e4a959cd9b758c8422af25bb
 
 ---
