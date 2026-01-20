@@ -1,5 +1,95 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.3.6] - 2026-01-20
+
+### Bug Fixes
+
+- Remove unnecessary whitespace in run_detect_secrets_scan function (994080a)
+
+- Fix (887c4bd)
+
+- Remove detect-secrets from requirements-dev.in (7ea2762)
+
+- Remove detect-secrets from requirements-dev.txt (0ca21ec)
+
+- Clean up requirements-dev.txt and ensure detect_secrets field is always present in stats (39014a6)
+
+- Ensure detect_secrets field is always present and improve code readability (3809688)
+
+- Update PKG-INFO and SOURCES.txt for improved documentation and asset management; enhance detect-secrets detection logic (558cc12)
+
+- Update .gitignore to include .vibe assets for proper tracking (a611dd8)
+
+- Enhance detect-secrets detection logic to support multiple formats and improve stats generation (de66541)
+
+- Update .gitignore to exclude .git/FETCH_HEAD and ensure proper asset tracking; enhance detect-secrets detection logic (57f0234)
+
+- Update security_scan workflow to allowlist secret and enhance detect-secrets plotting (1a4ef7d)
+
+- Update security_scan workflow to include allowlist comment for secret handling (1911f79)
+
+- Remove duplicate bug trend image from README (b650aab)
+
+- Update bug trend image and stats in README and stats.json (5988b5b)
+
+- Remove merge conflict markers from README (b3dfbb6)
+
+
+### Documentation
+
+- Update security trend chart (ee85c3f)
+
+- Update security trend chart (b17e0fc)
+
+- Update security trend chart (0a3b6c1)
+
+- Update security trend chart (f73cefa)
+
+- Update security trend chart (bba0908)
+
+- Update security trend chart (def1819)
+
+- Update security trend chart (3d07ec6)
+
+- Update security trend chart (25eef64)
+
+- Update section title and improve clarity in security audit description (86b8453)
+
+- Update security trend chart (740bc3c)
+
+- Update security trend chart (ae837e5)
+
+- Update security trend chart (5430eb0)
+
+- Update security trend chart (3dccca1)
+
+
+### Features
+
+- Adicionada uma verificação retroativa de bibliotecas vulneraveis. agora se uma lib for marcada como vulneravel, irá aparecer tambem qual a lib pai que traz ela para o projeto, ajudando na identificação de potenciais problemas de segurança (6c56c85)
+
+- Update VCSP Guard with enhanced security features and documentation (abbb967)
+
+- Enhance test cases for security tools and project structure validation (f69d09a)
+
+- Add workflows for Dependabot auto-merge, PR tests, and security audit (eac4bec)
+
+- Remove outdated GitHub workflows and security instructions; add new configurations (0a2313a)
+
+- Implement advanced secrets detection with detect-secrets scan (bed6a05)
+
+- Update requirements files to include detect-secrets and improve formatting (8927945)
+
+- Adicionado novo metodo de busca de senhas, detect-secrets, que faz varredura através de entropia. Adicionado um marcador de pasta raiz ao executar o vcsp-scan, para garantir ao usuario que o comando está de fato rodando na pasta raiz, e ao final do scan, foi adicionado um contador de pastas e arquivos, para garantir que o codigo verificou todos os caminhos e pastas necessárias para o projeto (f642c01)
+
+- Add final scan log with statistics for directories and files analyzed (67a7246)
+
+
+### Miscellaneous Tasks
+
+- Update changelog and version to v1.0.3.5 (27aa5ef)
+
+
 ## [1.0.3.5] - 2026-01-12
 
 ### Bug Fixes
