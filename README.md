@@ -17,12 +17,13 @@ No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muito
 
 **Foi pensando nisso que criei essa ferramenta:** ela vai varrer seu código, seja ele criado por IA ou não, em busca dessas potenciais falhas, atuando como uma camada de segurança automatizada.
 
-| Ferramenta | Tipo | O que ela protege? |
-| :--- | :--- | :--- |
-| **Ruff** | Linter/SAST | Qualidade de código, bugs e segurança lógica (substitui Bandit/Flake8). |
-| **Pip-Audit** | SCA | Verifica se suas dependências possuem vulnerabilidades conhecidas (CVEs). |
-| **Semgrep** | IaC/SAST | Varredura profunda em Dockerfiles, Terraform e padrões complexos. |
-| **Secrets** | Regex | Bloqueia chaves de API, tokens e senhas antes do commit. |
+| Ferramenta         | Tipo         | O que ela protege? |
+| :---               | :---         | :--- |
+| **Ruff**           | Linter/SAST  | Qualidade de código, bugs e segurança lógica (substitui Bandit/Flake8). |
+| **Pip-Audit**      | SCA          | Verifica se suas dependências possuem vulnerabilidades conhecidas (CVEs). |
+| **Semgrep**        | IaC/SAST     | Varredura profunda em Dockerfiles, Terraform e padrões complexos. |
+| **Secrets**        | Regex        | Bloqueia chaves de API, tokens e senhas antes do commit. |
+| **Detect-secrets** | SAST/Secrets | Detecção avançada de segredos (entropia, padrões de chaves, tokens, falsos positivos reduzidos). |
 
 ---
 

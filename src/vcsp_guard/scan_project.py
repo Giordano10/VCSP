@@ -734,7 +734,10 @@ def main():
     # Garante que a varredura sempre começa da raiz detectada do projeto
     root_dir = PROJECT_ROOT
     files_with_issues = 0
-    
+
+    # NOVO: Mostrar caminho da raiz no início da varredura
+    logger.log(f"🔎 Iniciando varredura na raiz: {root_dir}", YELLOW)
+
     check_gitignore = True
     active_ignored_dirs = IGNORED_DIRS.copy()
     if args.all:
@@ -756,6 +759,11 @@ def main():
         root_dir = PROJECT_ROOT
 
     logger.log("1️⃣  Buscando chaves (Regex)...")
+
+    # NOVO: Contadores de pastas e arquivos
+    total_dirs = set()
+    total_files = 0
+
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in active_ignored_dirs]
         
@@ -763,6 +771,7 @@ def main():
             # Otimização: Ignora pastas que o git também ignora
             dirs[:] = [d for d in dirs if not is_git_ignored(os.path.join(root, d))]
 
+        total_dirs.add(root)
         for file in files:
             if file in IGNORED_FILES.split(","):
                 continue
@@ -771,6 +780,7 @@ def main():
             if check_gitignore and is_git_ignored(filepath):
                 continue
 
+            total_files += 1
             issues = scan_file(filepath)
             if issues:
                 files_with_issues += 1
@@ -800,6 +810,12 @@ def main():
 
     # 7. Unused Libs (Apenas informativo, não falha o build)
     run_unused_libs_check()
+
+    # NOVO: Log final com estatísticas de varredura
+    logger.log(
+        f"\n📁 Varredura concluída: {len(total_dirs)} pastas e {total_files} arquivos analisados.",
+        GREEN
+    )
 
     if (
         not secrets_ok
