@@ -813,7 +813,8 @@ def main():
 
     # NOVO: Log final com estatísticas de varredura
     logger.log(
-        f"\n📁 Varredura concluída: {len(total_dirs)} pastas e {total_files} arquivos analisados.",
+        f"\n📁 Varredura concluída: {len(total_dirs)} pastas e {total_files},"
+          "arquivos analisados.",
         GREEN
     )
 
