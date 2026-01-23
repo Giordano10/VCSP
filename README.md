@@ -24,6 +24,7 @@ No mundo de hoje, com a crescente adoção das Inteligências Artificiais, muito
 | **Semgrep**        | IaC/SAST     | Varredura profunda em Dockerfiles, Terraform e padrões complexos. |
 | **Secrets**        | Regex        | Bloqueia chaves de API, tokens e senhas antes do commit. |
 | **Detect-secrets** | SAST/Secrets | Detecção avançada de segredos (entropia, padrões de chaves, tokens, falsos positivos reduzidos). |
+| **CWE Top 25 (Semgrep)** | SAST      | Varredura de vulnerabilidades do tipo CWE Top 25 (as 25 falhas mais críticas de software segundo o padrão CWE, usando Semgrep). |
 
 ---
 
@@ -111,18 +112,19 @@ Como este kit protege você enquanto a IA codifica?
 ## 🕵️ Varredura e Histórico (Scanner)
 
 **Para que serve o `vcsp-scan`?**
-Enquanto o `vcsp-init` protege o futuro (novos commits), o `vcsp-scan` protege o passado. Ele serve para **varrer todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
+Enquanto o `vcsp-init` protege o futuro (novos commits), o `vcsp-scan` protege o passado. Ele serve para **varredura todo o código que já existe no projeto** em busca de vulnerabilidades antigas que passaram despercebidas.
 
-O script `vcsp-scan` executa 6 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
+O script `vcsp-scan` executa 7 camadas de verificação e **salva tudo na pasta `logs_scan_vcsp/`**:
 
 1.  **Busca de Segredos:** Identifica chaves de API, tokens e senhas hardcoded (Regex).
 2.  **Segurança Lógica (SAST):** Analisa vulnerabilidades no código Python usando **Ruff** (regras de segurança `S`).
 3.  **Auditoria de Dependências (SCA):** Verifica vulnerabilidades conhecidas (CVEs) nas bibliotecas instaladas usando **Pip-Audit**.
 4.  **Qualidade de Código:** Linting e padronização PEP 8 via **Ruff**.
 5.  **Infraestrutura como Código (IaC):** Escaneia arquivos Docker, Kubernetes e Terraform usando **Semgrep**.
-6.  **Dependências Não Utilizadas:** Verifica se as libs do `requirements.txt` são realmente importadas no projeto.
+6.  **CWE Top 25:** Varredura de vulnerabilidades do tipo CWE Top 25 (as 25 falhas mais críticas de software segundo o padrão CWE, usando Semgrep).
+7.  **Dependências Não Utilizadas:** Verifica se as libs do `requirements.txt` são realmente importadas no projeto.
 
-> **⚠️ Usuários Windows:** Para a análise de infraestrutura (Docker/Terraform), é necessário ter o **Docker Desktop** instalado e rodando. O VCSP detecta automaticamente e usa um container para realizar a varredura, já que o Semgrep não roda nativamente no Windows.
+> **⚠️ Usuários Windows:** Para a análise de infraestrutura (Docker/Terraform) e CWE Top 25, é necessário ter o **Docker Desktop** instalado e rodando. O VCSP detecta automaticamente e usa um container para realizar a varredura, já que o Semgrep não roda nativamente no Windows.
 
 Para rodar a auditoria:
 ```bash
@@ -198,14 +200,15 @@ O VCSP realiza as seguintes verificações automáticas em cada execução:
 
 - **Busca de segredos via Regex** (chaves, tokens, senhas)
 - **Detect-secrets** (detecção avançada de segredos, incluindo entropia e padrões de chaves)
-- **Análise lógica de código** (Ruff Security)
-- **Auditoria de dependências** (Pip-Audit)
-- **Linter de código** (Ruff)
-- **Infraestrutura como código** (Semgrep)
+- **Bandit (Logic)**: Análise de vulnerabilidades lógicas em Python.
+- **Pip-Audit (Deps)**: Auditoria de vulnerabilidades em dependências (CVE).
+- **Ruff (Lint)**: Linting e checagem de boas práticas.
+- **Semgrep (IaC)**: Análise de infraestrutura como código (Dockerfile, Terraform, K8s).
+- **CWE (Top 25)**: Varredura de vulnerabilidades do tipo CWE Top 25 (Semgrep).
 
-O gráfico abaixo mostra a tendência das vulnerabilidades encontradas.
+O gráfico abaixo mostra a tendência das vulnerabilidades encontradas por cada ferramenta ao longo do tempo:
 
-![Bug Trend](.vibe/assets/bug_trend.png?v=20260120153332)
+![Bug Trend](.vibe/assets/bug_trend.png)
 
 ---
 
@@ -250,3 +253,8 @@ Este projeto foi criado e é mantido por **Giordano Alves**, Desenvolvedor Backe
 O objetivo deste template é permitir que desenvolvedores usem o poder da IA ("Vibe Coding") sem sacrificar a solidez e a segurança da engenharia de software tradicional.
 
 > *"Codifique na velocidade da luz, mas com a segurança de um cofre."*
+
+> **Nota Importante:**  
+> Como o **vcsp-guard** é uma biblioteca de varredura e segurança de código, **não é necessário listá-la nos arquivos de dependências** (`requirements.txt`, `pyproject.toml`, etc.), pois isso tornaria o projeto no GitHub desnecessariamente pesado.  
+> O vcsp-guard é recomendado para uso local, durante o desenvolvimento.  
+> Caso queira que seu projeto seja varrido automaticamente via CI/CD, basta rodar `vcsp-init` e escolher a opção correspondente aos **Actions do GitHub**. Assim, o `vcsp-scan` fará a varredura do seu projeto em uma máquina Linux via GitHub Actions, sem precisar incluir a biblioteca nas dependências do seu projeto.
