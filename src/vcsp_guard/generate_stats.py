@@ -60,7 +60,12 @@ def main():
             if ruff_match:
                 stats['ruff'] = int(ruff_match.group(1))
             
-            semgrep_match = re.search(r'Found (\d+) infrastructure issues|Problemas de infraestrutura encontrados: (\d+)', content)
+            # E501: Quebra linha longa para semgrep_match
+            semgrep_match = re.search(
+                r'Found (\d+) infrastructure issues|'
+                r'Problemas de infraestrutura encontrados: (\d+)',
+                content
+            )
             if semgrep_match:
                 val = semgrep_match.group(1) or semgrep_match.group(2)
                 stats['semgrep'] = int(val)

@@ -74,9 +74,10 @@ jobs:
               semgrep_match = re.search(r'Found (\d+) infrastructure issues', content)
               if semgrep_match: stats['semgrep'] = int(semgrep_match.group(1))
               # Busca por CWE (Semgrep Top 25)
+              # Regex mais robusto para capturar 'Code Finding' mesmo com espaços
               cwe_match = re.search(
-                  r"Semgrep CWE Top 25 encontrou vulnerabilidades!.*?(\d+) Code Finding",
-                  content, re.DOTALL
+                  r"^\s*┌─+\s*┐\s*│\s*(\d+)\s*Code Finding\s*│",
+                  content, re.MULTILINE
               )
               if cwe_match:
                   stats['cwe'] = int(cwe_match.group(1))
@@ -90,7 +91,7 @@ jobs:
           if os.path.exists(history_file):
               with open(history_file, 'r') as f: history = json.load(f)
           history.append(stats)
-          history = history[-15:]
+          history = history[-15:] # Manter últimos 15 scans
           with open(history_file, 'w') as f: json.dump(history, f)
 
           # 4. Gerar Gráfico
@@ -102,7 +103,7 @@ jobs:
           plt.plot(dates, [h['audit'] for h in history], label='Pip-Audit (Deps)', marker='o', color='blue')
           plt.plot(dates, [h['ruff'] for h in history], label='Ruff (Lint)', marker='o', color='green')
           plt.plot(dates, [h.get('semgrep', 0) for h in history], label='Semgrep (IaC)', marker='o', color='purple')
-          plt.plot(dates, [h.get('cwe', 0) for h in history], label='CWE (Top 25)', marker='o', color='magenta', linewidth=2)
+          plt.plot(dates, [h.get('cwe', 0) for h in history], label='CWE (Top 25)', marker='o', color='black', linewidth=2)
           plt.title('Tendência de Vulnerabilidades (VCSP)')
           plt.xlabel('Data')
           plt.ylabel('Quantidade de Falhas')

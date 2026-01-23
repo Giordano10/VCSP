@@ -103,7 +103,7 @@ jobs:
           plt.plot(dates, [h['audit'] for h in history], label='Pip-Audit (Deps)', marker='o', color='blue')
           plt.plot(dates, [h['ruff'] for h in history], label='Ruff (Lint)', marker='o', color='green')
           plt.plot(dates, [h.get('semgrep', 0) for h in history], label='Semgrep (IaC)', marker='o', color='purple')
-          plt.plot(dates, [h.get('cwe', 0) for h in history], label='CWE (Top 25)', marker='o', color='magenta', linewidth=2)
+          plt.plot(dates, [h.get('cwe', 0) for h in history], label='CWE (Top 25)', marker='o', color='black', linewidth=2)
           plt.title('Tendência de Vulnerabilidades (VCSP)')
           plt.xlabel('Data')
           plt.ylabel('Quantidade de Falhas')

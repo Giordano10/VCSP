@@ -208,11 +208,7 @@ O VCSP realiza as seguintes verificações automáticas em cada execução:
 
 O gráfico abaixo mostra a tendência das vulnerabilidades encontradas por cada ferramenta ao longo do tempo:
 
-<<<<<<< HEAD
-![Bug Trend](.vibe/assets/bug_trend.png)
-=======
 ![Bug Trend](.vibe/assets/bug_trend.png?v=20260123013906)
->>>>>>> dd06acb584bbc8bbd1c2ada5b61214835972f6b3
 
 ---
 

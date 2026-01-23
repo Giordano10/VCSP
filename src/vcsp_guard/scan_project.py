@@ -589,7 +589,11 @@ def run_iac_scan():
             logger.log("\n⛔ O SEMGREP ENCONTROU PROBLEMAS DE INFRAESTRUTURA!", RED)
             # Limita o output para não poluir demais se for gigante
             output_lines = result.stdout.splitlines()
-            logger.log(f"   🔴 Problemas de infraestrutura encontrados: {len(output_lines)}", YELLOW)
+            msg = (
+                f"   🔴 Problemas de infraestrutura encontrados: "
+                f"{len(output_lines)}"
+            )
+            logger.log(msg, YELLOW)
             if len(output_lines) > 50:
                 logger.log("\n".join(output_lines[:50]))
                 logger.log(f"... e mais {len(output_lines)-50} linhas.", YELLOW)
