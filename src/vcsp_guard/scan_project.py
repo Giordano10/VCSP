@@ -223,7 +223,7 @@ def build_reverse_dependency_map():
     return rev_map
 
 def run_pip_audit(custom_deps_file=None):
-    logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências (SCA)...{RESET}")
+    logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências (CVE)...{RESET}")
     
     # 1. Identificar quais arquivos existem
     target_filenames = ["requirements.txt", "requirements-dev.txt"]
@@ -350,6 +350,47 @@ def run_pip_audit(custom_deps_file=None):
         logger.log(f"❌ Erro ao rodar pip-audit: {e}", RED)
         return False
     
+def get_gitignore_excludes(root_dir):
+    """
+    Lê o .gitignore e retorna uma lista de arquivos/pastas a serem ignorados
+    pelo detect-secrets. Filtra padrões inválidos para regex.
+    """
+    gitignore_path = os.path.join(root_dir, ".gitignore")
+    excludes = []
+    if os.path.exists(gitignore_path):
+        with open(gitignore_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                # Ignora linhas vazias, comentários, negações, e padrões perigosos
+                if (
+                    not line or
+                    line.startswith("#") or
+                    line.startswith("!") or
+                    line in {"*", ".", "/", "./", "**"} or
+                    line.startswith("[") or
+                    line.startswith("]") or
+                    line.startswith("\\") or
+                    line.startswith("?") or
+                    line.startswith("+") or
+                    line.startswith("(") or
+                    line.startswith(")") or
+                    line.startswith("{") or
+                    line.startswith("}") or
+                    line.startswith("^") or
+                    line.startswith("$") or
+                    line.startswith("|")
+                ):
+                    continue
+                # Remove possíveis barras finais e espaços
+                pattern = line.rstrip("/").strip()
+                # Ignora padrões só de caracteres especiais ou com wildcards
+                has_word = re.search(r"\w", pattern)
+                has_wildcard = "*" in pattern or "?" in pattern
+                if not pattern or not has_word or has_wildcard:
+                    continue
+                excludes.append(pattern)
+    return excludes
+
 def run_detect_secrets_scan(root_dir):
     logger.log(
         "\n{}🔑 Executando Detect-secrets (Detecção Avançada de Segredos)...{}".format(
@@ -359,63 +400,70 @@ def run_detect_secrets_scan(root_dir):
     if not ensure_package_installed("detect-secrets"):
         return True  # Não falha o build, apenas avisa
 
-    try:
-        cmd = [
-            "detect-secrets", "scan", "--all-files",
-            "--exclude-files", "logs_scan_vcsp",
-            "--exclude-files", ".ruff_cache",
-            "--exclude-files", "__pycache__",
-            "--exclude-files", "pytest_cache",
-            "--exclude-files", ".git/FETCH_HEAD",
-        ]
-        result = subprocess.run(
-            cmd,
-            cwd=root_dir,
-            text=True,
-            encoding="utf-8",
-            errors="ignore",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-        )
-        output = result.stdout
+    # NOVO: Monta lista de --exclude-files a partir do .gitignore (exceto se --local)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--local", action="store_true")
+    args, _ = parser.parse_known_args()
+    exclude_files = [
+        "logs_scan_vcsp",
+        ".ruff_cache",
+        "__pycache__",
+        "pytest_cache",
+        ".git/FETCH_HEAD"
+        ".venv",
+    ]
+    if not args.local:
+        gitignore_excludes = get_gitignore_excludes(root_dir)
+        exclude_files.extend(gitignore_excludes)
 
-        try:
-            data = json.loads(output)
-            results = data.get("results", {})
-            
-            has_issues = False
-            for filepath, secrets in results.items():
-                if secrets:
-                    has_issues = True
-                    logger.log(f"❌ [DETECT-SECRETS] {filepath}", RED)
-                    for secret in secrets:
-                        line = secret.get("line_number", "?")
-                        type_ = secret.get("type", "Unknown")
-                        logger.log(f"   L.{line}: {type_}")
-            
-            if not has_issues:
-                logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
-                return True
-                
-            return False
-            
-        except json.JSONDecodeError:
-            # Fallback para verificação simples se o JSON falhar
-            if '"results": {}' in output or (
-                '"results":{' in output and '"type":' not in output
-            ):
-                logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
-                return True
-                
-            logger.log(
-                "❌ Detect-secrets encontrou possíveis segredos (Raw Output)!", RED
-            )
-            logger.log(output)
-            return False
-            
+    cmd = [
+        "detect-secrets", "scan", "--all-files"
+    ]
+    for excl in exclude_files:
+        cmd.extend(["--exclude-files", excl])
+
+    result = subprocess.run(
+        cmd,
+        cwd=root_dir,
+        text=True,
+        encoding="utf-8",
+        errors="ignore",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    output = result.stdout
+
+    try:
+        data = json.loads(output)
+        results = data.get("results", {})
+        has_issues = False
+        for filepath, secrets in results.items():
+            if secrets:
+                has_issues = True
+                logger.log(f"❌ [DETECT-SECRETS] {filepath}", RED)
+                for secret in secrets:
+                    line = secret.get("line_number", "?")
+                    type_ = secret.get("type", "Unknown")
+                    logger.log(f"   L.{line}: {type_}")
+        if not has_issues:
+            logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
+            return True
+        return False
+    except json.JSONDecodeError:
+        # Fallback para verificação simples se o JSON falhar
+        if '"results": {}' in output or (
+            '"results":{' in output and '"type":' not in output
+        ):
+            logger.log("✅ Nenhum segredo encontrado pelo detect-secrets.", GREEN)
+            return True
+        logger.log(
+            "❌ Detect-secrets encontrou possíveis segredos (Raw Output)!", RED
+        )
+        logger.log(output)
+        return False
     except Exception as e:
         logger.log(f"❌ Erro ao rodar detect-secrets: {e}", RED)
-        return True  # Não falha o build, apenas avisa    
+        return True  # Não falha o build, apenas avisa
 
 def run_security_logic():
     logger.log(f"\n{BOLD}🔫 Executando Análise Lógica (Ruff Security)...{RESET}")
@@ -541,7 +589,7 @@ def run_iac_scan():
             logger.log("\n⛔ O SEMGREP ENCONTROU PROBLEMAS DE INFRAESTRUTURA!", RED)
             # Limita o output para não poluir demais se for gigante
             output_lines = result.stdout.splitlines()
-            logger.log(f"Found {len(output_lines)} infrastructure issues.")
+            logger.log(f"   🔴 Problemas de infraestrutura encontrados: {len(output_lines)}", YELLOW)
             if len(output_lines) > 50:
                 logger.log("\n".join(output_lines[:50]))
                 logger.log(f"... e mais {len(output_lines)-50} linhas.", YELLOW)
@@ -706,6 +754,57 @@ def scan_file(filepath):
         pass
     return issues
 
+def run_cwe_scan():
+    """
+    Executa varredura de CWE usando Semgrep (regra p/cwe-top-25) e reporta no log.
+    """
+    logger.log(f"\n{BOLD}🕵️  Executando Varredura CWE (Semgrep Top 25)...{RESET}")
+    if not ensure_package_installed("semgrep"):
+        return True  # Não falha o build, apenas avisa
+
+    try:
+        cmd = [
+            "semgrep", "scan",
+            "--config", "p/cwe-top-25",
+            "--error", "--metrics=off", "--quiet", "--no-git-ignore"
+        ]
+        result = subprocess.run(
+            cmd,
+            cwd=PROJECT_ROOT,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        output = result.stdout
+        if result.returncode != 0:
+            logger.log("⛔ Semgrep CWE Top 25 encontrou vulnerabilidades!", RED)
+            # Conta linhas não vazias como falhas (com --quiet, 1 linha = 1 erro)
+            count = len([line for line in output.splitlines() if line.strip()])
+            logger.log(f"   🔴 Falhas CWE detectadas: {count}", RED)
+            logger.log(output)
+            return False
+        logger.log("✅ Nenhuma vulnerabilidade CWE Top 25 encontrada.", GREEN)
+        return True
+    except Exception as e:
+        logger.log(f"❌ Erro ao rodar Semgrep CWE Top 25: {e}", RED)
+        return True  # Não falha o build, apenas avisa
+
+def run_pip_audit_and_cwe(custom_deps_file=None):
+    """
+    Executa auditoria de dependências (CVE) e varredura CWE (Top 25) na mesma etapa.
+    """
+    logger.log(f"\n{BOLD}📦 Executando Auditoria de Dependências CVE e CWE...{RESET}")
+
+    # --- CVE (pip-audit) ---
+    cve_ok = run_pip_audit(custom_deps_file)
+
+    # --- CWE (Semgrep Top 25) ---
+    cwe_ok = run_cwe_scan()
+
+    return cve_ok and cwe_ok
+
 def main():
     global PROJECT_ROOT
     parser = argparse.ArgumentParser(
@@ -795,26 +894,21 @@ def main():
 
     # 2. Detect-secrets ()
     detect_secrets_ok = run_detect_secrets_scan(PROJECT_ROOT)
-
-    # 3. Security Logic (Ruff)
     security_ok = run_security_logic()
-    
-    # 4. Checkov (Infraestrutura)
     iac_ok = run_iac_scan()
-    
-    # 5. Pip Audit
-    audit_ok = run_pip_audit(custom_deps_file if custom_deps_file else None)
-
-    # 6. Ruff
+    # Corrige E501 quebrando linha longa
+    audit_and_cwe_ok = run_pip_audit_and_cwe(
+        custom_deps_file if custom_deps_file else None
+    )
     ruff_ok = run_ruff_linter()
-
-    # 7. Unused Libs (Apenas informativo, não falha o build)
     run_unused_libs_check()
 
-    # NOVO: Log final com estatísticas de varredura
+    # Remove chamada duplicada de run_cwe_scan (F841)
+    # ...existing code...
+
     logger.log(
         f"\n📁 Varredura concluída: {len(total_dirs)} pastas e {total_files},"
-          "arquivos analisados.",
+        "arquivos analisados.",
         GREEN
     )
 
@@ -823,7 +917,7 @@ def main():
         or not detect_secrets_ok
         or not security_ok
         or not iac_ok
-        or not audit_ok
+        or not audit_and_cwe_ok
         or not ruff_ok
     ):
         logger.log("\n⛔ FALHA NA AUDITORIA. VERIFIQUE OS ERROS ACIMA.", RED)

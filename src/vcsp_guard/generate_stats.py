@@ -25,14 +25,14 @@ def main():
         stats = {
             'date': '', 
             'secrets': 0, 
-            'detect_secrets': 0,  # Garante sempre presente
+            'detect_secrets': 0,
             'bandit': 0, 
             'audit': 0, 
             'ruff': 0, 
-            'semgrep': 0
+            'semgrep': 0,
+            'cwe': 0
         }
         
-        # Extrair data do nome do arquivo: scan_2025-12-15_11-10-45.txt
         filename = os.path.basename(log_file)
         try:
             date_part = filename.replace("scan_", "").replace(".txt", "")
@@ -44,7 +44,6 @@ def main():
         with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
             stats['secrets'] = len(re.findall(r'❌ \[SEGREDO\]', content))
-            # Garante que detect_secrets sempre existe, mesmo se não aparecer no log
             stats['detect_secrets'] = len(
                 re.findall(
                     r'❌ \[DETECT-SECRETS\]|❌ Detect-secrets encontrou',
@@ -60,9 +59,22 @@ def main():
             ruff_match = re.search(r'Found (\d+) error', content)
             if ruff_match:
                 stats['ruff'] = int(ruff_match.group(1))
-            semgrep_match = re.search(r'Found (\d+) infrastructure issues', content)
+            
+            semgrep_match = re.search(r'Found (\d+) infrastructure issues|Problemas de infraestrutura encontrados: (\d+)', content)
             if semgrep_match:
-                stats['semgrep'] = int(semgrep_match.group(1))
+                val = semgrep_match.group(1) or semgrep_match.group(2)
+                stats['semgrep'] = int(val)
+
+            cwe_match = re.search(r'│\s*(\d+)\s*Code Finding', content)
+            if cwe_match:
+                stats['cwe'] = int(cwe_match.group(1))
+            else:
+                # fallback para contagem por linha "Falhas CWE detectadas: N"
+                cwe_fallback = re.search(r'Falhas CWE detectadas: (\d+)', content)
+                if cwe_fallback:
+                    stats['cwe'] = int(cwe_fallback.group(1))
+                elif "Semgrep CWE Top 25 encontrou vulnerabilidades!" in content:
+                    stats['cwe'] = 1
         
         history.append(stats)
 
@@ -91,6 +103,7 @@ def main():
     plot_line('audit', 'Pip-Audit (Deps)', 'blue')
     plot_line('ruff', 'Ruff (Lint)', 'green')
     plot_line('semgrep', 'Semgrep (IaC)', 'purple')
+    plot_line('cwe', 'CWE Top 25', 'black')
     
     plt.title('Tendência de Vulnerabilidades (VCSP)')
     plt.xlabel('Execuções (Data/Hora)')
