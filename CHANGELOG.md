@@ -1,5 +1,39 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.3.7] - 2026-01-23
+
+### Bug Fixes
+
+- Resolve merge conflict in README.md regarding bug trend image (a38fb55)
+
+
+### Documentation
+
+- Update security trend chart (c3f31c2)
+
+- Update README to include CWE Top 25 vulnerability scanning and clarify vcsp-guard usage (a06cc64)
+
+- Update security trend chart (dd06acb)
+
+- Update security trend chart (b39fcdb)
+
+- Update security trend chart (b1f2f6c)
+
+- Update security trend chart (0e95827)
+
+
+### Features
+
+- Add GitHub workflows for Dependabot auto-merge, PR tests, and release publishing; enhance security scan reporting (9c09142)
+
+- Add GitHub workflows for Dependabot auto-merge, PR tests, and release publishing (0da5b93)
+
+
+### Miscellaneous Tasks
+
+- Update changelog and version to v1.0.3.6 (ab146ff)
+
+
 ## [1.0.3.6] - 2026-01-20
 
 ### Bug Fixes
