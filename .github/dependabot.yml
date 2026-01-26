@@ -1,4 +1,6 @@
+name: Dependabot Updates
 version: 2
+workflow_dispatch: # Permite rodar manualmente na aba Actions
 updates:
   - package-ecosystem: "pip"
     directory: "/"
