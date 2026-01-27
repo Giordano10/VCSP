@@ -27,23 +27,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Cache UV e Pacotes
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/uv
-            /tmp/.uv-cache
-          key: ${{ runner.os }}-uv-python-${{ hashFiles('**/requirements.txt', 'requirements-dev.txt ') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-python-
-
       - name: Instalar uv
         uses: astral-sh/setup-uv@v6
+        with:
+           enable-cache: true
+           cache-dependency-glob: "**/requirements.txt"
       
       - name: Instalar Ferramentas
         run: |
-          uv pip install --system -r requirements.txt
-          uv pip install --system vcsp-guard pytest "matplotlib>=3.8"
+          uv pip install --system -r requirements.txt, requirements-dev.txt
       
       - name: Rodar Testes (Pytest)
         run: pytest
