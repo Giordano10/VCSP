@@ -35,7 +35,7 @@ jobs:
       
       - name: Instalar Ferramentas
         run: |
-          uv pip install --system -r requirements.txt requirements-dev.txt
+          uv pip install --system -r requirements.txt -r requirements-dev.txt
       
       - name: Rodar Testes (Pytest)
         run: pytest
