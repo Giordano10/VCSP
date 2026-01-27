@@ -29,7 +29,10 @@ jobs:
           cache: 'pip'
       
       - name: Instalar Ferramentas
-        run: pip install --upgrade pip && pip install bandit pip-audit ruff pytest matplotlib "semgrep>=1.0.0"
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install vcsp-guard pytest "matplotlib>=3.8"
       
       - name: Rodar Testes (Pytest)
         run: pytest
@@ -37,7 +40,9 @@ jobs:
       - name: Rodar Scan Completo
         id: scan
         continue-on-error: true
-        run: python src/vcsp_guard/scan_project.py
+        run: |
+          rm -f .git/FETCH_HEAD
+          vcsp-scan
       
       - name: Gerar Gráfico de Tendência  # pragma: allowlist secret
         run: |  # pragma: allowlist secret
