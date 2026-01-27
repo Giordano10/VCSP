@@ -32,8 +32,8 @@ jobs:
         with:
           path: |
             ~/.cache/uv
-            ~/.local/lib/python3.11/site-packages
-          key: ${{ runner.os }}-uv-python-${{ hashFiles('**/requirements.txt') }}
+            /tmp/.uv-cache
+          key: ${{ runner.os }}-uv-python-${{ hashFiles('**/requirements.txt', 'requirements-dev.txt ') }}
           restore-keys: |
             ${{ runner.os }}-uv-python-
 
