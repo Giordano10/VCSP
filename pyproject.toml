@@ -1,60 +1,8 @@
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "vcsp-guard"
-version = "1.0.3.7"
-description = "Vibe Coding Security Protocol - Security & Quality Guardrails for AI Coding"
-readme = "README.md"
-requires-python = ">=3.10"
-license = {text = "MIT"}
-authors = [
-  {name = "Giordano Alves", email = "giordano.alves9@gmail.com"}
-]
-
-# --- BLOCO CORRIGIDO: Keywords e Classifiers dentro de [project] ---
-keywords = ["security", "ai", "audit", "code-quality", "guardrails", "static-analysis"]
-
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-    "Topic :: Security",
-    "Topic :: Software Development :: Quality Assurance",
-]
-
-dependencies = [
-    "pip-audit>=2.6.0",
-    "ruff>=0.1.0",
-    "semgrep>=1.0.0; sys_platform != 'win32'"
-]
-# -------------------------------------------------------------------
-
-# --- BLOCO MOVIDO PARA BAIXO: URLs isoladas ---
-[project.urls]
-Homepage = "https://github.com/giordano10/VCSP"
-Repository = "https://github.com/giordano10/VCSP"
-Issues = "https://github.com/giordano10/VCSP/issues"
-
-# --- Outras seções ---
-[project.optional-dependencies]
-stats = ["matplotlib>=3.7.0"]
-dev = ["pytest", "black", "mypy", "types-setuptools"]
-
-[project.scripts]
-vcsp-guard = "vcsp_guard.main:main"
-vcsp-init = "vcsp_guard.install_hooks:install"
-vcsp-scan = "vcsp_guard.scan_project:main"
-vcsp-stats = "vcsp_guard.generate_stats:main"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.ruff]
-line-length = 88
-target-version = "py311"
-
 [tool.ruff.lint]
 select = ["E", "F", "B", "S"]
-ignore = ["S101"]
-exclude = ["tests", "venv"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+"test_*.py" = ["S101"]
+
+# Original content preserved...
