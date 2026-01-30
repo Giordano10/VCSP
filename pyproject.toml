@@ -13,6 +13,9 @@ authors = [{ name = "Giordano Alves", email = "giordano.alves9@gmail.com" }]
 keywords = ["security", "ai", "audit", "code-quality", "guardrails", "static-analysis"]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
     "Topic :: Security",
     "Topic :: Software Development :: Quality Assurance",
@@ -25,7 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 stats = ["matplotlib>=3.7.0"]
-dev = ["pytest", "black", "mypy", "types-setuptools"]
+dev = ["pytest", "black", "mypy", "types-setuptools", "tomli>=2.0.0; python_version < '3.11'"]
 
 [project.scripts]
 vcsp-guard = "vcsp_guard.main:main"
