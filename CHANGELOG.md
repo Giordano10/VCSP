@@ -1,5 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [Unreleased]
+
+### Bug Fixes
+
+- Add pyproject packaging metadata (8ca7686)
+
+
+### Documentation
+
+- Update security trend chart (7295069)
+
+
+### Miscellaneous Tasks
+
+- Add py3 classifiers and tomli dev dep (7e42bf0)
+
+
+### Testing
+
+- Ensure version test works on py3.10 (2301953)
+
+
 ## [1.0.3.8] - 2026-01-30
 
 ### Bug Fixes
@@ -37,12 +59,16 @@ All notable changes to this project will be documented in this file.
 
 - Update security trend chart (52e74e5)
 
+- Update security trend chart (6a567b0)
+
 
 ### Miscellaneous Tasks
 
 - Update changelog and version to v1.0.3.7 (a0ec1b5)
 
 - Use uv in security workflow (38bb720)
+
+- Update changelog and version to v1.0.3.8 (d684a97)
 
 
 ## [1.0.3.7] - 2026-01-23
