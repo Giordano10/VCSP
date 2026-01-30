@@ -26,21 +26,27 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-          cache: 'uv'
 
       - name: Instalar uv
         uses: astral-sh/setup-uv@v6
-      
+        with:
+           enable-cache: true
+           cache-dependency-glob: "**/requirements.txt"
+
       - name: Instalar Ferramentas
-        run: uv pip install --system bandit pip-audit ruff pytest matplotlib "semgrep>=1.0.0"
+        run: |
+          uv pip install --system -r requirements.txt -r requirements-dev.txt
+          uv pip install --system vcsp-guard "matplotlib>=3.8"
       
       - name: Rodar Testes (Pytest)
         run: pytest
-      
+
       - name: Rodar Scan Completo
         id: scan
         continue-on-error: true
-        run: python src/vcsp_guard/scan_project.py
+        run: |
+          rm -f .git/FETCH_HEAD
+          vcsp-scan
       
       - name: Gerar Gráfico de Tendência  # pragma: allowlist secret
         run: |  # pragma: allowlist secret
@@ -134,21 +140,21 @@ jobs:
         env:
           HEAD_REF: ${{ github.head_ref }}
         run: git pull origin "$HEAD_REF" --rebase --autostash
-      
+
       - name: Commit do Gráfico
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "docs: update security trend chart"
           file_pattern: .vibe/stats.json .vibe/assets/bug_trend.png README.md
           branch: ${{ github.ref_name }}
-      
+
       - name: Upload Logs (Artifact)
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: security-logs
           path: logs_scan_vcsp/
-      
+
       - name: Verificar Status do Scan
         if: steps.scan.outcome == 'failure'
         run: |
