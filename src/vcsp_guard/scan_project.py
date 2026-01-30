@@ -635,6 +635,40 @@ def get_project_imports(root_dir):
                     continue
     return imports
 
+def read_file_with_encoding_fallback(filepath):
+    """
+    Tenta ler um arquivo testando múltiplas codificações.
+    Retorna o conteúdo do arquivo como string.
+    
+    Args:
+        filepath: Caminho completo do arquivo a ser lido
+        
+    Returns:
+        str: Conteúdo do arquivo decodificado
+        
+    Raises:
+        Exception: Se nenhuma codificação funcionar
+    """
+    # Lista de codificações comuns, em ordem de prioridade
+    encodings = ['utf-8', 'latin-1', 'cp1252', 'utf-16']
+    
+    for encoding in encodings:
+        try:
+            with open(filepath, 'r', encoding=encoding) as f:
+                content = f.read()
+                return content
+        except UnicodeDecodeError:
+            continue
+    
+    # Se nenhuma codificação funcionar, tenta com errors='replace'
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+            return f.read()
+    except Exception as e:
+        raise Exception(
+            f"Não foi possível ler o arquivo {filepath}: {e}"
+        ) from e
+
 def run_unused_libs_check():
     logger.log(f"\n{BOLD}🗑️  Verificando Dependências Não Utilizadas...{RESET}")
     
@@ -681,17 +715,17 @@ def run_unused_libs_check():
         declared_pkgs = set()
         
         for requirements_path in found_files:
-            with open(requirements_path, 'r', encoding='utf-8') as f:
-                for line in f:
-                    line = line.strip()
-                    
-                    if not line or line.startswith('#') or line.startswith('-'):
-                        continue
-                    
-                    # Remove versionamento (ex: "pandas>=1.0" vira "pandas")
-                    pkg_name = re.split(r'[=<>~!;]', line)[0].strip()
-                    if pkg_name:
-                        declared_pkgs.add(pkg_name.lower())
+            content = read_file_with_encoding_fallback(requirements_path)
+            for line in content.splitlines():
+                line = line.strip()
+                
+                if not line or line.startswith('#') or line.startswith('-'):
+                    continue
+                
+                # Remove versionamento (ex: "pandas>=1.0" vira "pandas")
+                pkg_name = re.split(r'[=<>~!;]', line)[0].strip()
+                if pkg_name:
+                    declared_pkgs.add(pkg_name.lower())
 
         # --- LÓGICA ESTILO PIPDEPTREE (FILTRO DE SUB-DEPENDÊNCIAS) ---
         transitive_deps = set()

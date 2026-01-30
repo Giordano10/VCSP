@@ -24,4 +24,5 @@ src/vcsp_guard/.vibe/.github/workflows/dependabot-auto-merge.yml
 src/vcsp_guard/.vibe/.github/workflows/dependabot-pr-tests.yml
 src/vcsp_guard/.vibe/.github/workflows/publish_release.yml
 src/vcsp_guard/.vibe/.github/workflows/security_scan.yml
+tests/test_encoding_fix.py
 tests/test_sample.py
