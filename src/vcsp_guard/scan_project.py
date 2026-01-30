@@ -665,7 +665,9 @@ def read_file_with_encoding_fallback(filepath):
         with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
             return f.read()
     except Exception as e:
-        raise Exception(f"Não foi possível ler o arquivo {filepath}: {e}")
+        raise Exception(
+            f"Não foi possível ler o arquivo {filepath}: {e}"
+        ) from e
 
 def run_unused_libs_check():
     logger.log(f"\n{BOLD}🗑️  Verificando Dependências Não Utilizadas...{RESET}")

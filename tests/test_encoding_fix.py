@@ -4,7 +4,6 @@ Testes para a correção de encoding em arquivos requirements.txt
 import tempfile
 import os
 from pathlib import Path
-import sys
 import importlib.util
 
 def _load_scan_module():
@@ -28,7 +27,9 @@ def test_read_file_utf8():
     module = _load_scan_module()
     
     # Cria um arquivo temporário com encoding UTF-8
-    with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', delete=False, suffix='.txt') as f:
+    with tempfile.NamedTemporaryFile(
+        mode='w', encoding='utf-8', delete=False, suffix='.txt'
+    ) as f:
         f.write("requests==2.28.0\n")
         f.write("flask>=2.0.0\n")
         f.write("# comentário\n")
@@ -38,7 +39,8 @@ def test_read_file_utf8():
         content = module.read_file_with_encoding_fallback(temp_path)
         assert "requests" in content
         assert "flask" in content
-        assert "comentário" in content or "coment" in content  # fallback pode alterar caracteres
+        # fallback pode alterar caracteres
+        assert "comentário" in content or "coment" in content
     finally:
         os.unlink(temp_path)
 
@@ -47,7 +49,9 @@ def test_read_file_latin1():
     module = _load_scan_module()
     
     # Cria um arquivo temporário com encoding Latin-1
-    with tempfile.NamedTemporaryFile(mode='w', encoding='latin-1', delete=False, suffix='.txt') as f:
+    with tempfile.NamedTemporaryFile(
+        mode='w', encoding='latin-1', delete=False, suffix='.txt'
+    ) as f:
         f.write("requests==2.28.0\n")
         f.write("flask>=2.0.0\n")
         f.write("# comentário com acentuação\n")
@@ -86,7 +90,9 @@ def test_read_file_cp1252():
     module = _load_scan_module()
     
     # Cria um arquivo temporário com encoding CP1252
-    with tempfile.NamedTemporaryFile(mode='w', encoding='cp1252', delete=False, suffix='.txt') as f:
+    with tempfile.NamedTemporaryFile(
+        mode='w', encoding='cp1252', delete=False, suffix='.txt'
+    ) as f:
         f.write("requests==2.28.0\n")
         f.write("numpy>=1.20.0\n")
         temp_path = f.name
