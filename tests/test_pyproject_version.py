@@ -2,7 +2,10 @@
 Tests to ensure packaging metadata defines a real version.
 """
 from pathlib import Path
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover
+    import tomli as tomllib
 
 
 def test_pyproject_version_is_defined() -> None:
