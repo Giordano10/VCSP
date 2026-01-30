@@ -1,5 +1,50 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.3.8] - 2026-01-30
+
+### Bug Fixes
+
+- Configure Ruff to ignore S101 (assert) only in test files (7e272ee)
+
+
+### Documentation
+
+- Update security trend chart (71bb1ef)
+
+- Update security trend chart (5e5b497)
+
+- Update security trend chart (a479009)
+
+- Update security trend chart (e40ac97)
+
+- Update security trend chart (196f77c)
+
+- Update security trend chart (8891fe2)
+
+- Update security trend chart (310a005)
+
+- Update security trend chart (8467eec)
+
+- Update security trend chart (9654488)
+
+- Update security trend chart (a37bb20)
+
+- Update security trend chart (a5f1594)
+
+- Update security trend chart (9d7836a)
+
+- Update security trend chart (7c6a2dc)
+
+- Update security trend chart (52e74e5)
+
+
+### Miscellaneous Tasks
+
+- Update changelog and version to v1.0.3.7 (a0ec1b5)
+
+- Use uv in security workflow (38bb720)
+
+
 ## [1.0.3.7] - 2026-01-23
 
 ### Bug Fixes
