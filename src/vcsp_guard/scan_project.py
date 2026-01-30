@@ -650,14 +650,14 @@ def read_file_with_encoding_fallback(filepath):
         Exception: Se nenhuma codificação funcionar
     """
     # Lista de codificações comuns, em ordem de prioridade
-    encodings = ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1', 'utf-16']
+    encodings = ['utf-8', 'latin-1', 'cp1252', 'utf-16']
     
     for encoding in encodings:
         try:
             with open(filepath, 'r', encoding=encoding) as f:
                 content = f.read()
                 return content
-        except (UnicodeDecodeError, LookupError):
+        except UnicodeDecodeError:
             continue
     
     # Se nenhuma codificação funcionar, tenta com errors='replace'
