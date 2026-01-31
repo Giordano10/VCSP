@@ -36,12 +36,6 @@ Instale a biblioteca oficial via pip em seu ambiente virtual:
 ```bash
 pip install vcsp-guard
 ```
-Para incluir a geração de gráficos (estatísticas):
-
-```bash
-pip install "vcsp-guard[stats]"
-```
-
 
 ### 2. Inicialização (Ativar Proteção)
 Na raiz do seu projeto, execute o comando de inicialização. Isso configurará os hooks do Git e copiará os arquivos de configuração de IA necessários.
