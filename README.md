@@ -118,6 +118,9 @@ O script `vcsp-scan` executa 7 camadas de verificação e **salva tudo na pasta 
 6.  **CWE Top 25:** Varredura de vulnerabilidades do tipo CWE Top 25 (as 25 falhas mais críticas de software segundo o padrão CWE, usando Semgrep).
 7.  **Dependências Não Utilizadas:** Verifica se as libs do `requirements.txt` são realmente importadas no projeto.
 
+**Como o Pip-Audit obtém os CVEs?**  
+O Pip-Audit não carrega uma lista fixa dentro do VCSP. Ele consulta fontes oficiais de vulnerabilidades (como o **PyPI Advisory Database** e o serviço **OSV**) em tempo de execução, baixando os avisos e mantendo um cache local quando disponível. Em execuções seguintes, ele reaproveita o cache e atualiza os dados quando necessário.
+
 > **⚠️ Usuários Windows:** Para a análise de infraestrutura (Docker/Terraform) e CWE Top 25, é necessário ter o **Docker Desktop** instalado e rodando. O VCSP detecta automaticamente e usa um container para realizar a varredura, já que o Semgrep não roda nativamente no Windows.
 
 Para rodar a auditoria:
