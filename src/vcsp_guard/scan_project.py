@@ -239,17 +239,35 @@ def run_pip_audit(custom_deps_file=None):
         if os.path.exists(custom_path):
             found_files.append(custom_path)
     
-    # Se não achar nada, tenta procurar qualquer coisa genérica (lógica antiga)
-    # ou retorna erro dependendo da sua estratégia.
-    # Vamos avisar e tentar escanear o ambiente.
+    def _is_requirements_file(path):
+        base = os.path.basename(path).lower()
+        return base.endswith(".txt") and "requirements" in base
+
+    # Se não achar nada, tenta procurar qualquer coisa genérica.
     if not found_files:
-        # Tenta achar um arquivo genérico se os específicos não existirem
         dep_file = find_dependency_file(PROJECT_ROOT)
         if dep_file:
-            found_files.append(dep_file)
+            if _is_requirements_file(dep_file):
+                found_files.append(dep_file)
+            else:
+                logger.log(
+                    "ℹ️  Nenhum requirements.txt válido encontrado na raiz. "
+                    "Pulando auditoria CVE de dependências.",
+                    YELLOW,
+                )
+                return True
         else:
             logger.log("ℹ️  Nenhum arquivo de dependências encontrado. Pulando.", YELLOW)
             return True
+
+    found_files = [f for f in found_files if _is_requirements_file(f)]
+    if not found_files:
+        logger.log(
+            "ℹ️  Apenas pyproject.toml detectado (não compatível com -r do pip-audit). "
+            "Pulando auditoria CVE.",
+            YELLOW,
+        )
+        return True
 
     files_list_str = ", ".join([os.path.basename(f) for f in found_files])
     logger.log(f"📄 Arquivos de dependências detectados: {files_list_str}", YELLOW)
@@ -409,8 +427,11 @@ def run_detect_secrets_scan(root_dir):
         ".ruff_cache",
         "__pycache__",
         "pytest_cache",
-        ".git/FETCH_HEAD"
+        ".git/FETCH_HEAD",
         ".venv",
+        r".*\.md$",
+        r".*[\\/]tests[\\/].*",
+        r".*[\\/]test_.*\.py$",
     ]
     if not args.local:
         gitignore_excludes = get_gitignore_excludes(root_dir)
@@ -430,6 +451,8 @@ def run_detect_secrets_scan(root_dir):
         errors="ignore",
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
+        stdin=subprocess.DEVNULL,
+        timeout=300,
     )
     output = result.stdout
 
@@ -912,7 +935,15 @@ def main():
         for file in files:
             if file in IGNORED_FILES.split(","):
                 continue
+            if file.lower().endswith(".md"):
+                continue
             filepath = os.path.join(root, file)
+            rel_path = os.path.relpath(filepath, root_dir).replace("\\", "/")
+
+            if "/tests/" in rel_path or rel_path.startswith("tests/"):
+                continue
+            if re.search(r"(^|/)test_.*\.py$", rel_path):
+                continue
             
             if check_gitignore and is_git_ignored(filepath):
                 continue
@@ -921,7 +952,6 @@ def main():
             issues = scan_file(filepath)
             if issues:
                 files_with_issues += 1
-                rel_path = os.path.relpath(filepath, root_dir)
                 logger.log(f"❌ [SEGREDO] {rel_path}", RED)
                 for line_num, msg, _ in issues:
                     logger.log(f"   L.{line_num}: {msg}")
