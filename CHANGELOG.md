@@ -1,6 +1,6 @@
 # Changelog
 All notable changes to this project will be documented in this file.
-## [Unreleased]
+## [1.0.3.9] - 2026-03-05
 
 ### Bug Fixes
 
@@ -11,10 +11,51 @@ All notable changes to this project will be documented in this file.
 
 - Update security trend chart (7295069)
 
+- Update security trend chart (b9adb1a)
+
+- Update security trend chart (1181901)
+
+- Explain pip-audit CVE data source (3f167ff)
+
+- Update security trend chart (83a88bd)
+
+- Update security trend chart (87d3d64)
+
+- Update security trend chart (6f54aed)
+
+- Update security trend chart (9e0e54b)
+
+- Update security trend chart (599bd5c)
+
+- Update security trend chart (7f512c5)
+
+- Update security trend chart (c188fe6)
+
+- Update security trend chart (eae0079)
+
+- Update security trend chart (cdc4688)
+
+- Update security trend chart (d97c14e)
+
+- Update security trend chart (dfbd572)
+
 
 ### Miscellaneous Tasks
 
 - Add py3 classifiers and tomli dev dep (7e42bf0)
+
+- Update changelog and version to v1.0.3.8 (e1d89cc)
+
+- Bump pillow from 12.1.0 to 12.1.1 (3f753c4)
+
+- Bump astral-sh/setup-uv from 6 to 7 (c42ac30)
+
+- Bump actions/upload-artifact from 6 to 7 (3bce96b)
+
+
+### Refactor
+
+- Enhance dependency file detection and logging in pip audit (e1720b9)
 
 
 ### Testing
