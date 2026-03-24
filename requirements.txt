@@ -10,7 +10,7 @@ cycler==0.12.1
     # via matplotlib
 fonttools==4.61.1
     # via matplotlib
-kiwisolver==1.4.9
+kiwisolver==1.5.0
     # via matplotlib
 matplotlib==3.10.8
     # via -r requirements.in
