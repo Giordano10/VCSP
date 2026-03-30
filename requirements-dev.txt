@@ -48,7 +48,7 @@ pluggy==1.6.0
     # via pytest
 py-serializable==2.1.0
     # via cyclonedx-python-lib
-pygments==2.19.2
+pygments==2.20.0
     # via
     #   pytest
     #   rich
@@ -62,7 +62,7 @@ pyyaml==6.0.3
     # via
     #   bandit
     #   detect-secrets
-requests==2.32.5
+requests==2.33.0
     # via
     #   cachecontrol
     #   detect-secrets
