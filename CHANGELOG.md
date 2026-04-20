@@ -1,5 +1,49 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+## [1.0.40] - 2026-04-20
+
+### Documentation
+
+- Update security trend chart (bb4319c)
+
+- Update security trend chart (d7bf84c)
+
+- Update security trend chart (4f30dbb)
+
+- Update security trend chart (82c7b3e)
+
+- Update security trend chart (70c7f07)
+
+- Update security trend chart (340349a)
+
+- Update security trend chart (064bc99)
+
+- Update security trend chart (b4c01c0)
+
+- Update security trend chart (7a7cfa0)
+
+- Update security trend chart (41f596a)
+
+- Update security trend chart (2e5ab8f)
+
+- Update security trend chart (b29ef95)
+
+- Update security trend chart (f54756e)
+
+
+### Miscellaneous Tasks
+
+- Update changelog and version to v1.0.3.9 (a37758c)
+
+- Bump kiwisolver from 1.4.9 to 1.5.0 (42a3450)
+
+- Bump fonttools from 4.61.1 to 4.62.1 (311de07)
+
+- Bump pillow from 12.1.1 to 12.2.0 (c834382)
+
+- Bump softprops/action-gh-release from 2 to 3 (6121338)
+
+
 ## [1.0.3.9] - 2026-03-05
 
 ### Bug Fixes
