@@ -6,7 +6,10 @@ import os
 from pathlib import Path
 import importlib.util
 
-def _load_scan_module():
+import pytest
+
+@pytest.fixture()
+def module():
     """Carrega o módulo scan_project.py"""
     root = Path(__file__).parent.parent
     scan_path = root / "src" / "vcsp_guard" / "scan_project.py"
@@ -22,9 +25,8 @@ def _load_scan_module():
     spec.loader.exec_module(module)
     return module
 
-def test_read_file_utf8():
+def test_read_file_utf8(module):
     """Testa leitura de arquivo UTF-8 normal"""
-    module = _load_scan_module()
     
     # Cria um arquivo temporário com encoding UTF-8
     with tempfile.NamedTemporaryFile(
@@ -44,9 +46,8 @@ def test_read_file_utf8():
     finally:
         os.unlink(temp_path)
 
-def test_read_file_latin1():
+def test_read_file_latin1(module):
     """Testa leitura de arquivo com encoding Latin-1"""
-    module = _load_scan_module()
     
     # Cria um arquivo temporário com encoding Latin-1
     with tempfile.NamedTemporaryFile(
@@ -66,9 +67,8 @@ def test_read_file_latin1():
     finally:
         os.unlink(temp_path)
 
-def test_read_file_with_bom():
+def test_read_file_with_bom(module):
     """Testa leitura de arquivo com UTF-8 BOM (Byte Order Mark)"""
-    module = _load_scan_module()
     
     # Cria um arquivo com UTF-8 BOM (comum em Windows)
     with tempfile.NamedTemporaryFile(mode='wb', delete=False, suffix='.txt') as f:
@@ -85,9 +85,8 @@ def test_read_file_with_bom():
     finally:
         os.unlink(temp_path)
 
-def test_read_file_cp1252():
+def test_read_file_cp1252(module):
     """Testa leitura de arquivo com encoding CP1252 (Windows)"""
-    module = _load_scan_module()
     
     # Cria um arquivo temporário com encoding CP1252
     with tempfile.NamedTemporaryFile(
@@ -104,9 +103,8 @@ def test_read_file_cp1252():
     finally:
         os.unlink(temp_path)
 
-def test_read_binary_file_with_fallback():
+def test_read_binary_file_with_fallback(module):
     """Testa que arquivos binários também são tratados (com errors='replace')"""
-    module = _load_scan_module()
     
     # Cria um arquivo com bytes binários que não são texto válido
     with tempfile.NamedTemporaryFile(mode='wb', delete=False, suffix='.txt') as f:
@@ -123,9 +121,8 @@ def test_read_binary_file_with_fallback():
     finally:
         os.unlink(temp_path)
 
-def test_read_file_starting_with_0xff():
+def test_read_file_starting_with_0xff(module):
     """Testa o caso específico do erro relatado: arquivo começando com 0xFF"""
-    module = _load_scan_module()
     
     # Simula o caso exato do erro: arquivo que começa com 0xFF
     with tempfile.NamedTemporaryFile(mode='wb', delete=False, suffix='.txt') as f:
