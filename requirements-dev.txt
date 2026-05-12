@@ -33,7 +33,7 @@ cachecontrol[filecache]==0.14.4
     # via
     #   cachecontrol
     #   pip-audit
-certifi==2026.1.4
+certifi==2026.4.22
     # via
     #   httpcore
     #   httpx
