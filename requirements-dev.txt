@@ -18,7 +18,7 @@ attrs==26.1.0
     #   jsonschema
     #   referencing
     #   semgrep
-bandit==1.9.2
+bandit==1.9.4
     # via -r requirements-dev.in
 boltons==21.0.0
     # via
