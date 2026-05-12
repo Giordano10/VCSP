@@ -207,7 +207,7 @@ requests==2.33.0
     #   opentelemetry-exporter-otlp-proto-http
     #   pip-audit
     #   semgrep
-rich==14.2.0
+rich==15.0.0
     # via
     #   bandit
     #   pip-audit
