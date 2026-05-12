@@ -159,7 +159,7 @@ pip-audit==2.10.0
     # via -r requirements-dev.in
 pip-requirements-parser==32.0.1
     # via pip-audit
-platformdirs==4.5.1
+platformdirs==4.9.6
     # via pip-audit
 pluggy==1.6.0
     # via pytest
