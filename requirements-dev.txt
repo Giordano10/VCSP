@@ -201,7 +201,7 @@ referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.33.0
+requests==2.34.0
     # via
     #   cachecontrol
     #   opentelemetry-exporter-otlp-proto-http
