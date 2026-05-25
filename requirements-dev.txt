@@ -236,7 +236,7 @@ starlette==1.0.0
     #   sse-starlette
 stevedore==5.7.0
     # via bandit
-tomli==2.4.0
+tomli==2.4.1
     # via
     #   pip-audit
     #   pytest
