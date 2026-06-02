@@ -193,7 +193,7 @@ pytest==7.4.4
     # via -r requirements-dev.in
 python-dotenv==1.2.2
     # via pydantic-settings
-python-multipart==0.0.29
+python-multipart==0.0.30
     # via mcp
 pyyaml==6.0.3
     # via bandit
