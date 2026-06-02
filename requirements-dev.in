@@ -2,7 +2,7 @@
 bandit
 pip-audit>=2.4.0,<3.0.0
 ruff
-pytest>=7.0.0,<8.0.0
+pytest>=9.0.3,<10.0.0
 semgrep>=1.0.0; sys_platform != 'win32'
 
 # Compatibilidade para versões antigas do Python
