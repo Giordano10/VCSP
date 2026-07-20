@@ -224,7 +224,7 @@ ruff==0.15.13
     # via -r requirements-dev.in
 semantic-version==2.10.0
     # via semgrep
-semgrep==1.163.0 ; sys_platform != "win32"
+semgrep==1.164.0 ; sys_platform != "win32"
     # via -r requirements-dev.in
 sortedcontainers==2.4.0
     # via cyclonedx-python-lib
