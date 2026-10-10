@@ -62,7 +62,7 @@ exceptiongroup==1.2.2
     #   anyio
     #   pytest
     #   semgrep
-face==26.0.0
+face==26.0.1
     # via glom
 filelock==3.29.0
     # via cachecontrol
@@ -189,7 +189,7 @@ pyparsing==3.3.1
     # via
     #   -c requirements.txt
     #   pip-requirements-parser
-pytest==9.0.3
+pytest==7.4.4
     # via -r requirements-dev.in
 python-dotenv==1.2.2
     # via pydantic-settings
@@ -255,7 +255,6 @@ typing-extensions==4.15.0
     #   opentelemetry-semantic-conventions
     #   pydantic
     #   pydantic-core
-    #   pyjwt
     #   referencing
     #   semgrep
     #   starlette
